@@ -1,11 +1,7 @@
 package com.demo.service;
 
-import com.demo.domain.Bookdetails;
-import com.demo.domain.Bookroom;
-import com.demo.domain.Picturetable;
-import com.demo.repository.BookDetailsRepo;
-import com.demo.repository.BookRoomRepo;
-import com.demo.repository.PictureRepo;
+import com.demo.domain.*;
+import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +18,8 @@ public class BookService {
     private final BookRoomRepo bookRoomRepo;
     private final BookDetailsRepo bookDetailsRepo;
     private final PictureRepo pictureRepo;
+    private final WordRepo wordRepo;
+    private final MindMapRepo mindMapRepo;
 
     /**
      * 기본 외에 제공해야 할 데이터
@@ -50,5 +48,13 @@ public class BookService {
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
         List<Picturetable> picturetables = pictureRepo.findAllByBookroomId(bookroomId);
         return picturetables;
+    }
+    public List<Wordtable> getWordByroomId(Long bookroomId) {
+        List<Wordtable> wordtables = wordRepo.findAllByBookroomId(bookroomId);
+        return wordtables;
+    }
+    public List<Mindmap> getMindmapByBookroomId(Long bookroomId) {
+        List<Mindmap> mindmaps = mindMapRepo.findAllByBookroomId(bookroomId);
+        return mindmaps;
     }
 }

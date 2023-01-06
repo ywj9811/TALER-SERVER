@@ -1,6 +1,8 @@
 package com.demo.controller;
 
+import com.demo.domain.Mindmap;
 import com.demo.domain.Picturetable;
+import com.demo.domain.Wordtable;
 import com.demo.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,5 +30,15 @@ public class BookController {
     public List<Picturetable> moveToPictureTab(Long bookroomId) {
         List<Picturetable> picturetables = bookService.getPictureByBookroomId(bookroomId);
         return picturetables;
+    }
+    @GetMapping("/word")
+    public List<Wordtable> moveToWordTab(Long bookroomId) {
+        List<Wordtable> wordtables = bookService.getWordByroomId(bookroomId);
+        return wordtables;
+    }
+    @GetMapping("/mind")
+    public List<Mindmap> moveToMindTab(Long bookroomId) {
+        List<Mindmap> mindmaps = bookService.getMindmapByBookroomId(bookroomId);
+        return mindmaps;
     }
 }
