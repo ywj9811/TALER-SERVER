@@ -6,4 +6,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookRoomRepo extends JpaRepository<Bookroom, Long> {
+
+    Bookroom findByUserIdAndBookId(Long bookId, Long userId);
+
+//    @Query("select bd, br from Bookdetails bd JOIN Bookroom br ON br.bookId = br.bookId where br.userId = :userId")
+//    BookRoomPlusBookDetails findBookTitle(@Param("userId") Long userId);
+    
 }
