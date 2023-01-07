@@ -3,9 +3,13 @@ package com.demo.controller;
 import com.demo.domain.Mindmap;
 import com.demo.domain.Picturetable;
 import com.demo.domain.Wordtable;
+import com.demo.dto.MindInsertDto;
+import com.demo.dto.PictureInsertDto;
+import com.demo.dto.WordInsertDto;
 import com.demo.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,15 +35,33 @@ public class BookController {
         List<Picturetable> picturetables = bookService.getPictureByBookroomId(bookroomId);
         return picturetables;
     }
+
+    @PostMapping("/picture")
+    public Picturetable savePicture(PictureInsertDto pictureInsertDto) {
+        Picturetable picturetable = bookService.savePicture(pictureInsertDto);
+        return picturetable;
+    }
+
     @GetMapping("/word")
     public List<Wordtable> moveToWordTab(Long bookroomId) {
         List<Wordtable> wordtables = bookService.getWordByroomId(bookroomId);
         return wordtables;
     }
+    @PostMapping("/word")
+    public Wordtable saveWord(WordInsertDto wordInsertDto) {
+        Wordtable wordtable = bookService.saveWord(wordInsertDto);
+        return wordtable;
+    }
+
     @GetMapping("/mind")
     public List<Mindmap> moveToMindTab(Long bookroomId) {
         List<Mindmap> mindmaps = bookService.getMindmapByBookroomId(bookroomId);
         return mindmaps;
+    }
+    @PostMapping("/mind")
+    public Mindmap saveMind(MindInsertDto mindInsertDto) {
+        Mindmap mindmap = bookService.saveMind(mindInsertDto);
+        return mindmap;
     }
 }
 /**

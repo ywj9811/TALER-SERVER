@@ -1,6 +1,9 @@
 package com.demo.service;
 
 import com.demo.domain.*;
+import com.demo.dto.MindInsertDto;
+import com.demo.dto.PictureInsertDto;
+import com.demo.dto.WordInsertDto;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,12 +53,29 @@ public class BookService {
         List<Picturetable> picturetables = pictureRepo.findAllByBookroomId(bookroomId);
         return picturetables;
     }
+    public Picturetable savePicture(PictureInsertDto pictureInsertDto) {
+        Picturetable picturetable = pictureInsertDto.insertDtoToPicturetable(pictureInsertDto);
+        Picturetable save = pictureRepo.save(picturetable);
+        return save;
+    }
+
     public List<Wordtable> getWordByroomId(Long bookroomId) {
         List<Wordtable> wordtables = wordRepo.findAllByBookroomId(bookroomId);
         return wordtables;
     }
+    public Wordtable saveWord(WordInsertDto wordInsertDto) {
+        Wordtable wordtable = wordInsertDto.insertDtoToWordtable(wordInsertDto);
+        Wordtable save = wordRepo.save(wordtable);
+        return save;
+    }
+
     public List<Mindmap> getMindmapByBookroomId(Long bookroomId) {
         List<Mindmap> mindmaps = mindMapRepo.findAllByBookroomId(bookroomId);
         return mindmaps;
+    }
+    public Mindmap saveMind(MindInsertDto mindInsertDto) {
+        Mindmap mindmap = mindInsertDto.insertDtoToMindmap(mindInsertDto);
+        Mindmap save = mindMapRepo.save(mindmap);
+        return save;
     }
 }
