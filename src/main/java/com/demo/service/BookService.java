@@ -34,10 +34,11 @@ public class BookService {
     public Map<String, Object> getBookRoom(Long bookId, Long userId) {
         Map<String, Object> returnMap = new HashMap<>();
 
-        Bookroom bookroom = bookRoomRepo.findByUserIdAndBookId(bookId, userId);
+        Optional<Bookroom> optionalBookroom = bookRoomRepo.findByUserIdAndBookId(bookId, userId);
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookId);
-        if (optionalBookdetails.isEmpty())
+        if (optionalBookdetails.isEmpty() || optionalBookroom.isEmpty())
             return null;
+        Bookroom bookroom = optionalBookroom.get();
         Bookdetails bookdetails = optionalBookdetails.get();
         returnMap.put("bookroom", bookroom);
         returnMap.put("bookdetails", bookdetails);
