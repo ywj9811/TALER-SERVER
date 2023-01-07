@@ -42,3 +42,13 @@ public class BookController {
         return mindmaps;
     }
 }
+/**
+ * ----------설명------------
+ * bookroom에 접근하면 Map에 각각의 객체를 담아서 반환함
+ * key : bookroom 는 bookroom객체
+ * key : bookdetails 는 bookdetails객체를 가지고 있음
+ * 만약 잘못된 데이터를 통해서 접근하게 된다면 null을 반환함
+ * 
+ * picture, word, mind 탭에 접근하는 경우 접근시 아무것도 없을 경우 Empty로 반환이 됨
+ * 존재한다면 모두 List에 담아서 반환하고 있음
+ */
