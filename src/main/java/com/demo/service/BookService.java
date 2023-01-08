@@ -6,20 +6,20 @@ import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class BookService {
     private final BookRoomRepo bookRoomRepo;
     private final BookDetailsRepo bookDetailsRepo;
+    private final RoomViewRepo roomViewRepo;
     private final PictureRepo pictureRepo;
     private final WordRepo wordRepo;
     private final MindMapRepo mindMapRepo;
@@ -29,24 +29,40 @@ public class BookService {
      * 1. bookId를 통한 책 제목
      * 2. 그리고 그냥 bookroom을 통째로 제공하여도 괜찮을지
      */
-//    public BookRoomPlusBookDetails moveToBookRoom(Long userId, Long bookId) {
+//    public BookRoomPlusBookDetails getBookRoom(Long userId) {
+//        log.info("userId 입력 = {}", userId);
 //        BookRoomPlusBookDetails bookRoomPlusBookDetails = bookRoomRepo.findBookTitle(userId);
 //        return bookRoomPlusBookDetails;
 //    }
+    /**
+     * 결과값이 안나옴 null로 나옴
+     * 나중에 이유를 알게 되면 고치도록 하자.
+     * 우선 작동하는 방식으로 하자.
+     */
 
-    public Map<String, Object> getBookRoom(Long bookId, Long userId) {
-        Map<String, Object> returnMap = new HashMap<>();
+//    public Map<String, Object> getBookRoom(Long bookId, Long userId) {
+//        Map<String, Object> returnMap = new HashMap<>();
+//
+//        Optional<Bookroom> optionalBookroom = bookRoomRepo.findByUserIdAndBookId(bookId, userId);
+//        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookId);
+//        if (optionalBookdetails.isEmpty() || optionalBookroom.isEmpty())
+//            return null;
+//        Bookroom bookroom = optionalBookroom.get();
+//        Bookdetails bookdetails = optionalBookdetails.get();
+//        returnMap.put("bookroom", bookroom);
+//        returnMap.put("bookdetails", bookdetails);
+//
+//        return returnMap;
+//    }
 
-        Optional<Bookroom> optionalBookroom = bookRoomRepo.findByUserIdAndBookId(bookId, userId);
-        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookId);
-        if (optionalBookdetails.isEmpty() || optionalBookroom.isEmpty())
-            return null;
-        Bookroom bookroom = optionalBookroom.get();
-        Bookdetails bookdetails = optionalBookdetails.get();
-        returnMap.put("bookroom", bookroom);
-        returnMap.put("bookdetails", bookdetails);
+    /**
+     * View를 이용하는 방식으로 작성함
+     * join에서 문제 발생 -> 하나하나 조회는 비효율 -> view 사용
+     */
 
-        return returnMap;
+    public Roomview getBookRoom(Long bookId, Long userId) {
+        Roomview roomView = roomViewRepo.findByBookIdAndUserId(bookId, userId);
+        return roomView;
     }
 
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
