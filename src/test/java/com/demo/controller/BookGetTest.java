@@ -23,40 +23,33 @@ class BookGetTest {
 
     @Test
     void bookroomSuccess() {
-        Map<String, Object> bookRoom = bookService.getBookRoom(1L, 1L);
-        Bookroom bookroom = (Bookroom) bookRoom.get("bookroom");
-        Bookdetails bookdetails = (Bookdetails) bookRoom.get("bookdetails");
-        log.info("bookroomId = {}", bookroom.getBookroomId());
-        log.info("bookId = {}", bookroom.getBookId());
-        log.info("userId = {}", bookroom.getUserId());
-        log.info("characterId = {}", bookroom.getCharacterId());
-        log.info("themeColor = {}", bookroom.getThemeColor());
-        log.info("themeMusicUrl = {}", bookroom.getThemeMusicUrl());
+        Roomview bookRoom = bookService.getBookRoom(1L, 1L);
+        log.info("bookroomId = {}", bookRoom.getBookroomId());
+        log.info("bookId = {}", bookRoom.getBookId());
+        log.info("userId = {}", bookRoom.getUserId());
+        log.info("characterId = {}", bookRoom.getCharacterId());
+        log.info("themeColor = {}", bookRoom.getThemeColor());
+        log.info("themeMusicUrl = {}", bookRoom.getThemeMusicUrl());
         log.info("--------------------------------------------");
-        log.info("bookId = {}", bookdetails.getBookId());
-        log.info("bookId = {}", bookdetails.getBookAuthor());
-        log.info("bookId = {}", bookdetails.getBookGenre());
-        log.info("bookId = {}", bookdetails.getBookTitle());
-        log.info("bookId = {}", bookdetails.getBookPopularity());
-        assertThat(bookRoom.size()).isEqualTo(2);
+        log.info("bookId = {}", bookRoom.getBookTitle());
     }
 
     @Test
     void bookroomfailByBookId() {
-        Map<String, Object> bookRoom = bookService.getBookRoom(3L, 1L);
+        Roomview bookRoom = bookService.getBookRoom(3L, 1L);
         assertThat(bookRoom).isNull();
     }
 
     @Test
     void bookroomfailByUserId() {
-        Map<String, Object> bookRoom = bookService.getBookRoom(1L, 4L);
+        Roomview bookRoom = bookService.getBookRoom(1L, 4L);
         assertThat(bookRoom).isNull();
     }
 
     @Test
     void moveToPictureTab() {
         List<Picturetable> pictures = bookService.getPictureByBookroomId(1L);
-        assertThat(pictures.size()).isEqualTo(3);
+        assertThat(pictures.size()).isEqualTo(4);
     }
 
     @Test
