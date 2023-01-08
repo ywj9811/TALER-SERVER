@@ -61,7 +61,7 @@ public class BookPostTest {
 
         log.info("기존의 크기 = {}", size);
 
-        MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", 1, "", "", 2);
+        MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", "", "",  2);
         bookService.saveMind(mindInsertDto);
 
         List<Mindmap> mindmaps = bookService.getMindmapByBookroomId(1L);

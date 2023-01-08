@@ -31,5 +31,5 @@ public class User {
 
     private String pw;
 
-    private int phonenumber;
+    private String phonenumber;
 }
