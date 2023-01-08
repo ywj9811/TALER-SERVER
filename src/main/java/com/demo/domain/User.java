@@ -25,6 +25,8 @@ public class User {
 
     private String createdAt;
 
+    private String updateAt;
+
     private int status;
 
     private String pw;

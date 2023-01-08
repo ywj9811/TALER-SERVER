@@ -21,4 +21,5 @@ public class Favorite {
 
     private Long bookId;
 
+    private int isfavorite;
 }
