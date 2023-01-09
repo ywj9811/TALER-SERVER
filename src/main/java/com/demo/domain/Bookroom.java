@@ -21,8 +21,6 @@ public class Bookroom {
 
     private Long bookId;
 
-    private Long characterId;
-
     private String themeColor;
 
     private String themeMusicUrl;

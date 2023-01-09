@@ -19,7 +19,7 @@ public class Favorite {
 
     private Long userId;
 
-    private Long bookId;
+    private Long bookroomId;
 
     private int isfavorite;
 }
