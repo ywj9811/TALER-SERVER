@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.domain.*;
+import com.demo.dto.BookRoomInsertDto;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
@@ -47,6 +48,12 @@ public class BookController {
      * 우선 작동하는 방식으로 하자.
      */
 
+    @PostMapping("/bookroom")
+    public Bookroom saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
+        Bookroom bookroom = bookService.saveBookRoom(bookRoomInsertDto);
+        return bookroom;
+    }
+
     @GetMapping("/picture")
     public List<Picturetable> moveToPictureTab(Long bookroomId) {
         List<Picturetable> picturetables = bookService.getPictureByBookroomId(bookroomId);
@@ -84,7 +91,7 @@ public class BookController {
 /**
  * ----------설명------------
  * bookroom에 접근하면 Roomview에 담아서 반환함
- * Roomview에는 bookroom의 모든 필드와 bookTitle 이 들어있다.
+ * Roomview에는 bookroom의 모든 필드와 bookTitle, userCharacter, isfavorite 이 들어있다.
  * 만약 없다면 null이 반환됨
  * 
  * picture, word, mind 탭에 접근하는 경우 접근시 아무것도 없을 경우 Empty로 반환이 됨
