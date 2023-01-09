@@ -1,9 +1,7 @@
 package com.demo.service;
 
 import com.demo.domain.*;
-import com.demo.dto.MindInsertDto;
-import com.demo.dto.PictureInsertDto;
-import com.demo.dto.WordInsertDto;
+import com.demo.dto.*;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,6 @@ import java.util.List;
 @Slf4j
 public class BookService {
     private final BookRoomRepo bookRoomRepo;
-    private final BookDetailsRepo bookDetailsRepo;
     private final RoomViewRepo roomViewRepo;
     private final PictureRepo pictureRepo;
     private final WordRepo wordRepo;
@@ -60,9 +57,16 @@ public class BookService {
      * join에서 문제 발생 -> 하나하나 조회는 비효율 -> view 사용
      */
 
+
     public Roomview getBookRoom(Long bookId, Long userId) {
         Roomview roomView = roomViewRepo.findByBookIdAndUserId(bookId, userId);
         return roomView;
+    }
+
+    public Bookroom saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
+        Bookroom bookroom = bookRoomInsertDto.dtoToBookRoom(bookRoomInsertDto);
+        Bookroom save = bookRoomRepo.save(bookroom);
+        return save;
     }
 
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {

@@ -19,4 +19,17 @@ public class Roomview {
     private String themeColor;
     private String themeMusicUrl;
     private String bookTitle;
+    private int isfavorite;
+    private String gender;
+    private String nickname;
+    private String headStyle;
+    private String headColor;
+    private String topStyle;
+    private String topColor;
+    private String pantsStyle;
+    private String pantsColor;
+    private String shoesStyle;
+    private String shoesColor;
+    private String faceColor;
+    private String faceStyle;
 }

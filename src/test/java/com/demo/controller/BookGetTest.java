@@ -23,7 +23,7 @@ class BookGetTest {
 
     @Test
     void bookroomSuccess() {
-        Roomview bookRoom = bookService.getBookRoom(1L, 1L);
+        Roomview bookRoom = (Roomview) bookService.getBookRoom(1L, 1L);
         log.info("bookroomId = {}", bookRoom.getBookroomId());
         log.info("bookId = {}", bookRoom.getBookId());
         log.info("userId = {}", bookRoom.getUserId());
@@ -36,13 +36,13 @@ class BookGetTest {
 
     @Test
     void bookroomfailByBookId() {
-        Roomview bookRoom = bookService.getBookRoom(3L, 1L);
+        Roomview bookRoom = (Roomview) bookService.getBookRoom(3L, 1L);
         assertThat(bookRoom).isNull();
     }
 
     @Test
     void bookroomfailByUserId() {
-        Roomview bookRoom = bookService.getBookRoom(1L, 4L);
+        Roomview bookRoom = (Roomview) bookService.getBookRoom(1L, 4L);
         assertThat(bookRoom).isNull();
     }
 
