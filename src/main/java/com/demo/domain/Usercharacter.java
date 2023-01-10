@@ -1,11 +1,14 @@
 package com.demo.domain;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -45,7 +48,9 @@ public class Usercharacter {
 
     private String faceStyle;
 
-    private String createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    private String updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
