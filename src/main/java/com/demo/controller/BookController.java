@@ -7,6 +7,7 @@ import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
 import com.demo.service.BookService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/book")
+@Slf4j
 public class BookController {
     private final BookService bookService;
 
@@ -24,6 +26,12 @@ public class BookController {
     public Roomview moveToBookRoom(Long userId, Long bookId) {
         Roomview bookRoom = bookService.getBookRoom(bookId, userId);
         return bookRoom;
+//        List<BookRoomPlusBookDetails> getbr = bookService.getbr(bookId, userId);
+//        log.info("리스트는 잘 뜨는가 = {}", getbr.size());
+//        log.info("bookId = {}", getbr.get(getbr.size() - 1).getBookId());
+//        String bookTitle = getbr.get(getbr.size() - 1).getBookTitle();
+//        log.info("bookTitle = {}", bookTitle);
+//        return getbr;
     }
     /**
      * View를 만들어서 사용함 (join대신)
