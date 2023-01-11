@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserCharacterRepo extends JpaRepository<Usercharacter, Long> {
+    Usercharacter findByUserIdAndBookId(Long userId, Long bookId);
 }
