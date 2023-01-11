@@ -1,9 +1,11 @@
 package com.demo.dto;
 
 import com.demo.domain.Bookroom;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class BookRoomInsertDto {
     Long userId;
     Long bookId;
