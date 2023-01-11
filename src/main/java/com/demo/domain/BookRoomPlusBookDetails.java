@@ -8,13 +8,8 @@ public interface BookRoomPlusBookDetails {
      */
     Long getBookId();
     String getBookTitle();
-    String getBookAuthor();
-    String getBookGenre();
-    String getBookPopularity();
-
     Long getBookroomId();
     Long getUserId();
-    Long getCharacterId();
     String getThemeColor();
     String getThemeMusicUrl();
 
