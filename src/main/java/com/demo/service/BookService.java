@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.demo.dto.DefaultFavoriteInsert.dtoToEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -16,16 +19,14 @@ import java.util.List;
 @Slf4j
 public class BookService {
     private final BookRoomRepo bookRoomRepo;
+    private final BookDetailsRepo bookDetailsRepo;
+    private final FavoriteRepo favoriteRepo;
     private final RoomViewRepo roomViewRepo;
     private final PictureRepo pictureRepo;
     private final WordRepo wordRepo;
     private final MindMapRepo mindMapRepo;
+    private final UserCharacterRepo userCharacterRepo;
 
-    /**
-     * 기본 외에 제공해야 할 데이터
-     * 1. bookId를 통한 책 제목
-     * 2. 그리고 그냥 bookroom을 통째로 제공하여도 괜찮을지
-     */
 //    public BookRoomPlusBookDetails getBookRoom(Long userId) {
 //        log.info("userId 입력 = {}", userId);
 //        BookRoomPlusBookDetails bookRoomPlusBookDetails = bookRoomRepo.findBookTitle(userId);
@@ -64,9 +65,40 @@ public class BookService {
     }
 
     public Bookroom saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
+        insertDefaultCharacter(bookRoomInsertDto);
+        //기본 캐릭터를 바탕으로 bookroom기본 캐릭터 생성
+        updateBookPopularity(bookRoomInsertDto);
+        //bookroom을 생성하면서 bookdetails에서 popularity를 +1함
+
         Bookroom bookroom = bookRoomInsertDto.dtoToBookRoom(bookRoomInsertDto);
         Bookroom save = bookRoomRepo.save(bookroom);
+        log.info("bookroom save = {}", save);
+        //생성
+
+        insertDefaultFavorite(bookroom);
+        //좋아요 표시 안한 상태로 favorite 생성
         return save;
+    }
+
+    private void updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
+        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
+        Bookdetails bookdetails = optionalBookdetails.get();
+        bookdetails.updatePopularity();
+        log.info("bookdetails update 실행");
+    }
+
+    private void insertDefaultFavorite(Bookroom bookroom) {
+        Favorite favorite = dtoToEntity(bookroom.getUserId(), bookroom.getBookId(), bookroom.getBookroomId());
+        Favorite favoriteSave = favoriteRepo.save(favorite);
+        log.info("default favorite save = {}", favoriteSave);
+    }
+
+    private void insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
+        Usercharacter defaultCharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);
+        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookRoomInsertDto.getBookId());
+
+        Usercharacter characterSave = userCharacterRepo.save(usercharacter);
+        log.info("default character save = {}", characterSave);
     }
 
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
@@ -76,6 +108,7 @@ public class BookService {
     public Picturetable savePicture(PictureInsertDto pictureInsertDto) {
         Picturetable picturetable = pictureInsertDto.insertDtoToPicturetable(pictureInsertDto);
         Picturetable save = pictureRepo.save(picturetable);
+        log.info("picture save = {}", save);
         return save;
     }
 
@@ -86,6 +119,7 @@ public class BookService {
     public Wordtable saveWord(WordInsertDto wordInsertDto) {
         Wordtable wordtable = wordInsertDto.insertDtoToWordtable(wordInsertDto);
         Wordtable save = wordRepo.save(wordtable);
+        log.info("word save = {}", save);
         return save;
     }
 
@@ -96,6 +130,7 @@ public class BookService {
     public Mindmap saveMind(MindInsertDto mindInsertDto) {
         Mindmap mindmap = mindInsertDto.insertDtoToMindmap(mindInsertDto);
         Mindmap save = mindMapRepo.save(mindmap);
+        log.info("mind save = {}", save);
         return save;
     }
 }

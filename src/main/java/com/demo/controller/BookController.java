@@ -61,6 +61,14 @@ public class BookController {
         Bookroom bookroom = bookService.saveBookRoom(bookRoomInsertDto);
         return bookroom;
     }
+    /**
+     * /bookroom 실행시
+     * bookroom 생성
+     * 기본 usercharacter 베이스로 bookroom 캐릭터 생성
+     * favorite 좋아요X 생성
+     * bookdetails의 bookpopularity 증가
+     *
+     */
 
     @GetMapping("/picture")
     public List<Picturetable> moveToPictureTab(Long bookroomId) {
