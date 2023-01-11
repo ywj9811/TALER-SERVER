@@ -21,11 +21,6 @@ public class Mindmap {
 
     private String wordPictureUrl;
 
-//    private int wordMain;
-    /**
-     * 용도를 다시 생각해보자
-     */
-
     private String wordVoiceUrl;
 
     private String wordText;
