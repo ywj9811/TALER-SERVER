@@ -24,4 +24,8 @@ public class Bookdetails {
     private String bookGenre;
 
     private int bookPopularity;
+
+    public void updatePopularity() {
+        this.bookPopularity += 1;
+    }
 }
