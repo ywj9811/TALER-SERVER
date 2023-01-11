@@ -1,17 +1,14 @@
 package com.demo.dto;
 
 import com.demo.domain.Picturetable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class PictureInsertDto {
     String pictureUrl;
     Long bookroomId;
-
-    public PictureInsertDto(String pictureUrl, Long bookroomId) {
-        this.pictureUrl = pictureUrl;
-        this.bookroomId = bookroomId;
-    }
 
     public Picturetable insertDtoToPicturetable(PictureInsertDto pictureInsertDto) {
         return Picturetable.builder()
