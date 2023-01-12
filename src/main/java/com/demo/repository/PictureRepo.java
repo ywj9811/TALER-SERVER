@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PictureRepo extends JpaRepository<Picturetable, Long> {
     List<Picturetable> findAllByBookroomId(Long bookroomId);
+
+    void deleteByBookroomId(Long bookroomId);
 }
