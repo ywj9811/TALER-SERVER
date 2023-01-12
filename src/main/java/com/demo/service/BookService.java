@@ -73,6 +73,27 @@ public class BookService {
         log.info("default favorite save = {}", favoriteSave);
     }
 
+    //themeColor 추가용(업데이트)
+    public void updateThemeColor(String themeColor, Long bookroomId) {
+        Bookroom bookroom = getBookroom(bookroomId);
+        bookroom.updateThemeColor(themeColor);
+        log.info("update themeColor = {}", themeColor);
+    }
+
+    //themeMusicUrl 추가용(업데이트)
+    public void updateThemeMusicUrl(String themeMusicUrl, Long bookroomId) {
+        Bookroom bookroom = getBookroom(bookroomId);
+        bookroom.updateThemeMusicUrl(themeMusicUrl);
+        log.info("update themeMusicUrl = {}", themeMusicUrl);
+    }
+    
+    //bookroom정보 가져오기
+    private Bookroom getBookroom(Long bookroomId) {
+        Optional<Bookroom> optionalBookroom = bookRoomRepo.findById(bookroomId);
+        Bookroom bookroom = optionalBookroom.get();
+        return bookroom;
+    }
+
     //기본 케릭터 가져와서 bookroom생성시 등록하는 메소드
     private void insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
         Usercharacter defaultCharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);

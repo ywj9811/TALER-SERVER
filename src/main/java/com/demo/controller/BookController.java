@@ -51,6 +51,16 @@ public class BookController {
      *
      */
 
+    @PostMapping("/bookroom/color")
+    public void updateThemeColor(Long bookroomId, String themeColor) {
+        bookService.updateThemeColor(themeColor, bookroomId);
+    }
+
+    @PostMapping("/bookroom/music")
+    public void updateThemeMusicUrl(Long bookroomId, String themeMusicUrl) {
+        bookService.updateThemeMusicUrl(themeMusicUrl, bookroomId);
+    }
+
     @GetMapping("/picture") //pciture탭 조회
     public List<Picturetable> moveToPictureTab(Long bookroomId) {
         List<Picturetable> picturetables = bookService.getPictureByBookroomId(bookroomId);
