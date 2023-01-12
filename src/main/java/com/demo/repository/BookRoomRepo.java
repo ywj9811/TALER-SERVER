@@ -2,6 +2,7 @@ package com.demo.repository;
 
 import com.demo.domain.BookRoomPlusBookDetails;
 import com.demo.domain.Bookroom;
+import com.demo.dto.RecommendBookFavoriteDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

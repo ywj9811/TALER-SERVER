@@ -1,7 +1,12 @@
 package com.demo.service;
 
+import com.demo.dao.BookroomDao;
 import com.demo.domain.*;
 import com.demo.dto.*;
+import com.demo.dto.MindInsertDto;
+import com.demo.dto.PictureInsertDto;
+import com.demo.dto.RecommendBookFavoriteDto;
+import com.demo.dto.WordInsertDto;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +23,7 @@ import static com.demo.dto.DefaultFavoriteInsert.dtoToEntity;
 @Transactional
 @Slf4j
 public class BookService {
+    private final BookroomDao bookroomDao;
     private final BookRoomRepo bookRoomRepo;
     private final BookDetailsRepo bookDetailsRepo;
     private final FavoriteRepo favoriteRepo;
@@ -51,7 +57,7 @@ public class BookService {
         //좋아요 표시 안한 상태로 favorite 생성
         return save;
     }
-    
+
     //popularity 업데이트 시키는 메소드
     private void updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
@@ -59,7 +65,7 @@ public class BookService {
         bookdetails.updatePopularity();
         log.info("bookdetails update 실행");
     }
-    
+
     //bookroom 생성시 isfavorite를 0으로하여 등록하는 메소드
     private void insertDefaultFavorite(Bookroom bookroom) {
         Favorite favorite = dtoToEntity(bookroom.getUserId(), bookroom.getBookId(), bookroom.getBookroomId());
@@ -75,7 +81,7 @@ public class BookService {
         Usercharacter characterSave = userCharacterRepo.save(usercharacter);
         log.info("default character save = {}", characterSave);
     }
-    
+
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
         List<Picturetable> picturetables = pictureRepo.findAllByBookroomId(bookroomId);
         return picturetables;
@@ -107,5 +113,18 @@ public class BookService {
         Mindmap save = mindMapRepo.save(mindmap);
         log.info("mind save = {}", save);
         return save;
+    }
+
+    public List<RecommendBookFavoriteDto> getRecommendBooks(Long id){
+        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
+        List<RecommendBookFavoriteDto> recommendBookFavoriteDtoList = bookroomDao.getBookroomByFavorite(id);
+        System.out.println(recommendBookFavoriteDtoList);
+        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
+        recommendBookFavoriteDtoList.addAll(bookroomDao.getBookroomByExperience(id));
+        //가장 좋아요가 많은 동화책
+
+        //가장 popular한 동화책방
+
+        return recommendBookFavoriteDtoList;
     }
 }
