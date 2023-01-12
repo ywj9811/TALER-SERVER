@@ -77,7 +77,7 @@ public class BookRoomTest {
         log.info("기존의 크기 = {}", size);
         
         log.info("Insert 수행");
-        MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", "", "",  2);
+        MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", 0, "",  "abc", 2);
         bookService.saveMind(mindInsertDto);
         
         log.info("두번째 select 수행");
@@ -89,7 +89,7 @@ public class BookRoomTest {
 
     @Test
     void saveBookRoom() {
-        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L, "red", "abfddf123");
+        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
         log.info("bookdetails의 popularity 첫번째 조회");
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
         Bookdetails bookdetails = optionalBookdetails.get();
