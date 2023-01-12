@@ -24,7 +24,7 @@ public class BookController {
 
     @GetMapping("/bookroom") //bookroom 조회
     public Roomview moveToBookRoom(Long userId, Long bookId) {
-        Roomview bookRoom = bookService.getBookRoom(bookId, userId);
+        Roomview bookRoom = bookService.selectBookRoom(bookId, userId);
         return bookRoom;
     }
     /**
@@ -59,6 +59,11 @@ public class BookController {
     @PostMapping("/bookroom/music")
     public void updateThemeMusicUrl(Long bookroomId, String themeMusicUrl) {
         bookService.updateThemeMusicUrl(themeMusicUrl, bookroomId);
+    }
+
+    @PostMapping("/bookroom/delete")
+    public void deleteBookroom(Long bookroomId) {
+        bookService.deleteBookRoom(bookroomId);
     }
 
     @GetMapping("/picture") //pciture탭 조회

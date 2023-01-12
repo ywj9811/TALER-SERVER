@@ -37,7 +37,7 @@ public class BookService {
      * View를 이용하는 방식으로 작성함
      * join에서 문제 발생 -> 하나하나 조회는 비효율 -> view 사용
      */
-    public Roomview getBookRoom(Long bookId, Long userId) {
+    public Roomview selectBookRoom(Long bookId, Long userId) {
         Roomview roomView = roomViewRepo.findByBookIdAndUserId(bookId, userId);
         return roomView;
     }
@@ -101,6 +101,14 @@ public class BookService {
 
         Usercharacter characterSave = userCharacterRepo.save(usercharacter);
         log.info("default character save = {}", characterSave);
+    }
+
+    public void deleteBookRoom(Long bookroomId) {
+        Bookroom bookroom = getBookroom(bookroomId);
+        bookRoomRepo.delete(bookroom);
+        pictureRepo.deleteById(bookroomId);
+        wordRepo.deleteByBookroomId(bookroomId);
+        mindMapRepo.deleteByBookroomId(bookroomId);
     }
 
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
