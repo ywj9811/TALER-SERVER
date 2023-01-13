@@ -11,8 +11,6 @@ public class MindInsertDto {
 
     String wordPictureUrl;
 
-    int wordMain;
-
     String wordVoiceUrl;
 
     String wordText;
