@@ -10,5 +10,5 @@ import java.util.List;
 public interface MindMapRepo extends JpaRepository<Mindmap, Long> {
     List<Mindmap> findAllByBookroomId(Long bookroomId);
 
-    void deleteByBookroomId(Long bookroomId);
+    void deleteAllByBookroomId(Long bookroomId);
 }
