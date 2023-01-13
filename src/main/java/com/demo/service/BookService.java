@@ -106,9 +106,10 @@ public class BookService {
     public void deleteBookRoom(Long bookroomId) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookRoomRepo.delete(bookroom);
-        pictureRepo.deleteById(bookroomId);
-        wordRepo.deleteByBookroomId(bookroomId);
-        mindMapRepo.deleteByBookroomId(bookroomId);
+        pictureRepo.deleteAllByBookroomId(bookroomId);
+        wordRepo.deleteAllByBookroomId(bookroomId);
+        mindMapRepo.deleteAllByBookroomId(bookroomId);
+        userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
     }
 
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
@@ -156,4 +157,5 @@ public class BookService {
 
         return recommendBookFavoriteDtoList;
     }
+
 }
