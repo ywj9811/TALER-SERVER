@@ -10,5 +10,5 @@ import java.util.List;
 public interface WordRepo extends JpaRepository<Wordtable, Long> {
     List<Wordtable> findAllByBookroomId(Long bookroomId);
 
-    void deleteByBookroomId(Long bookroomId);
+    void deleteAllByBookroomId(Long bookroomId);
 }

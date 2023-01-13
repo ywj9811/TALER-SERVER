@@ -5,9 +5,7 @@ import com.demo.dto.BookRoomInsertDto;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
-import com.demo.repository.BookDetailsRepo;
-import com.demo.repository.FavoriteRepo;
-import com.demo.repository.UserCharacterRepo;
+import com.demo.repository.*;
 import com.demo.service.BookService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,6 +22,14 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 @Transactional
 public class BookRoomTest {
+    @Autowired
+    PictureRepo pictureRepo;
+    @Autowired
+    WordRepo wordRepo;
+    @Autowired
+    MindMapRepo mindMapRepo;
+    @Autowired
+    BookRoomRepo bookRoomRepo;
     @Autowired
     BookService bookService;
     @Autowired
@@ -77,7 +83,7 @@ public class BookRoomTest {
         log.info("기존의 크기 = {}", size);
         
         log.info("Insert 수행");
-        MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", 0, "",  "abc", 2);
+        MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", "", "", 2);
         bookService.saveMind(mindInsertDto);
         
         log.info("두번째 select 수행");
@@ -114,5 +120,53 @@ public class BookRoomTest {
         Bookdetails afterBookdetails = bookDetailsRepo.findById(bookdetails.getBookId()).get();
         log.info("완료 후 popularity = {}", afterBookdetails.getBookPopularity());
         assertThat(afterBookdetails.getBookPopularity()).isEqualTo(bookPopularity + 1);
+    }
+
+    @Test
+    void deleteBookRoom() {
+        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
+        Bookroom bookroom = bookService.saveBookRoom(bookRoomInsertDto);
+        log.info("bookroom하나 생성(bookId = 3)(userId = 1)");
+
+        List<Bookroom> originAll = bookRoomRepo.findAll();
+        int originSize = originAll.size();
+
+        int pictureSize = getPictureSize(bookroom);
+
+        int wordSize = getWordSize(bookroom);
+
+        int mindSize = getMindSize(bookroom);
+
+        List<Usercharacter> originCharacterAll = userCharacterRepo.findAll();
+        int characterSize = originCharacterAll.size();
+
+        bookService.deleteBookRoom(bookroom.getBookroomId());
+
+        assertThat(bookRoomRepo.findAll().size()).isEqualTo(originSize - 1);
+        assertThat(wordRepo.findAll().size()).isEqualTo(wordSize - 1);
+        assertThat(mindMapRepo.findAll().size()).isEqualTo(mindSize - 1);
+        assertThat(pictureRepo.findAll().size()).isEqualTo(pictureSize - 1);
+        assertThat(userCharacterRepo.findAll().size()).isEqualTo(characterSize - 1);
+    }
+
+    private int getMindSize(Bookroom bookroom) {
+        MindInsertDto mindInsertDto = new MindInsertDto(bookroom.getBookroomId(), "", "", "good", 1);
+        Mindmap mindmap = bookService.saveMind(mindInsertDto);
+        List<Mindmap> originMindAll = mindMapRepo.findAll();
+        return originMindAll.size();
+    }
+
+    private int getWordSize(Bookroom bookroom) {
+        WordInsertDto wordInsertDto = new WordInsertDto(bookroom.getBookroomId(), 1L, "", "", "good", 1);
+        Wordtable wordtable = bookService.saveWord(wordInsertDto);
+        List<Wordtable> originWordAll = wordRepo.findAll();
+        return originWordAll.size();
+    }
+
+    private int getPictureSize(Bookroom bookroom) {
+        PictureInsertDto pictureInsertDto = new PictureInsertDto("asfdv", bookroom.getBookroomId());
+        Picturetable picturetable = bookService.savePicture(pictureInsertDto);
+        List<Picturetable> originPictureAll = pictureRepo.findAll();
+        return originPictureAll.size();
     }
 }
