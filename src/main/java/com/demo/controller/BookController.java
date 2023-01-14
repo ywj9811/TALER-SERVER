@@ -5,6 +5,8 @@ import com.demo.dto.BookRoomInsertDto;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
+import com.demo.dto.response.GetBookroomResponse;
+import com.demo.dto.response.SaveBookroomResponse;
 import com.demo.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,17 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.demo.domain.responseCode.ResponseCodeMessage.*;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/book")
 @Slf4j
 public class BookController {
     private final BookService bookService;
-
+    //결과 코드, 결과 메시지, 결과 -> Map 사용
     @GetMapping("/bookroom") //bookroom 조회
-    public Roomview moveToBookRoom(Long userId, Long bookId) {
-        Roomview bookRoom = bookService.selectBookRoom(bookId, userId);
-        return bookRoom;
+    public GetBookroomResponse moveToBookRoom(Long userId, Long bookId) {
+        GetBookroomResponse getBookroomResponse = new GetBookroomResponse();
+        if (userId == null || bookId == null) {
+            getBookroomResponse.setCode(NULLCODE);
+            getBookroomResponse.setMessage(NULLMESSAGE);
+            return getBookroomResponse;
+        }
+
+        return bookService.selectBookRoom(bookId, userId, getBookroomResponse);
     }
     /**
      * View를 만들어서 사용함 (join대신)
@@ -36,11 +46,16 @@ public class BookController {
      * 나중에 이유를 알게 되면 고치도록 하자.
      * 우선 작동하는 방식으로 하자.
      */
-
     @PostMapping("/bookroom") //bookroom 생성
-    public Bookroom saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
-        Bookroom bookroom = bookService.saveBookRoom(bookRoomInsertDto);
-        return bookroom;
+    public SaveBookroomResponse saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
+        SaveBookroomResponse saveBookroomResponse = new SaveBookroomResponse();
+        log.info("getBookId = {}", bookRoomInsertDto.getBookId());
+        if (bookRoomInsertDto.getBookId() == null || bookRoomInsertDto.getBookId() == null) {
+            saveBookroomResponse.setCode(NULLCODE);
+            saveBookroomResponse.setMessage(NULLMESSAGE);
+            return saveBookroomResponse;
+        }
+        return bookService.saveBookRoom(bookRoomInsertDto, saveBookroomResponse);
     }
     /**
      * Post/bookroom 실행시

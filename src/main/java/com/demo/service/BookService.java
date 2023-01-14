@@ -7,6 +7,8 @@ import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.RecommendBookFavoriteDto;
 import com.demo.dto.WordInsertDto;
+import com.demo.dto.response.GetBookroomResponse;
+import com.demo.dto.response.SaveBookroomResponse;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 import static com.demo.dto.DefaultFavoriteInsert.dtoToEntity;
 
 @Service
@@ -37,16 +40,44 @@ public class BookService {
      * View를 이용하는 방식으로 작성함
      * join에서 문제 발생 -> 하나하나 조회는 비효율 -> view 사용
      */
-    public Roomview selectBookRoom(Long bookId, Long userId) {
+    public GetBookroomResponse selectBookRoom(Long bookId, Long userId, GetBookroomResponse getBookroomResponse) {
         Roomview roomView = roomViewRepo.findByBookIdAndUserId(bookId, userId);
-        return roomView;
+        if (roomView == null) {
+            getBookroomResponse.setMessage(ROOMVIEWSELECTERRORMESSAGE);
+            getBookroomResponse.setCode(ROOMVIEWSELECTERRORCODE);
+            return getBookroomResponse;
+        }
+        getBookroomResponse.setRoomview(roomView);
+        getBookroomResponse.setMessage(SUCCESSMESSAGE);
+        getBookroomResponse.setCode(SUCCESSCODE);
+        return getBookroomResponse;
     }
 
-    public Bookroom saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
-        insertDefaultCharacter(bookRoomInsertDto);
-        //기본 캐릭터를 바탕으로 bookroom기본 캐릭터 생성
-        updateBookPopularity(bookRoomInsertDto);
+    public SaveBookroomResponse saveBookRoom(BookRoomInsertDto bookRoomInsertDto, SaveBookroomResponse saveBookroomResponse) {
+        //중복되는 북룸을 생성하는지 체크
+        Long bookId = bookRoomInsertDto.getBookId();
+        List<Long> bookIds = bookRoomRepo.findBookroomId(bookRoomInsertDto.getUserId());
+        if (bookIds.contains(bookId)) {
+            saveBookroomResponse.setMessage(BOOKROOMDUPLICATEDMESSAGE);
+            saveBookroomResponse.setCode(BOOKROOMDUPLICATEDCODE);
+            return saveBookroomResponse;
+        }
+
         //bookroom을 생성하면서 bookdetails에서 popularity를 +1함
+        //만약 책이 조회가 안된다면 예외 반환
+        if (updateBookPopularity(bookRoomInsertDto) == null) {
+            saveBookroomResponse.setMessage(BOOKDETAILSSELECTERRORMESSAGE);
+            saveBookroomResponse.setCode(BOOKDETAILSSELECTERRORCODE);
+            return saveBookroomResponse;
+        }
+
+        //기본 캐릭터를 바탕으로 bookroom기본 캐릭터 생성
+        //만약 기존 캐릭터 조회가 안된다면 예외반환
+        if (insertDefaultCharacter(bookRoomInsertDto) == null) {
+            saveBookroomResponse.setMessage(USERCHARACTERSELECTERRORMESSAGE);
+            saveBookroomResponse.setCode(USERCHARACTERSELECTERRORCODE);
+            return saveBookroomResponse;
+        }
 
         Bookroom bookroom = bookRoomInsertDto.dtoToBookRoom(bookRoomInsertDto);
         Bookroom save = bookRoomRepo.save(bookroom);
@@ -55,15 +86,39 @@ public class BookService {
 
         insertDefaultFavorite(bookroom);
         //좋아요 표시 안한 상태로 favorite 생성
-        return save;
+        
+        //성공
+        saveBookroomResponse.setBookroom(bookroom);
+        saveBookroomResponse.setMessage(SUCCESSMESSAGE);
+        saveBookroomResponse.setCode(SUCCESSCODE);
+
+        return saveBookroomResponse;
     }
 
     //popularity 업데이트 시키는 메소드
-    private void updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
+    private Bookdetails updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
+        if (optionalBookdetails.isEmpty()) {
+            return null;
+        }
         Bookdetails bookdetails = optionalBookdetails.get();
         bookdetails.updatePopularity();
         log.info("bookdetails update 실행");
+        return bookdetails;
+    }
+
+    //기본 케릭터 가져와서 bookroom생성시 등록하는 메소드
+    private Usercharacter insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
+        Optional<Usercharacter> optionalUsercharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);
+        if (optionalUsercharacter.isEmpty()) {
+            return null;
+        }
+        Usercharacter defaultCharacter = optionalUsercharacter.get();
+        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookRoomInsertDto.getBookId());
+
+        Usercharacter characterSave = userCharacterRepo.save(usercharacter);
+        log.info("default character save = {}", characterSave);
+        return characterSave;
     }
 
     //bookroom 생성시 isfavorite를 0으로하여 등록하는 메소드
@@ -94,15 +149,6 @@ public class BookService {
         return bookroom;
     }
 
-    //기본 케릭터 가져와서 bookroom생성시 등록하는 메소드
-    private void insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
-        Usercharacter defaultCharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);
-        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookRoomInsertDto.getBookId());
-
-        Usercharacter characterSave = userCharacterRepo.save(usercharacter);
-        log.info("default character save = {}", characterSave);
-    }
-
     public void deleteBookRoom(Long bookroomId) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookRoomRepo.delete(bookroom);
@@ -110,6 +156,7 @@ public class BookService {
         wordRepo.deleteAllByBookroomId(bookroomId);
         mindMapRepo.deleteAllByBookroomId(bookroomId);
         userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
+        favoriteRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
     }
 
     public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
