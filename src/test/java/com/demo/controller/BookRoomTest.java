@@ -5,6 +5,7 @@ import com.demo.dto.BookRoomInsertDto;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
+import com.demo.dto.response.SaveBookroomResponse;
 import com.demo.repository.*;
 import com.demo.service.BookService;
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +96,8 @@ public class BookRoomTest {
 
     @Test
     void saveBookRoom() {
+        SaveBookroomResponse saveBookroomResponse = new SaveBookroomResponse();
+
         BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
         log.info("bookdetails의 popularity 첫번째 조회");
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
@@ -103,14 +106,14 @@ public class BookRoomTest {
         log.info("popularity = {} ", bookPopularity);
         
         log.info("bookroom 추가");
-        Bookroom bookroom = bookService.saveBookRoom(bookRoomInsertDto);
+        saveBookroomResponse = bookService.saveBookRoom(bookRoomInsertDto, saveBookroomResponse);
 
-        Favorite favorite = favoriteRepo.findByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
+        Favorite favorite = favoriteRepo.findByUserIdAndBookId(saveBookroomResponse.getBookroom().getUserId(), saveBookroomResponse.getBookroom().getBookId());
         log.info("favorite 생성 확인, isfavorite = {}", favorite.getIsfavorite());
         assertThat(favorite.getIsfavorite()).isEqualTo(0);
 
-        Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
-        Usercharacter originalUsercharacter = userCharacterRepo.findByUserIdAndBookId(bookroom.getUserId(), 0L);
+        Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(saveBookroomResponse.getBookroom().getUserId(), saveBookroomResponse.getBookroom().getBookId()).get();
+        Usercharacter originalUsercharacter = userCharacterRepo.findByUserIdAndBookId(saveBookroomResponse.getBookroom().getUserId(), 0L).get();
         log.info("userCharacter 생성 확인, bookId = {}", usercharacter.getBookId());
         assertThat(originalUsercharacter.getFaceColor()).isEqualTo(usercharacter.getFaceColor());
         assertThat(originalUsercharacter.getFaceStyle()).isEqualTo(usercharacter.getFaceStyle());
@@ -124,23 +127,24 @@ public class BookRoomTest {
 
     @Test
     void deleteBookRoom() {
+        SaveBookroomResponse saveBookroomResponse = new SaveBookroomResponse();
         BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
-        Bookroom bookroom = bookService.saveBookRoom(bookRoomInsertDto);
+        saveBookroomResponse = bookService.saveBookRoom(bookRoomInsertDto, saveBookroomResponse);
         log.info("bookroom하나 생성(bookId = 3)(userId = 1)");
 
         List<Bookroom> originAll = bookRoomRepo.findAll();
         int originSize = originAll.size();
 
-        int pictureSize = getPictureSize(bookroom);
+        int pictureSize = getPictureSize(saveBookroomResponse.getBookroom());
 
-        int wordSize = getWordSize(bookroom);
+        int wordSize = getWordSize(saveBookroomResponse.getBookroom());
 
-        int mindSize = getMindSize(bookroom);
+        int mindSize = getMindSize(saveBookroomResponse.getBookroom());
 
         List<Usercharacter> originCharacterAll = userCharacterRepo.findAll();
         int characterSize = originCharacterAll.size();
 
-        bookService.deleteBookRoom(bookroom.getBookroomId());
+        bookService.deleteBookRoom(saveBookroomResponse.getBookroom().getBookroomId());
 
         assertThat(bookRoomRepo.findAll().size()).isEqualTo(originSize - 1);
         assertThat(wordRepo.findAll().size()).isEqualTo(wordSize - 1);
