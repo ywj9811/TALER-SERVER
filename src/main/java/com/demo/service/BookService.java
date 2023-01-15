@@ -155,40 +155,61 @@ public class BookService {
         wordRepo.deleteAllByBookroomId(bookroomId);
         mindMapRepo.deleteAllByBookroomId(bookroomId);
         userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
-        favoriteRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
+        favoriteRepo.deleteAllByBookroomId(bookroomId);
     }
 
-    public List<Picturetable> getPictureByBookroomId(Long bookroomId) {
+    public Response getPictureByBookroomId(Long bookroomId, Response response) {
         List<Picturetable> picturetables = pictureRepo.findAllByBookroomId(bookroomId);
-        return picturetables;
+        response.setCode(SUCCESSCODE);
+        response.setMessage(SUCCESSMESSAGE);
+        response.setResult(picturetables);
+        return response;
     }
-    public Picturetable savePicture(PictureInsertDto pictureInsertDto) {
+    public Response savePicture(PictureInsertDto pictureInsertDto, Response response) {
         Picturetable picturetable = pictureInsertDto.insertDtoToPicturetable(pictureInsertDto);
         Picturetable save = pictureRepo.save(picturetable);
         log.info("picture save = {}", save);
-        return save;
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        response.setResult(save);
+
+        return response;
     }
 
-    public List<Wordtable> getWordByroomId(Long bookroomId) {
+    public Response getWordByroomId(Long bookroomId, Response response) {
         List<Wordtable> wordtables = wordRepo.findAllByBookroomId(bookroomId);
-        return wordtables;
+        response.setResult(wordtables);
+        response.setCode(SUCCESSCODE);
+        response.setMessage(SUCCESSMESSAGE);
+        return response;
     }
-    public Wordtable saveWord(WordInsertDto wordInsertDto) {
+    public Response saveWord(WordInsertDto wordInsertDto, Response response) {
         Wordtable wordtable = wordInsertDto.insertDtoToWordtable(wordInsertDto);
         Wordtable save = wordRepo.save(wordtable);
         log.info("word save = {}", save);
-        return save;
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        response.setResult(save);
+        return response;
     }
 
-    public List<Mindmap> getMindmapByBookroomId(Long bookroomId) {
+    public Response getMindmapByBookroomId(Long bookroomId, Response response) {
         List<Mindmap> mindmaps = mindMapRepo.findAllByBookroomId(bookroomId);
-        return mindmaps;
+        response.setResult(mindmaps);
+        response.setCode(SUCCESSCODE);
+        response.setMessage(SUCCESSMESSAGE);
+        return response;
     }
-    public Mindmap saveMind(MindInsertDto mindInsertDto) {
+    public Response saveMind(MindInsertDto mindInsertDto, Response response) {
         Mindmap mindmap = mindInsertDto.insertDtoToMindmap(mindInsertDto);
         Mindmap save = mindMapRepo.save(mindmap);
         log.info("mind save = {}", save);
-        return save;
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        response.setResult(save);
+        return response;
     }
 
     public List<RecommendBookFavoriteDto> getRecommendBooks(Long id){
