@@ -23,6 +23,13 @@ public class Bookroom {
 
     private String themeColor;
 
+    public void updateThemeColor(String themeColor) {
+        this.themeColor = themeColor;
+    }
+
     private String themeMusicUrl;
 
+    public void updateThemeMusicUrl(String themeMusicUrl) {
+        this.themeMusicUrl = themeMusicUrl;
+    }
 }

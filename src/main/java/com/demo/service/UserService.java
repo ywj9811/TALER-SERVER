@@ -2,17 +2,20 @@ package com.demo.service;
 
 import com.demo.domain.*;
 import com.demo.domain.config.BaseException;
+import com.demo.domain.config.BaseResponse;
 import com.demo.dto.*;
+import com.demo.dto.response.Response;
+import com.demo.dto.response.BException;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static com.demo.domain.config.BaseResponseStatus.*;
+import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -20,6 +23,8 @@ import static com.demo.domain.config.BaseResponseStatus.*;
 public class UserService {
 
     private final UserRepo userRepo;
+    @Autowired
+    private final ParentRepo parentRepo;
     private final PasswordEncoder passwordEncoder;
 
     public User saveUser(UserInsertDto userInsertDto) throws BaseException {
@@ -34,6 +39,28 @@ public class UserService {
         return saveUser;
     }
 
+    public Parent saveParent(ParentInsertDto parentInsertDto){
+        String encodePw = passwordEncoder.encode(parentInsertDto.getPw());
+        parentInsertDto.setPw(encodePw);
+        Parent parent = parentInsertDto.dtoToParent(parentInsertDto);
+        Parent saveParent = parentRepo.save(parent);
+        return saveParent;
+
+    }
+
+    public Response registerUser(LogInDto logInDto) throws BException {
+        User user = userRepo.findByNickname(logInDto.getNickname());
+        try{
+            userRepo.updateUserId(user.getUserId(), logInDto.getNickname());
+
+        }catch (Exception e){
+            throw new BException(UPDATEERRORMESSAGE,UPDATEERRORCODE);
+        }
+        return response;
+
+    }
+
+
     public boolean checkNickname(String nickname) throws BaseException {
         try {
             return userRepo.existsByNickname(nickname);
@@ -42,16 +69,6 @@ public class UserService {
         }
     }
 
-    public User userLogIn(String nickname) throws BaseException {
-
-        try {
-            User user = userRepo.findUserByNickname(nickname);
-            //UserLogInResponse userLogInResponse = UserLogInResponse.builder().user(user).build();
-            return user;
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
 
 
 }

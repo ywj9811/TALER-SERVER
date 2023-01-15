@@ -4,7 +4,10 @@ import com.demo.domain.Usercharacter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserCharacterRepo extends JpaRepository<Usercharacter, Long> {
-    Usercharacter findByUserIdAndBookId(Long userId, Long bookId);
+    Optional<Usercharacter> findByUserIdAndBookId(Long userId, Long bookId);
+    void deleteByUserIdAndBookId(Long userId, Long bookId);
 }
