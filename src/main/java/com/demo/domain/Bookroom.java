@@ -24,4 +24,5 @@ public class Bookroom {
     private String themeColor;
 
     private String themeMusicUrl;
+
 }
