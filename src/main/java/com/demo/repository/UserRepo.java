@@ -13,9 +13,10 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
     boolean existsByNickname(String nickname);
-    User findByNickname(String nickname);
-    @Modifying
-    @Query("UPDATE Parent p SET p.userId = :userId where p.nickname = :nickname")
-    void updateUserId(@Param(value="userId") long userId, @Param(value="nickname") String nickname);
+    Optional<User> findByNickname(String nickname);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Parent p SET p.userId = :userId where p.parentId = :parentId")
+    void updateUserId(@Param(value="userId") long userId, @Param(value="parentId") long parentId);
 
 }
