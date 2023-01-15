@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface BookRoomRepo extends JpaRepository<Bookroom, Long> {
+    List<Bookroom> findByUserId(Long userId);
+
     @Query("SELECT br.bookId FROM Bookroom br WHERE br.userId = :userId")
     List<Long> findBookroomId(@Param("userId") Long userId);
 

@@ -5,7 +5,7 @@ import com.demo.dto.BookRoomInsertDto;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
-import com.demo.dto.response.SaveBookroomResponse;
+import com.demo.dto.response.Response;
 import com.demo.repository.*;
 import com.demo.service.BookService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+
+/**
+ * 테스트 오류 다시 잡아야함
+ */
 
 @SpringBootTest
 @Slf4j
@@ -42,17 +46,20 @@ public class BookRoomTest {
 
     @Test
     void savePicture() {
+        Response response = new Response();
         log.info("첫번째 select 수행");
-        List<Picturetable> originPicturetables = bookService.getPictureByBookroomId(1L);
+        Response responsePicture = bookService.getPictureByBookroomId(1L, response);
+        List<Picturetable> originPicturetables = (List<Picturetable>) responsePicture.getResult();
         int size = originPicturetables.size();
         log.info("기존의 크기 = {}", size);
         
         log.info("Insert 수행");
         PictureInsertDto pictureInsertDto = new PictureInsertDto("abcd123.png", 1L);
-        bookService.savePicture(pictureInsertDto);
+        bookService.savePicture(pictureInsertDto, response);
         
         log.info("두번째 select 수행");
-        List<Picturetable> picturetables = bookService.getPictureByBookroomId(1L);
+        Response responsePicture2 = bookService.getPictureByBookroomId(1L, response);
+        List<Picturetable> picturetables = (List<Picturetable>) responsePicture2.getResult();
         assertThat(picturetables.size()).isEqualTo(size+1);
         log.info("실행 이후 크기 = {}", picturetables.size());
         assertThat(picturetables.get(size).getPictureUrl()).isEqualTo("abcd123.png");
@@ -60,17 +67,20 @@ public class BookRoomTest {
 
     @Test
     void saveWord() {
+        Response response = new Response();
         log.info("첫번째 select 수행");
-        List<Wordtable> originWord = bookService.getWordByroomId(1L);
+        Response responseWord = bookService.getWordByroomId(1L, response);
+        List<Wordtable> originWord = (List<Wordtable>) responseWord.getResult();
         int size = originWord.size();
         log.info("기존의 크기 = {}", size);
         
         log.info("Insert 수행");
         WordInsertDto wordInsertDto = new WordInsertDto(1L, 1L, "abc123abc", "", "", 1);
-        bookService.saveWord(wordInsertDto);
+        bookService.saveWord(wordInsertDto, response);
     
         log.info("두번째 select 수행");
-        List<Wordtable> wordtables = bookService.getWordByroomId(1L);
+        Response responseBooksroom = bookService.getWordByroomId(1L, response);
+        List<Wordtable> wordtables = (List<Wordtable>) responseBooksroom.getResult();
         assertThat(wordtables.size()).isEqualTo(size+1);
         log.info("실행 이후의 크기 = {}", wordtables.size());
         assertThat(wordtables.get(size).getWordPictureUrl()).isEqualTo("abc123abc");
@@ -78,17 +88,20 @@ public class BookRoomTest {
 
     @Test
     void saveMind() {
+        Response response = new Response();
         log.info("첫번째 select 수행");
-        List<Mindmap> originMind = bookService.getMindmapByBookroomId(1L);
+        Response responseMind = bookService.getMindmapByBookroomId(1L, response);
+        List<Mindmap> originMind = (List<Mindmap>) responseMind.getResult();
         int size = originMind.size();
         log.info("기존의 크기 = {}", size);
         
         log.info("Insert 수행");
         MindInsertDto mindInsertDto = new MindInsertDto(1L, "123abc", "", "", 2);
-        bookService.saveMind(mindInsertDto);
+        bookService.saveMind(mindInsertDto, response);
         
         log.info("두번째 select 수행");
-        List<Mindmap> mindmaps = bookService.getMindmapByBookroomId(1L);
+        Response responseMind2 = bookService.getMindmapByBookroomId(1L, response);
+        List<Mindmap> mindmaps = (List<Mindmap>) responseMind2.getResult();
         assertThat(mindmaps.size()).isEqualTo(size+1);
         log.info("실행 이후의 크기 = {}", mindmaps.size());
         assertThat(mindmaps.get(size).getPriority()).isEqualTo(2);
@@ -96,7 +109,7 @@ public class BookRoomTest {
 
     @Test
     void saveBookRoom() {
-        SaveBookroomResponse saveBookroomResponse = new SaveBookroomResponse();
+        Response response = new Response();
 
         BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
         log.info("bookdetails의 popularity 첫번째 조회");
@@ -106,14 +119,15 @@ public class BookRoomTest {
         log.info("popularity = {} ", bookPopularity);
         
         log.info("bookroom 추가");
-        saveBookroomResponse = bookService.saveBookRoom(bookRoomInsertDto, saveBookroomResponse);
+        response = bookService.saveBookRoom(bookRoomInsertDto, response);
+        Bookroom bookroom = (Bookroom) response.getResult();
 
-        Favorite favorite = favoriteRepo.findByUserIdAndBookId(saveBookroomResponse.getBookroom().getUserId(), saveBookroomResponse.getBookroom().getBookId());
+        Favorite favorite = favoriteRepo.findByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
         log.info("favorite 생성 확인, isfavorite = {}", favorite.getIsfavorite());
         assertThat(favorite.getIsfavorite()).isEqualTo(0);
 
-        Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(saveBookroomResponse.getBookroom().getUserId(), saveBookroomResponse.getBookroom().getBookId()).get();
-        Usercharacter originalUsercharacter = userCharacterRepo.findByUserIdAndBookId(saveBookroomResponse.getBookroom().getUserId(), 0L).get();
+        Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId()).get();
+        Usercharacter originalUsercharacter = userCharacterRepo.findByUserIdAndBookId(bookroom.getUserId(), 0L).get();
         log.info("userCharacter 생성 확인, bookId = {}", usercharacter.getBookId());
         assertThat(originalUsercharacter.getFaceColor()).isEqualTo(usercharacter.getFaceColor());
         assertThat(originalUsercharacter.getFaceStyle()).isEqualTo(usercharacter.getFaceStyle());
@@ -127,24 +141,25 @@ public class BookRoomTest {
 
     @Test
     void deleteBookRoom() {
-        SaveBookroomResponse saveBookroomResponse = new SaveBookroomResponse();
+        Response response = new Response();
         BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
-        saveBookroomResponse = bookService.saveBookRoom(bookRoomInsertDto, saveBookroomResponse);
+        response = bookService.saveBookRoom(bookRoomInsertDto, response);
+        Bookroom bookroom = (Bookroom) response.getResult();
         log.info("bookroom하나 생성(bookId = 3)(userId = 1)");
 
         List<Bookroom> originAll = bookRoomRepo.findAll();
         int originSize = originAll.size();
 
-        int pictureSize = getPictureSize(saveBookroomResponse.getBookroom());
+        int pictureSize = getPictureSize(bookroom);
 
-        int wordSize = getWordSize(saveBookroomResponse.getBookroom());
+        int wordSize = getWordSize(bookroom);
 
-        int mindSize = getMindSize(saveBookroomResponse.getBookroom());
+        int mindSize = getMindSize(bookroom);
 
         List<Usercharacter> originCharacterAll = userCharacterRepo.findAll();
         int characterSize = originCharacterAll.size();
 
-        bookService.deleteBookRoom(saveBookroomResponse.getBookroom().getBookroomId());
+        bookService.deleteBookRoom(bookroom.getBookroomId());
 
         assertThat(bookRoomRepo.findAll().size()).isEqualTo(originSize - 1);
         assertThat(wordRepo.findAll().size()).isEqualTo(wordSize - 1);
@@ -154,22 +169,28 @@ public class BookRoomTest {
     }
 
     private int getMindSize(Bookroom bookroom) {
+        Response response = new Response();
         MindInsertDto mindInsertDto = new MindInsertDto(bookroom.getBookroomId(), "", "", "good", 1);
-        Mindmap mindmap = bookService.saveMind(mindInsertDto);
+        Response responseMind = bookService.saveMind(mindInsertDto, response);
+        Mindmap mindmap = (Mindmap) responseMind.getResult();
         List<Mindmap> originMindAll = mindMapRepo.findAll();
         return originMindAll.size();
     }
 
     private int getWordSize(Bookroom bookroom) {
+        Response response = new Response();
         WordInsertDto wordInsertDto = new WordInsertDto(bookroom.getBookroomId(), 1L, "", "", "good", 1);
-        Wordtable wordtable = bookService.saveWord(wordInsertDto);
+        Response responseWord = bookService.saveWord(wordInsertDto, response);
+        Wordtable wordtable = (Wordtable) responseWord.getResult();
         List<Wordtable> originWordAll = wordRepo.findAll();
         return originWordAll.size();
     }
 
     private int getPictureSize(Bookroom bookroom) {
+        Response response = new Response();
         PictureInsertDto pictureInsertDto = new PictureInsertDto("asfdv", bookroom.getBookroomId());
-        Picturetable picturetable = bookService.savePicture(pictureInsertDto);
+        Response responsePicture = bookService.savePicture(pictureInsertDto, response);
+        Picturetable picturetable = (Picturetable) responsePicture.getResult();
         List<Picturetable> originPictureAll = pictureRepo.findAll();
         return originPictureAll.size();
     }
