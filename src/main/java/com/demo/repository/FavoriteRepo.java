@@ -22,4 +22,6 @@ public interface FavoriteRepo extends JpaRepository<Favorite, Long> {
     List<Favorite> DisLike(@Param("userId")Long userId, @Param("bookId")Long bookId);
 
     void deleteByUserIdAndBookId(Long userId, Long bookId);
+
+    void deleteAllByBookroomId(Long bookroomId);
 }
