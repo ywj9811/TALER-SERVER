@@ -1,7 +1,9 @@
 package com.demo.controller;
 
 import com.demo.domain.Favorite;
+import com.demo.domain.Friend;
 import com.demo.domain.User;
+import com.demo.dto.FavoriteInsertDto;
 import com.demo.dto.RecommendBookFavoriteDto;
 import com.demo.dto.RecommendFriendDto;
 import com.demo.service.BookService;
@@ -9,6 +11,7 @@ import com.demo.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.FileVisitOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,26 @@ public class InterFaceController {
 
     @Autowired
     BookService bookService;
+
+    @PostMapping("/book/favorite/{user_id}/{book_id}")
+    //책 좋아요 추가
+    public Favorite addFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
+        Favorite favorite = favoriteService.LikeBooks(user_id,0l,book_id);
+        return favorite;
+    }
+    @PostMapping("book/deletefavorite/{user_id}/{book_id}")
+    // 책 좋아요 삭제
+    public Favorite deleteFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
+        Favorite favorite = favoriteService.DisLikeBooks(user_id,0l,book_id);
+        return favorite;
+    }
+//    @PostMapping("user/addfriend/{user_id}")
+//    public Friend addFriend(@PathVariable Long user_id){
+//        Friend friend = favoriteService.
+//    }
+//
+//
+//    @PostMapping("user/deletefriend/{user_id}")
 
     @GetMapping("/book/recommend/{user_id}")
     //추천 동화책 방

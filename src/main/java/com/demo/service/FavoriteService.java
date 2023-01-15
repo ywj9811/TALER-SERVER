@@ -3,6 +3,7 @@ package com.demo.service;
 import com.demo.dao.BookdetailsDao;
 import com.demo.dao.UserDao;
 import com.demo.domain.Favorite;
+import com.demo.domain.Friend;
 import com.demo.domain.User;
 import com.demo.dto.FavoriteInsertDto;
 import com.demo.dto.RecommendFriendDto;
@@ -26,6 +27,24 @@ public class FavoriteService {
     @Autowired
     UserDao userDao;
 
+    //책 좋아요
+    public Favorite LikeBooks(@PathVariable Long user_id, @PathVariable Long bookroom_id, @PathVariable Long book_id){
+        FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,1);
+        Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
+
+        return  favorite;
+    }
+    //책 좋아요 취소
+    public  Favorite DisLikeBooks(@PathVariable Long user_id, @PathVariable Long bookroom_id, @PathVariable Long book_id){
+        FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,0);
+        Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
+
+        return favorite;
+    }
+
+
+
+
 
     public Favorite save(@PathVariable Long user_id, @PathVariable Long bookroom_id, Long book_id) {
         //책을 담을때 popularity올려야함 -> 그린님과 공통되는 부분
@@ -34,6 +53,8 @@ public class FavoriteService {
 
         return favorite;
     }
+
+
 
     //동화책 등록시 추천 동화책
     public List<String> bookRecommendSelect(Long user_id) {
