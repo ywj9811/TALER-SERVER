@@ -5,7 +5,7 @@ import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
-import com.demo.dto.RecommendBookFavoriteDto;
+import com.demo.dto.BookRoomSelectDto;
 import com.demo.dto.WordInsertDto;
 import com.demo.dto.response.Response;
 import com.demo.repository.*;
@@ -85,7 +85,7 @@ public class BookService {
 
         insertDefaultFavorite(bookroom);
         //좋아요 표시 안한 상태로 favorite 생성
-        
+
         //성공
         response.setResult(bookroom);
         response.setMessage(SUCCESSMESSAGE);
@@ -94,6 +94,9 @@ public class BookService {
         return response;
     }
 
+    //book detail에 검색한 동화책 파싱하는 작업도 해야할 것 같습니다..! book details에서 값을 찾아서 popularity를 올리는 경우는
+    //검색한 도서가 이미 book details테이블에 있는 경우이고
+    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요!
     //popularity 업데이트 시키는 메소드
     private Bookdetails updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
@@ -146,6 +149,15 @@ public class BookService {
         Optional<Bookroom> optionalBookroom = bookRoomRepo.findById(bookroomId);
         Bookroom bookroom = optionalBookroom.get();
         return bookroom;
+    }
+
+    //기본 케릭터 가져와서 bookroom생성시 등록하는 메소드
+    private void insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
+        Usercharacter defaultCharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);
+        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookRoomInsertDto.getBookId());
+
+        Usercharacter characterSave = userCharacterRepo.save(usercharacter);
+        log.info("default character save = {}", characterSave);
     }
 
     public void deleteBookRoom(Long bookroomId) {
@@ -212,17 +224,14 @@ public class BookService {
         return response;
     }
 
-    public List<RecommendBookFavoriteDto> getRecommendBooks(Long id){
+    public List<BookRoomSelectDto> getRecommendBooks(Long id){
         //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
-        List<RecommendBookFavoriteDto> recommendBookFavoriteDtoList = bookroomDao.getBookroomByFavorite(id);
-        System.out.println(recommendBookFavoriteDtoList);
+        List<BookRoomSelectDto> bookRoomSelectDtoList = bookroomDao.getBookroomByFavorite(id);
+        System.out.println(bookRoomSelectDtoList);
         //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
-        recommendBookFavoriteDtoList.addAll(bookroomDao.getBookroomByExperience(id));
-        //가장 좋아요가 많은 동화책
+        bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
 
-        //가장 popular한 동화책방
-
-        return recommendBookFavoriteDtoList;
+        return bookRoomSelectDtoList;
     }
 
 }
