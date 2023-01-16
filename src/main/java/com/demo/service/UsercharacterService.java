@@ -18,7 +18,7 @@ public class UsercharacterService{
 
     private final UserCharacterRepo userCharacterRepo;
     public Usercharacter getUsercharacter(Long userId, Long bookId) {
-        Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(userId, bookId);
+        Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(userId, bookId).get();
         return usercharacter;
     }
 

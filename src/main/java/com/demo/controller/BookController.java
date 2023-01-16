@@ -66,18 +66,36 @@ public class BookController {
      */
 
     @PostMapping("/bookroom/color")
-    public void updateThemeColor(Long bookroomId, String themeColor) {
-        bookService.updateThemeColor(themeColor, bookroomId);
+    public Response updateThemeColor(Long bookroomId, String themeColor) {
+        Response response = new Response();
+        if (bookroomId == null || themeColor == null) {
+            response.setCode(NULLCODE);
+            response.setMessage(NULLMESSAGE);
+            return response;
+        }
+        return bookService.updateThemeColor(themeColor, bookroomId, response);
     }
 
     @PostMapping("/bookroom/music")
-    public void updateThemeMusicUrl(Long bookroomId, String themeMusicUrl) {
-        bookService.updateThemeMusicUrl(themeMusicUrl, bookroomId);
+    public Response updateThemeMusicUrl(Long bookroomId, String themeMusicUrl) {
+        Response response = new Response();
+        if (bookroomId == null || themeMusicUrl == null) {
+            response.setCode(NULLCODE);
+            response.setMessage(NULLMESSAGE);
+            return response;
+        }
+        return bookService.updateThemeMusicUrl(themeMusicUrl, bookroomId, response);
     }
 
     @PostMapping("/bookroom/delete")
-    public void deleteBookroom(Long bookroomId) {
-        bookService.deleteBookRoom(bookroomId);
+    public Response deleteBookroom(Long bookroomId) {
+        Response response = new Response();
+        if (bookroomId == null) {
+            response.setCode(NULLCODE);
+            response.setMessage(NULLMESSAGE);
+            return response;
+        }
+        return bookService.deleteBookRoom(bookroomId, response);
     }
 
     @GetMapping("/picture") //pciture탭 조회
@@ -160,7 +178,7 @@ public class BookController {
  * bookroom에 접근하면 Roomview에 담아서 반환함
  * Roomview에는 bookroom의 모든 필드와 bookTitle, userCharacter의 필드, isfavorite 이 들어있다.
  * 만약 없다면 null이 반환됨
- * 
+ *
  * picture, word, mind 탭에 접근하는 경우 접근시 아무것도 없을 경우 Empty로 반환이 됨 이들은 List반환
  * 존재한다면 모두 List에 담아서 반환하고 있음
  */
