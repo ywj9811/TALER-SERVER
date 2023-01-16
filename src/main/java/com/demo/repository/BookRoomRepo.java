@@ -20,6 +20,8 @@ public interface BookRoomRepo extends JpaRepository<Bookroom, Long> {
             + "from Bookdetails bd JOIN Bookroom br ON br.book_id = bd.book_id "
             + "where br.user_id = :userId", nativeQuery = true)
     List<BookRoomPlusBookDetails> findBookTitle(@Param("userId") Long userId);
+
+
     /**
      * 결과값이 안나옴 null로 나옴
      * 나중에 이유를 알게 되면 고치도록 하자.
