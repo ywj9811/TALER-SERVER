@@ -130,17 +130,25 @@ public class BookService {
     }
 
     //themeColor 추가용(업데이트)
-    public void updateThemeColor(String themeColor, Long bookroomId) {
+    public Response updateThemeColor(String themeColor, Long bookroomId, Response response) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookroom.updateThemeColor(themeColor);
         log.info("update themeColor = {}", themeColor);
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        return response;
     }
 
     //themeMusicUrl 추가용(업데이트)
-    public void updateThemeMusicUrl(String themeMusicUrl, Long bookroomId) {
+    public Response updateThemeMusicUrl(String themeMusicUrl, Long bookroomId, Response response) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookroom.updateThemeMusicUrl(themeMusicUrl);
         log.info("update themeMusicUrl = {}", themeMusicUrl);
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        return response;
     }
 
     //bookroom정보 가져오기
@@ -150,7 +158,7 @@ public class BookService {
         return bookroom;
     }
 
-    public void deleteBookRoom(Long bookroomId) {
+    public Response deleteBookRoom(Long bookroomId, Response response) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookRoomRepo.delete(bookroom);
         pictureRepo.deleteAllByBookroomId(bookroomId);
@@ -158,6 +166,10 @@ public class BookService {
         mindMapRepo.deleteAllByBookroomId(bookroomId);
         userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
         favoriteRepo.deleteAllByBookroomId(bookroomId);
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        return response;
     }
 
     public Response getPictureByBookroomId(Long bookroomId, Response response) {
