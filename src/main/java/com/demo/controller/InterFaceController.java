@@ -7,8 +7,9 @@ import com.demo.dto.BookRoomSelectDto;
 import com.demo.domain.Friend;
 import com.demo.domain.User;
 import com.demo.dto.FavoriteInsertDto;
-import com.demo.dto.RecommendBookFavoriteDto;
+//import com.demo.dto.RecommendBookFavoriteDto;
 import com.demo.dto.RecommendFriendDto;
+import com.demo.dto.response.Response;
 import com.demo.service.BookService;
 import com.demo.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,16 @@ public class InterFaceController {
     BookService bookService;
 
 
+    /**
+     * bookRecommend가 두개가 있어요 : pull하다가 문제가 생긴건지... 우선 아래는 bookRecommendOther로 바꿨습니다.
+     */
     @GetMapping("/book/recommend")
     public void bookRecommend(@RequestParam("user_id") Long user_id) {
         //response dto 필요할까요?
         //추천 동화책 방
         List<BookRoomSelectDto> bookRecommendList = bookService.getRecommendBooks(user_id);
         //model.setAttribute("recommendBookFavoriteDtoList",recommendBookFavoriteDtoList);
+    }
     @PostMapping("/book/favorite/{user_id}/{book_id}")
     //책 좋아요 추가
     public Favorite addFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
@@ -55,9 +60,10 @@ public class InterFaceController {
 //
 //    @PostMapping("user/deletefriend/{user_id}")
 
+    /** RecommendBookFavoriteDto 때문에 잠시 주석처리 합니다!
     @GetMapping("/book/recommend/{user_id}")
     //추천 동화책 방
-    public List<RecommendBookFavoriteDto> bookRecommend(@PathVariable Long user_id) {
+    public List<RecommendBookFavoriteDto> bookRecommendOther(@PathVariable Long user_id) {
         List<RecommendBookFavoriteDto> recommendBookFavoriteDtoList = bookService.getRecommendBooks(user_id);
 
         //user의 추천 친구
@@ -69,6 +75,7 @@ public class InterFaceController {
         //model.setAttribute("bookRoomFavoriteList",bookRoomFavoriteList);
 
     }
+     */
 
     @GetMapping("/book/readbook")
     //읽어본 동화책 클릭시 favorite table에 담기
@@ -106,28 +113,35 @@ public class InterFaceController {
 
     //친구가 등록한 동화책방 클릭시
     @GetMapping("/book/friend/bookroom")
-    public Roomview bookFriendBookroom(Long notFriendUserId, Long bookId) {
+    public Response bookFriendBookroom(Long notFriendUserId, Long bookId) {
+        Response response = new Response();
         //별표 확인
         if(favoriteService.checkFavorite(notFriendUserId, bookId)){
             //안드쪽 별표 있게
         }else{
             //안드쪽 별표 없이
         }
-        return bookService.selectBookRoom(bookId,notFriendUserId);
+        return bookService.selectBookRoom(bookId, notFriendUserId, response);
     }
 
     //추천 동화책방 클릭시 로드되는 동화책방
     @GetMapping("/book/recommend/bookroom")
-    public Roomview bookRecommendBookroom(Long notFriendUserId, Long bookId) {
+    public Response bookRecommendBookroom(Long notFriendUserId, Long bookId) {
+        Response response = new Response();
         //안드로이드 측 별표 없이
-        return bookService.selectBookRoom(bookId,notFriendUserId);
+        return bookService.selectBookRoom(bookId,notFriendUserId, response);
     }
 
     //즐겨찾기 클릭시 로드 되는 동화책방
     @GetMapping("/book/favorite/bookroom")
-    public Roomview bookFavoriteBookroom(Long notFriendUserId, Long bookId) {
+    public Response bookFavoriteBookroom(Long notFriendUserId, Long bookId) {
+        Response response = new Response();
         //안드로이드 측 별표 있게
-        return bookService.selectBookRoom(bookId,notFriendUserId);
+        return bookService.selectBookRoom(bookId,notFriendUserId, response);
     }
 
+    /**
+     * Response 타입으로 반환을 하고 있어서 우선 그에 맞춰서 수정했습니다
+     *이 부분은 제가 더 자세히 설명 드릴게요!
+     */
 }

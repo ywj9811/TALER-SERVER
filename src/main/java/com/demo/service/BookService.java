@@ -5,7 +5,6 @@ import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
-import com.demo.dto.BookRoomSelectDto;
 import com.demo.dto.WordInsertDto;
 import com.demo.dto.response.Response;
 import com.demo.repository.*;
@@ -143,21 +142,12 @@ public class BookService {
         bookroom.updateThemeMusicUrl(themeMusicUrl);
         log.info("update themeMusicUrl = {}", themeMusicUrl);
     }
-    
+
     //bookroom정보 가져오기
     private Bookroom getBookroom(Long bookroomId) {
         Optional<Bookroom> optionalBookroom = bookRoomRepo.findById(bookroomId);
         Bookroom bookroom = optionalBookroom.get();
         return bookroom;
-    }
-
-    //기본 케릭터 가져와서 bookroom생성시 등록하는 메소드
-    private void insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
-        Usercharacter defaultCharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);
-        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookRoomInsertDto.getBookId());
-
-        Usercharacter characterSave = userCharacterRepo.save(usercharacter);
-        log.info("default character save = {}", characterSave);
     }
 
     public void deleteBookRoom(Long bookroomId) {
