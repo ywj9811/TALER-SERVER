@@ -21,7 +21,7 @@ public class UserDao {
                 "select u.user_id,u.profile_color,u.nickname " +
                         "from bookroom b join user u on b.user_id = u.user_id " +
                         "where book_id in( " +
-                        "select book_id from favorite where user_id = 1 and isfavorite=0);",
+                        "select book_id from favorite where user_id = ? and isfavorite=0);",
                 new RowMapper<RecommendFriendDto>() {
                     @Override
                     public RecommendFriendDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -63,9 +63,15 @@ public class UserDao {
     //등록한 동화책이 같은 경우가 2개 이상인 경우
     public List<RecommendFriendDto> recommendFriendBySameBook(Long userId) {
         List<RecommendFriendDto> results = jdbcTemplate.query(
+//                "select u.user_id,u.profile_color,u.nickname " +
+//                        "from bookroom b join user u on b.user_id = u.user_id " +
+//                        "where b.book_id = (select * from (" +
+//                        "select book_id " +
+//                        "from bookroom " +
+//                        "where user_id = ? limit 1) as tmp);",
                 "select u.user_id,u.profile_color,u.nickname " +
-                        "from bookroom b join user u on b.user_id = u.user_id " +
-                        "where b.book_id = (" +
+                "from bookroom b join user u on b.user_id = u.user_id " +
+                        "where b.book_id >= 2 and b.book_id in (" +
                         "select book_id " +
                         "from bookroom " +
                         "where user_id = ?);",
