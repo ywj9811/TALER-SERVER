@@ -15,10 +15,33 @@ public class ResponseCodeMessage {
     public static final int SUCCESSCODE = 2000;
     public static final int NULLCODE = 3000;
     public static final int USERSELECTERRORMCODE = 4000;
-    public static final int BOOKDETAILSSELECTERRORCODE = 4001;
-    public static final int BOOKROOMSELECTERRORCODE = 4002;
-    public static final int ROOMVIEWSELECTERRORCODE = 4003;
-    public static final int USERCHARACTERSELECTERRORCODE = 4004;
-    public static final int UPDATEERRORCODE = 5000;
-    public static final int BOOKROOMDUPLICATEDCODE = 6002;
+    public static final int BOOKDETAILSSELECTERRORCODE = 40001;
+    public static final int BOOKROOMSELECTERRORCODE = 30001;
+    public static final int ROOMVIEWSELECTERRORCODE = 110001;
+    public static final int USERCHARACTERSELECTERRORCODE = 20001;
+    public static final int BOOKROOMDUPLICATEDCODE = 20002;
 }
+/**
+ * SUCCESS = 2000
+ * NULL관련 에러 = 3000
+ *
+ * USER관련 에러 = 10000
+ * USERCHARACTER관련 에러 = 20000
+ * BOOKROOM관련 에러 = 30000번대
+ * BOOKDETAILS 관련 에러 = 40000번대
+ * PARENT 관련 에러 = 50000번대
+ * PICTURE 관련 에러 = 60000번대
+ * WORD 관련 에러 = 70000번대
+ * MINDMAP 관련 에러 = 80000번대
+ * FRIEND 관련 에러 = 90000번대
+ * FAVORITE 관련 에러 = 100000번대
+ * ROOMVIEW 관련 에러 = 110000번대
+ *
+ * SELECT - 1 (EX, 20001 : USERCHARACETER SELECT 오류)
+ * UPDATE - 2
+ * INSERT - 3
+ * DELETE - 4
+ *
+ * 위 코드에 맞춰서 본인에 맞게 생성해서 사용하시면 됩니다!
+ * 이외에 필요한 부분은 더 추가해서 사용!
+ */
