@@ -95,7 +95,7 @@ public class BookService {
 
     //book detail에 검색한 동화책 파싱하는 작업도 해야할 것 같습니다..! book details에서 값을 찾아서 popularity를 올리는 경우는
     //검색한 도서가 이미 book details테이블에 있는 경우이고
-    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요!
+    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요! -> 안드로이드 파트와 이야기 후 결정
     //popularity 업데이트 시키는 메소드
     private Bookdetails updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
