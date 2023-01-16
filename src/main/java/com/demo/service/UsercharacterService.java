@@ -21,6 +21,8 @@ public class UsercharacterService{
         Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(userId, bookId).get();
         return usercharacter;
     }
+    //.get()을 사용해서 Optional에서 따로 받아왔습니다.
+    //Optional을 사용하면 .empty가 가능해서 예외처리가 쉬워 사용했습니다
 
     public Usercharacter saveUsercharacter(UsercharacterDto usercharacterDto){
         Usercharacter usercharacter = usercharacterDto.insertDtoToUsercharacter(usercharacterDto);
