@@ -35,6 +35,7 @@ public class InterFaceController {
         //추천 동화책 방
         List<BookRoomSelectDto> bookRecommendList = bookService.getRecommendBooks(user_id);
         //model.setAttribute("recommendBookFavoriteDtoList",recommendBookFavoriteDtoList);
+    }
     @PostMapping("/book/favorite/{user_id}/{book_id}")
     //책 좋아요 추가
     public Favorite addFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
