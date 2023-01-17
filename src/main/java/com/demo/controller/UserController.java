@@ -14,9 +14,6 @@ import com.demo.dto.UsercharacterDto;
 import com.demo.dto.UsercharacterUpdateDto;
 import com.demo.service.UsercharacterService;
 
-import static com.demo.domain.responseCode.ResponseCodeMessage.*;
-import static com.demo.utils.ValidationRegex.isRegexPhonenumber;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
