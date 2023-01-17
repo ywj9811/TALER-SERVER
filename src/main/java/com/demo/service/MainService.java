@@ -58,4 +58,18 @@ public class MainService {
          * -> 누르면 정보 나옴
          */
     }
+
+    public Response getMainAndisFriend(Long userId, Long otherUserId, Response response) {
+        response = getMain(otherUserId, response);
+        Map<String, Object> result = (Map<String, Object>) response.getResult();
+
+        List<Friend> byUserId = friendRepo.findByUserId(otherUserId);
+        if (byUserId.contains(userId)) {
+            result.put("isFollow", true);
+            response.setResult(result);
+            return response;
+        }
+        result.put("isFollow", false);
+        return response;
+    }
 }
