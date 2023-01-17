@@ -111,7 +111,7 @@ public class BookRoomTest {
     void saveBookRoom() {
         Response response = new Response();
 
-        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
+        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 4L);
         log.info("bookdetails의 popularity 첫번째 조회");
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
         Bookdetails bookdetails = optionalBookdetails.get();
@@ -142,20 +142,17 @@ public class BookRoomTest {
     @Test
     void deleteBookRoom() {
         Response response = new Response();
-        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 3L);
-        response = bookService.saveBookRoom(bookRoomInsertDto, response);
-        Bookroom bookroom = (Bookroom) response.getResult();
-        log.info("bookroom하나 생성(bookId = 3)(userId = 1)");
+        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(1L, 4L);
+        Response bookResult = bookService.saveBookRoom(bookRoomInsertDto, response);
+        Bookroom bookroom = (Bookroom) bookResult.getResult();
+        log.info("bookroom하나 생성(bookId = 4)(userId = 1) {}");
+        log.info("bookroomId = {}", bookroom.getBookroomId());
 
         List<Bookroom> originAll = bookRoomRepo.findAll();
         int originSize = originAll.size();
-
         int pictureSize = getPictureSize(bookroom);
-
         int wordSize = getWordSize(bookroom);
-
         int mindSize = getMindSize(bookroom);
-
         List<Usercharacter> originCharacterAll = userCharacterRepo.findAll();
         int characterSize = originCharacterAll.size();
 
@@ -191,6 +188,8 @@ public class BookRoomTest {
         PictureInsertDto pictureInsertDto = new PictureInsertDto("asfdv", bookroom.getBookroomId());
         Response responsePicture = bookService.savePicture(pictureInsertDto, response);
         Picturetable picturetable = (Picturetable) responsePicture.getResult();
+        log.info("들어감? = {}", picturetable.getPictureUrl());
+
         List<Picturetable> originPictureAll = pictureRepo.findAll();
         return originPictureAll.size();
     }

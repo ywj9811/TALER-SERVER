@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -226,14 +227,20 @@ public class BookService {
         return response;
     }
 
-    public List<BookRoomSelectDto> getRecommendBooks(Long id){
-        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
-        List<BookRoomSelectDto> bookRoomSelectDtoList = bookroomDao.getBookroomByFavorite(id);
-        System.out.println(bookRoomSelectDtoList);
-        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
-        bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
-
-        return bookRoomSelectDtoList;
-    }
-
+//    public List<BookRoomSelectDto> getRecommendBooks(Long id){
+//        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
+//        List<BookRoomSelectDto> bookRoomSelectDtoList = new ArrayList<>();
+//        if (bookroomDao.getBookroomByFavorite(id) != null) {
+//            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByFavorite(id));
+//        }
+//        System.out.println(bookRoomSelectDtoList);
+//        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
+//        if (bookroomDao.getBookroomByExperience(id) != null) {
+//            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
+//        }
+//        return bookRoomSelectDtoList;
+//    }
+/**
+ * favoriteService로 옮김
+ */
 }
