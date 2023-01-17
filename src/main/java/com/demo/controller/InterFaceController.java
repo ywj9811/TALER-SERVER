@@ -20,31 +20,16 @@ public class InterFaceController {
     @Autowired
     BookService bookService;
 
-<<<<<<< HEAD
-
-    /**
-     * bookRecommend가 두개가 있어요 : pull하다가 문제가 생긴건지... 우선 아래는 bookRecommendOther로 바꿨습니다.
-     */
-    @GetMapping("/book/recommend")
-    public void bookRecommend(@RequestParam("user_id") Long user_id) {
-        //response dto 필요할까요?
-        //추천 동화책 방
-        List<BookRoomSelectDto> bookRecommendList = bookService.getRecommendBooks(user_id);
-        //model.setAttribute("recommendBookFavoriteDtoList",recommendBookFavoriteDtoList);
-    }
-    @PostMapping("/book/favorite/{book_id}")
-=======
-    @PostMapping("/book/favorite/{user_id}/{book_id}")
->>>>>>> 38be70611d5e41db6555b1fa1630c6844b26edc6
+    @PostMapping("/book/favorite")
     //책 좋아요 추가
     public Favorite addFavorite(@RequestParam Long userId, @RequestParam Long bookId){
-        Favorite favorite = favoriteService.LikeBooks(userId,bookId);
+        Favorite favorite = favoriteService.likeBooks(userId,bookId);
         return favorite;
     }
-    @PostMapping("book/deletefavorite/{user_id}/{book_id}")
+    @PostMapping("book/deletefavorite")
     // 책 좋아요 삭제
     public Favorite deleteFavorite(@RequestParam Long userId, @RequestParam Long bookId){
-        Favorite favorite = favoriteService.DisLikeBooks(userId,bookId);
+        Favorite favorite = favoriteService.disLikeBooks(userId,bookId);
         return favorite;
     }
 //    @PostMapping("user/addfriend/{user_id}")
