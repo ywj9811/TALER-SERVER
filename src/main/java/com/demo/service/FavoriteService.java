@@ -47,13 +47,13 @@ public class FavoriteService {
     UserDao userDao;
 
     //책 좋아요
-    public Favorite LikeBooks(@RequestParam(value = "userId") Long userId, @RequestParam(value = "bookId") Long bookId){
+    public Favorite likeBooks(Long userId, Long bookId){
         Favorite favorite = favoriteRepo.Like(userId,bookId);
 
         return  favorite;
     }
     //책 좋아요 취소
-    public  Favorite DisLikeBooks(@RequestParam(value = "userId") Long userId, @RequestParam(value = "bookId") Long bookId){
+    public  Favorite disLikeBooks(Long userId, Long bookId){
         Favorite favorite = favoriteRepo.DisLike(userId,bookId);
 
         return favorite;
@@ -179,3 +179,4 @@ public class FavoriteService {
         return false;
     }
 }
+
