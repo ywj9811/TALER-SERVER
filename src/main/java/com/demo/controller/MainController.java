@@ -16,24 +16,40 @@ public class MainController {
     private final MainService mainService;
 
     @GetMapping("/mine")
-    public Response getMyMain(Long userId) {
+    public Response getMyMain(String userId) {
         Response response = new Response();
-        if (userId == null) {
-            response.setMessage(NULLMESSAGE);
-            response.setCode(NULLCODE);
+        try {
+            if (userId == null) {
+                response.setMessage(NULLMESSAGE);
+                response.setCode(NULLCODE);
+                return response;
+            }
+            return mainService.getMain(Long.parseLong(userId), response);
+        } catch (Exception e) {
+            response.setCode(000);
+            response.setMessage("추후 작성");
             return response;
         }
-        return mainService.getMain(userId, response);
     }
 
     @GetMapping("/another")
-    public Response getAnotherMain(Long userId) {
+    public Response getAnotherMain(String userId, String otherUserId) {
         Response response = new Response();
-        if (userId == null) {
-            response.setMessage(NULLMESSAGE);
-            response.setCode(NULLCODE);
+
+        try {
+            if (userId == null) {
+                response.setMessage(NULLMESSAGE);
+                response.setCode(NULLCODE);
+                return response;
+            }
+            return mainService.getMainAndisFriend(Long.parseLong(userId), Long.parseLong(otherUserId), response);
+        } catch (Exception e) {
+            response.setCode(000);
+            response.setMessage("추후 작성");
             return response;
         }
-        return mainService.getMain(userId, response);
     }
+    /**
+     * 팔로우 여부 확인 필요
+     */
 }

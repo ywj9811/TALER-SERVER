@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,7 +96,7 @@ public class BookService {
 
     //book detail에 검색한 동화책 파싱하는 작업도 해야할 것 같습니다..! book details에서 값을 찾아서 popularity를 올리는 경우는
     //검색한 도서가 이미 book details테이블에 있는 경우이고
-    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요!
+    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요! -> 안드로이드 파트와 이야기 후 결정
     //popularity 업데이트 시키는 메소드
     private Bookdetails updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
@@ -130,17 +131,25 @@ public class BookService {
     }
 
     //themeColor 추가용(업데이트)
-    public void updateThemeColor(String themeColor, Long bookroomId) {
+    public Response updateThemeColor(String themeColor, Long bookroomId, Response response) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookroom.updateThemeColor(themeColor);
         log.info("update themeColor = {}", themeColor);
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        return response;
     }
 
     //themeMusicUrl 추가용(업데이트)
-    public void updateThemeMusicUrl(String themeMusicUrl, Long bookroomId) {
+    public Response updateThemeMusicUrl(String themeMusicUrl, Long bookroomId, Response response) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookroom.updateThemeMusicUrl(themeMusicUrl);
         log.info("update themeMusicUrl = {}", themeMusicUrl);
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        return response;
     }
 
     //bookroom정보 가져오기
@@ -150,7 +159,7 @@ public class BookService {
         return bookroom;
     }
 
-    public void deleteBookRoom(Long bookroomId) {
+    public Response deleteBookRoom(Long bookroomId, Response response) {
         Bookroom bookroom = getBookroom(bookroomId);
         bookRoomRepo.delete(bookroom);
         pictureRepo.deleteAllByBookroomId(bookroomId);
@@ -158,6 +167,10 @@ public class BookService {
         mindMapRepo.deleteAllByBookroomId(bookroomId);
         userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
         favoriteRepo.deleteAllByBookroomId(bookroomId);
+
+        response.setMessage(SUCCESSMESSAGE);
+        response.setCode(SUCCESSCODE);
+        return response;
     }
 
     public Response getPictureByBookroomId(Long bookroomId, Response response) {
@@ -214,14 +227,20 @@ public class BookService {
         return response;
     }
 
-    public List<BookRoomSelectDto> getRecommendBooks(Long id){
-        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
-        List<BookRoomSelectDto> bookRoomSelectDtoList = bookroomDao.getBookroomByFavorite(id);
-        System.out.println(bookRoomSelectDtoList);
-        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
-        bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
-
-        return bookRoomSelectDtoList;
-    }
-
+//    public List<BookRoomSelectDto> getRecommendBooks(Long id){
+//        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
+//        List<BookRoomSelectDto> bookRoomSelectDtoList = new ArrayList<>();
+//        if (bookroomDao.getBookroomByFavorite(id) != null) {
+//            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByFavorite(id));
+//        }
+//        System.out.println(bookRoomSelectDtoList);
+//        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
+//        if (bookroomDao.getBookroomByExperience(id) != null) {
+//            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
+//        }
+//        return bookRoomSelectDtoList;
+//    }
+/**
+ * favoriteService로 옮김
+ */
 }

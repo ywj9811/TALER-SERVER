@@ -1,12 +1,34 @@
 package com.demo.domain.responseCode;
 
+import javax.swing.plaf.PanelUI;
+
 public class ResponseCodeMessage {
     public static final String SUCCESSMESSAGE = "성공";
     public static final String NULLMESSAGE = "[ERROR] 들어온 값이 NULL입니다";
     public static final String USERSELECTERRORMESSAGE = "[ERROR] USER 조회에 실패했습니다";
     public static final String BOOKDETAILSSELECTERRORMESSAGE = "[ERROR] BOOKDETAILS 조회에 실패했습니다";
     public static final String BOOKROOMSELECTERRORMESSAGE = "[ERROR] BOOKROOM 조회에 실패했습니다";
+    public static final String BOOKROOMINSERTERRORMESSAGE = "[ERROR] BOOKROOM 생성에 실패했습니다.";
+    public static final String BOOKROOMUPDATEERRORMESSAGE = "[ERROR] BOOKROOM 업데이트에 실패했습니다.";
+    public static final String BOOKROOMDELETEERRORMESSAGE = "[ERROR] BOOKROOM 삭제에 실패했습니다.";
+
     public static final String ROOMVIEWSELECTERRORMESSAGE = "[ERROR] ROOMVIEW 조회에 실패했습니다";
+
+    public static final String PICTURESELECTERRORMESSAGE = "[ERROR] PICTURE 조회에 실패했습니다";
+    public static final String PICTUREINSERTERRORMESSAGE = "[ERROR] PICTURE 생성에 실패했습니다";
+    public static final String PICTUREUPDATEERRORMESSAGE = "[ERROR] PICTURE 업데이트에 실패했습니다";
+    public static final String PICTUREDELETEERRORMESSAGE = "[ERROR] PICTURE 삭제에 실패했습니다";
+
+    public static final String WORDSELECTERRORMESSAGE = "[ERROR] WORD 조회에 실패했습니다";
+    public static final String WORDUPDATEERRORMESSAGE = "[ERROR] WORD 업데이트에 실패했습니다";
+    public static final String WORDINSERTERRORMESSAGE = "[ERROR] WORD 생성에 실패했습니다";
+    public static final String WORDDELETEERRORMESSAGE = "[ERROR] WORD 삭제에 실패했습니다";
+
+    public static final String MINDMAPSELECTERRORMESSAGE = "[ERROR] MINDMAP 조회에 실패했습니다";
+    public static final String MINDMAPUPDATEERRORMESSAGE = "[ERROR] MINDMAP 업데이트에 실패했습니다";
+    public static final String MINDMAPINSERTERRORMESSAGE = "[ERROR] MINDMAP 생성에 실패했습니다";
+    public static final String MINDMAPDELETEERRORMESSAGE = "[ERROR] MINDMAP 삭제에 실패했습니다";
+
     public static final String FAVORITESELECTERRORMESSAGE = "[ERROR] FAVORITE 조회에 실패했습니다";
     public static final String FRIENDSELECTERRORMESSAGE = "[ERROR] FRIEND 조회에 실패했습니다";
     public static final String USERCHARACTERSELECTERRORMESSAGE = "[ERROR] USERCHARACTER 조회에 실패했습니다";
@@ -20,6 +42,24 @@ public class ResponseCodeMessage {
     public static final int USERSELECTERRORMCODE = 4000;
     public static final int BOOKDETAILSSELECTERRORCODE = 40001;
     public static final int BOOKROOMSELECTERRORCODE = 30001;
+    public static final int BOOKROOMUPDATEERRORCODE = 30002;
+    public static final int BOOKROOMINSERTERRORCODE = 30003;
+    public static final int BOOKROOMDELETEERRORCODE = 30003;
+
+    public static final int PICTURESELECTERRORCODE = 60001;
+    public static final int PICTUREUPDATEERRORCODE = 60002;
+    public static final int PICTUREINSERTERRORCODE = 60003;
+    public static final int PICTUREDELETEERRORCODE = 60004;
+
+    public static final int WORDSELECTERRORCODE = 70001;
+    public static final int WORDUPDATEERRORCODE = 70002;
+    public static final int WORDINSERTERRORCODE = 70003;
+    public static final int WORDDELETEERRORCODE = 70004;
+
+    public static final int MINDMAPSELECTERRORCODE = 80001;
+    public static final int MINDMAPUPDATEERRORCODE = 80002;
+    public static final int MINDMAPINSERTERRORCODE = 80003;
+    public static final int MINDMAPDELTEEERRORCODE = 80004;
     public static final int ROOMVIEWSELECTERRORCODE = 110001;
     public static final int USERCHARACTERSELECTERRORCODE = 20001;
     public static final int BOOKROOMDUPLICATEDCODE = 20002;
