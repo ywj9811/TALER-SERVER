@@ -20,16 +20,16 @@ public class InterFaceController {
     @Autowired
     BookService bookService;
 
-    @PostMapping("/book/favorite/{user_id}/{book_id}")
+    @PostMapping("/book/favorite")
     //책 좋아요 추가
-    public Favorite addFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
-        Favorite favorite = favoriteService.LikeBooks(user_id,0l,book_id);
+    public Favorite addFavorite(@RequestParam Long userId, @RequestParam Long bookId){
+        Favorite favorite = favoriteService.likeBooks(userId,bookId);
         return favorite;
     }
-    @PostMapping("book/deletefavorite/{user_id}/{book_id}")
+    @PostMapping("book/deletefavorite")
     // 책 좋아요 삭제
-    public Favorite deleteFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
-        Favorite favorite = favoriteService.DisLikeBooks(user_id,0l,book_id);
+    public Favorite deleteFavorite(@RequestParam Long userId, @RequestParam Long bookId){
+        Favorite favorite = favoriteService.disLikeBooks(userId,bookId);
         return favorite;
     }
 //    @PostMapping("user/addfriend/{user_id}")

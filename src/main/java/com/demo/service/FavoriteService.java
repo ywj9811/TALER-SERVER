@@ -14,9 +14,11 @@ import com.demo.dto.RecommendFriendDto;
 import com.demo.dto.response.Response;
 import com.demo.repository.BookRoomRepo;
 import com.demo.repository.FavoriteRepo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.awt.print.Book;
 import java.util.*;
@@ -45,17 +47,14 @@ public class FavoriteService {
     UserDao userDao;
 
     //책 좋아요
-    public Favorite LikeBooks(@PathVariable Long user_id, @PathVariable Long bookroom_id, @PathVariable Long book_id){
-        FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,1);
-        Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
+    public Favorite likeBooks(Long userId, Long bookId){
+        Favorite favorite = favoriteRepo.Like(userId,bookId);
 
         return  favorite;
     }
     //책 좋아요 취소
-    public  Favorite DisLikeBooks(@PathVariable Long user_id, @PathVariable Long bookroom_id, @PathVariable Long book_id){
-        FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,0);
-        bookdetailsDao.setBookPopularity(book_id);
-        Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
+    public  Favorite disLikeBooks(Long userId, Long bookId){
+        Favorite favorite = favoriteRepo.DisLike(userId,bookId);
 
         return favorite;
     }
@@ -180,3 +179,4 @@ public class FavoriteService {
         return false;
     }
 }
+
