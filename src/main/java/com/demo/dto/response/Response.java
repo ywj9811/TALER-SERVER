@@ -10,4 +10,5 @@ public class Response {
     private String message;
     private int code;
 
+    public Response() {}
 }

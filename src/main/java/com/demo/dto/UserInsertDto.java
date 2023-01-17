@@ -12,6 +12,7 @@ public class UserInsertDto {
     private int status;
     private String pw;
     private String phonenumber;
+    private String authority;
 
     public User dtoToUser(UserInsertDto userInsertDto){
         return User.builder()
@@ -21,6 +22,7 @@ public class UserInsertDto {
                 .status(userInsertDto.getStatus())
                 .pw(userInsertDto.getPw())
                 .phonenumber(userInsertDto.getPhonenumber())
+                .authority("user")
                 .build();
     }
 

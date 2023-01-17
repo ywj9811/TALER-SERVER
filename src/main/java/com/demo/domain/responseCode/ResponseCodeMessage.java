@@ -14,6 +14,7 @@ public class ResponseCodeMessage {
     public static final String BOOKROOMDUPLICATEDMESSAGE = "[ERROR] BOOKROOM 중복되었습니다";
     public static final String USERSEXISTSNICKNAME = "이미 존재하는 아이디입니다";
     public static final String USERSINVALIDPHONENUMBER = "전화번호 형식을 확인해 주세요";
+
     public static final int SUCCESSCODE = 2000;
     public static final int NULLCODE = 3000;
     public static final int USERSELECTERRORMCODE = 4000;

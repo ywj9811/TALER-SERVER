@@ -1,0 +1,1 @@
+insert into user (age,authority,nickname,phonenumber,profile_color,pw,status) values (22,'user','chan','01011112222','blue','$2a$10$EcSBZX2lknB4AZpmCZGjTeDNx3OKja3dpCCRU4FeXt/SVerhSE7U2',1);

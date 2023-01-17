@@ -4,10 +4,16 @@ import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.response.Response;
 import com.demo.dto.response.BaseException;
+import com.demo.jwt.TokenProvider;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,20 +28,21 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 public class UserService {
 
     private final UserRepo userRepo;
-    @Autowired
     private final ParentRepo parentRepo;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public Response saveUser(UserInsertDto userInsertDto) throws BaseException {
-        if(checkNickname(userInsertDto.getNickname())){
-            throw new BaseException(USERSEXISTSNICKNAME,UPDATEERRORCODE);
+    public Response signup(UserInsertDto userInsertDto) throws DuplicateMemberException {
+        if (userRepo.findByNickname(userInsertDto.getNickname()).orElse(null) != null) {
+            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
+        String encodePw = passwordEncoder.encode(userInsertDto.getPw());
+        userInsertDto.setPw(encodePw);
 
-        String encodedPw = passwordEncoder.encode(userInsertDto.getPw());
-        userInsertDto.setPw(encodedPw);
         User user = userInsertDto.dtoToUser(userInsertDto);
-        User saveUser = userRepo.save(user);
-        return new Response(saveUser,SUCCESSMESSAGE,SUCCESSCODE);
+        User saveuser = userRepo.save(user);
+        return new Response(saveuser,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
     public Response saveParent(ParentInsertDto parentInsertDto){
@@ -61,13 +68,17 @@ public class UserService {
 
     }
 
+    public Response logIn(LogInDto logInDto){
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(logInDto.getNickname(), logInDto.getPw());
 
-    public boolean checkNickname(String nickname) throws BaseException {
-        try {
-            return userRepo.existsByNickname(nickname);
-        } catch (Exception exception) {
-            throw new BaseException(UPDATEERRORMESSAGE,UPDATEERRORCODE);
-        }
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        TokenDto tokenDto = tokenProvider.createToken(authentication);
+
+
+        return new Response(tokenDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
 
