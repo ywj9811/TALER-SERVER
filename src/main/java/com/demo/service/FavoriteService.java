@@ -15,6 +15,7 @@ import com.demo.repository.FavoriteRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.awt.print.Book;
 import java.util.*;
@@ -38,24 +39,17 @@ public class FavoriteService {
     UserDao userDao;
 
     //책 좋아요
-    public Favorite LikeBooks(@PathVariable Long user_id, @PathVariable Long bookroom_id, @PathVariable Long book_id){
-        FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,1);
-        Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
+    public Favorite LikeBooks(Long userId, Long bookId){
+        Favorite favorite = favoriteRepo.Like(userId,bookId);
 
         return  favorite;
     }
     //책 좋아요 취소
-    public  Favorite DisLikeBooks(@PathVariable Long user_id, @PathVariable Long bookroom_id, @PathVariable Long book_id){
-        FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,0);
-        bookdetailsDao.setBookPopularity(book_id);
-        Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
+    public  Favorite DisLikeBooks(Long userId, Long bookId){
+        Favorite favorite = favoriteRepo.DisLike(userId,bookId);
 
         return favorite;
     }
-
-
-
-
 
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {
         //책을 담을때 popularity올려야함-> dao에서 해결 -> 그린님과 공통되는 부분
@@ -64,8 +58,6 @@ public class FavoriteService {
 
         return favorite;
     }
-
-
 
     //동화책 등록시 추천 동화책
     public List<String> bookRecommendSelect(Long user_id) {

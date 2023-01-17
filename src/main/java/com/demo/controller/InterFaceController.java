@@ -1,24 +1,14 @@
 package com.demo.controller;
 
-import com.demo.domain.Bookroom;
 import com.demo.domain.Favorite;
-import com.demo.domain.Roomview;
 import com.demo.dto.BookRoomSelectDto;
-import com.demo.domain.Friend;
-import com.demo.domain.User;
-import com.demo.dto.FavoriteInsertDto;
-//import com.demo.dto.RecommendBookFavoriteDto;
-import com.demo.dto.RecommendFriendDto;
 import com.demo.dto.response.Response;
 import com.demo.service.BookService;
 import com.demo.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.FileVisitOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class InterFaceController {
@@ -40,16 +30,15 @@ public class InterFaceController {
         List<BookRoomSelectDto> bookRecommendList = bookService.getRecommendBooks(user_id);
         //model.setAttribute("recommendBookFavoriteDtoList",recommendBookFavoriteDtoList);
     }
-    @PostMapping("/book/favorite/{user_id}/{book_id}")
-    //책 좋아요 추가
-    public Favorite addFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
-        Favorite favorite = favoriteService.LikeBooks(user_id,0l,book_id);
+    @PostMapping("/book/favorite")    //책 좋아요 추가
+    public Favorite addFavorite(@RequestParam Long userId, @RequestParam Long bookId){
+        Favorite favorite = favoriteService.LikeBooks(userId, bookId);
         return favorite;
     }
-    @PostMapping("book/deletefavorite/{user_id}/{book_id}")
+    @PostMapping("book/deletefavorite")
     // 책 좋아요 삭제
-    public Favorite deleteFavorite(@PathVariable Long user_id, @PathVariable Long book_id){
-        Favorite favorite = favoriteService.DisLikeBooks(user_id,0l,book_id);
+    public Favorite deleteFavorite(@RequestParam Long userId, @RequestParam Long bookId){
+        Favorite favorite = favoriteService.DisLikeBooks(userId,bookId);
         return favorite;
     }
 //    @PostMapping("user/addfriend/{user_id}")
