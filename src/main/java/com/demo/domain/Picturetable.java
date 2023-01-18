@@ -20,4 +20,8 @@ public class Picturetable {
     private Long bookroomId;
 
     private String pictureUrl;
+
+    public void updatePictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
 }

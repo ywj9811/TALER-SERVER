@@ -59,7 +59,7 @@ public class ResponseCodeMessage {
     public static final int MINDMAPSELECTERRORCODE = 80001;
     public static final int MINDMAPUPDATEERRORCODE = 80002;
     public static final int MINDMAPINSERTERRORCODE = 80003;
-    public static final int MINDMAPDELTEEERRORCODE = 80004;
+    public static final int MINDMAPDELETEERRORCODE = 80004;
     public static final int ROOMVIEWSELECTERRORCODE = 110001;
     public static final int USERCHARACTERSELECTERRORCODE = 20001;
     public static final int BOOKROOMDUPLICATEDCODE = 20002;

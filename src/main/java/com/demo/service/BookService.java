@@ -188,4 +188,47 @@ public class BookService {
 
         return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
+
+    public Response updatePicture(Long pictureId, String pictureUrl) {
+        Optional<Picturetable> optionalPicturetable = pictureRepo.findById(pictureId);
+        if (optionalPicturetable.isEmpty())
+            return new Response(PICTURESELECTERRORMESSAGE, PICTURESELECTERRORCODE);
+        Picturetable picturetable = optionalPicturetable.get();
+        picturetable.updatePictureUrl(pictureUrl);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response updateWord(Long wordId, String wordText, String wordPictureUrl, String wordVoiceUrl) {
+        Optional<Wordtable> optionalWordtable = wordRepo.findById(wordId);
+        if (optionalWordtable.isEmpty())
+            return new Response(WORDSELECTERRORMESSAGE, WORDSELECTERRORCODE);
+        Wordtable wordtable = optionalWordtable.get();
+        wordtable.updateWord(wordPictureUrl, wordVoiceUrl, wordText);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response updateMind(Long mindId, String wordText, String wordPictureUrl, String wordVoiceUrl) {
+        Optional<Mindmap> optionalMindmap = mindMapRepo.findById(mindId);
+        if (optionalMindmap.isEmpty())
+            return new Response(MINDMAPSELECTERRORMESSAGE, MINDMAPSELECTERRORCODE);
+        Mindmap mindmap = optionalMindmap.get();
+        mindmap.updateMind(wordText, wordPictureUrl, wordVoiceUrl);
+
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response deletePicture(Long pictureId) {
+        pictureRepo.deleteById(pictureId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response deleteWord(Long wordId) {
+        pictureRepo.deleteById(wordId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response deleteMind(Long mindId) {
+        pictureRepo.deleteById(mindId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
 }

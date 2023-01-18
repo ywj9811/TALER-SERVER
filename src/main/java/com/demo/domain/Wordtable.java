@@ -28,4 +28,10 @@ public class Wordtable {
     private String wordVoiceUrl;
 
     private String wordText;
+
+    public void updateWord(String wordPictureUrl, String wordVoiceUrl, String wordText) {
+        this.wordPictureUrl = wordPictureUrl;
+        this.wordText = wordText;
+        this.wordVoiceUrl = wordVoiceUrl;
+    }
 }
