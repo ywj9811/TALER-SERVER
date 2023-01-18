@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface FavoriteRepo extends JpaRepository<Favorite, Long> {
     Optional<Favorite> findByUserIdAndBookroomId(Long userId, Long bookroomId);
 
-    @Query("SELECT fv.bookroomId FROM Favorite fv WHERE fv.userId = :userId AND fv.isfavorite = 1")
-    List<Long> findBookroomIdByUserId(@Param("userId") Long userId);
+    @Query("SELECT fv.bookroomId FROM Favorite fv, Bookroom br WHERE fv.bookroomId = br.bookroomId and fv.userId = :userId AND fv.isfavorite = 1 AND NOT br.userId = :userId2")
+    List<Long> findBookroomIdByUserId(@Param("userId") Long userId, @Param("userId2") Long userId2);
 
     //좋아요 누르면 특정 isint = 1로 세팅
     @Query("UPDATE Favorite SET isfavorite =1 WHERE userId = :userId and bookId = :bookId")

@@ -20,7 +20,7 @@ public class BookroomDao {
     public List<BookRoomSelectDto> getBookroomByFavorite(Long userId) {
         List<BookRoomSelectDto> results = jdbcTemplate.query(
                 "select distinct user_id,book_id,bookroom_id,theme_color from bookroom " +
-                        "where bookroom_id in(select bookroom_id " +
+                        "where user_id != ? AND bookroom_id in(select bookroom_id " +
                         "from favorite " +
                         "where user_id = ? and isfavorite = 1);",
                 new RowMapper<BookRoomSelectDto>() {
@@ -33,7 +33,7 @@ public class BookroomDao {
                                 rs.getString("theme_color"));
                         return bookRoomSelectDto;
                     }
-                }, userId);
+                }, userId, userId);
 
         return results.isEmpty() ? null : results;
     }

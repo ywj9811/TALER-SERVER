@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RecommendFriendDto {
-    Long userId;
+    Long FriendUserId;
     String profile_color;
     String nickname;
 

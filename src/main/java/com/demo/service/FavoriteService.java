@@ -31,6 +31,7 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 import static com.demo.domain.responseCode.ResponseCodeMessage.BOOKROOMSELECTERRORMESSAGE;
 
 @Service
+@Slf4j
 public class FavoriteService {
     @Autowired
     RoomViewRepo roomViewRepo;
@@ -115,7 +116,7 @@ public class FavoriteService {
         Response response = new Response();
         Set<BookRoomSelectDto> recommendBookFavoriteDtoList = getRecommendBooks(userId);
         Set<RecommendFriendDto> recommendUserList = bookRecommendFriend(userId);
-        Optional<Bookroom> bookRoomFavoriteList = getFavoriteBookRooms(userId);
+        List<Bookroom> bookRoomFavoriteList = getFavoriteBookRooms(userId);
 
         if (recommendUserList == null && recommendUserList == null && bookRoomFavoriteList == null) {
             response.setCode(NULLCODE);
@@ -130,96 +131,96 @@ public class FavoriteService {
             return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
         }
     }
-    private Set<BookRoomSelectDto> getRecommendBooks(Long id){
+    private Set<BookRoomSelectDto> getRecommendBooks(Long userId){
         //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
-        List<BookRoomSelectDto> bookRoomSelectDtoList = bookroomDao.getBookroomByFavorite(id);
-        if(bookRoomSelectDtoList == null){
-            bookRoomSelectDtoList = bookroomDao.getBookroomByExperience(id);
-        }
-        else{
-            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
-        }
-        System.out.println(bookRoomSelectDtoList);
+        List<BookRoomSelectDto> bookRoomSelectDtoList = new ArrayList<>();
+
+        if (bookroomDao.getBookroomByFavorite(userId) != null)
+            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByFavorite(userId));
+        if (bookroomDao.getBookroomByExperience(userId) != null)
+            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(userId));
 
         Set<BookRoomSelectDto> bookRoomSelectDtos = new HashSet<>();
-        if(bookRoomSelectDtoList == null){
+
+        if(bookRoomSelectDtoList == null)
             //null일경우 아무것도 보내주지 않게 하기
             return bookRoomSelectDtos;
-        }
-        else {
-            for (BookRoomSelectDto brs : bookRoomSelectDtoList) {
-                bookRoomSelectDtos.add(brs);
-            }
-            return bookRoomSelectDtos;
-        }
+
+        for (BookRoomSelectDto brs : bookRoomSelectDtoList)
+            bookRoomSelectDtos.add(brs);
+
+        return bookRoomSelectDtos;
     }
-        /**
-         * 이 부분에서 null인 경우에 add를 하려하면 NullPointException이 발생하길래 우선 조건문을 써서 막아뒀어요
-         */
+    /**
+     * 이 부분에서 null인 경우에 add를 하려하면 NullPointException이 발생하길래 우선 조건문을 써서 막아뒀어요
+     *
+     * add할 때 add하는 값이 null이면 NPE가 발생하는 것 같아요
+     * 그래서 조건문 내요잉랑 위치를 살짝 바꿨습니다!
+     */
 
-        //유저에게 추천 친구
-        private Set<RecommendFriendDto> bookRecommendFriend(Long user_id) {
-            List<RecommendFriendDto> recommendUserList  = new ArrayList<>();
+    //유저에게 추천 친구
+    private Set<RecommendFriendDto> bookRecommendFriend(Long user_id) {
+        List<RecommendFriendDto> recommendUserList  = new ArrayList<>();
 
-            if (userDao.recommendFriendByFavoriteExperience(user_id) != null)
-                recommendUserList = userDao.recommendFriendByFavoriteExperience(user_id);
-            if (userDao.recommendFriendBySameAge(user_id) != null)
-                recommendUserList.addAll(userDao.recommendFriendBySameAge(user_id));
-            if (userDao.recommendFriendBySameBook(user_id) != null)
-                recommendUserList.addAll(userDao.recommendFriendBySameBook(user_id));
-            if (userDao.recommendFriendBySameFavoriteBook(user_id) != null)
-                recommendUserList.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
+        if (userDao.recommendFriendByFavoriteExperience(user_id) != null)
+            recommendUserList = userDao.recommendFriendByFavoriteExperience(user_id);
+        if (userDao.recommendFriendBySameAge(user_id) != null)
+            recommendUserList.addAll(userDao.recommendFriendBySameAge(user_id));
+        if (userDao.recommendFriendBySameBook(user_id) != null)
+            recommendUserList.addAll(userDao.recommendFriendBySameBook(user_id));
+        if (userDao.recommendFriendBySameFavoriteBook(user_id) != null)
+            recommendUserList.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
 
-            Set<RecommendFriendDto> resultSet = new HashSet<>();
-            for(RecommendFriendDto rfd:recommendUserList){
-                Friend friendDto = new FriendDto(user_id,rfd.getUserId()).FriendDto();
-                if(rfd.getUserId() == user_id && friendRepo.exists(friendDto));
-                    continue;
-                resultSet.add(rfd);
-            }
-            return resultSet;
+        Set<RecommendFriendDto> resultSet = new HashSet<>();
+        for(RecommendFriendDto recommendFriendDto:recommendUserList){
+            if(recommendFriendDto.getFriendUserId() == user_id
+                    || friendRepo.existsByUserFriendIdAndUserId(recommendFriendDto.getFriendUserId(), user_id))
+                continue;
+            log.info("추천 = {}", recommendFriendDto.getFriendUserId());
+            resultSet.add(recommendFriendDto);
         }
-
-        /**
-         * 여기도 위와 같이 null일 경우 오류가 발생할 것 같기도 한데, null이 안나와서..
-         * 나중에 필요하면 처리!
-         */
-
-        private List<Bookroom> getFavoriteBookRooms(Long user_id) {
-//        Optional<Bookroom> getFavoriteBookRoomList;
-//        getFavoriteBookRoomList = bookroomRepo.findById(user_id);
-            List<Bookroom> getFavoriteBookRoomList = new ArrayList<>();
-            /**
-             * 이건 그냥 본인의 책방 리스트를 가져오는 중입니다 -> 좋아요 누른 책방이 아님
-             * 그리고 findById는 해당 pk값으로 가져오는 것입니다.
-             * userId를 사용하기 위해서는 findByUserId라는 메소드를 만들고 사용하면 됩니다.
-             *
-             * 우선 제 나름대로 수정했습니다.
-             * favorite에서 bookroomId를 가져와서 그 bookroomId를 통해 bookroom조회하여 리스트로 만들어 반환합니다.
-             */
-            List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id);
-            for (Long bookroomId : bookroomIds) {
-                Optional<Bookroom> byId = bookroomRepo.findById(bookroomId);
-                if (byId.isPresent())
-                    getFavoriteBookRoomList.add(byId.get());
-            }
-
-            return getFavoriteBookRoomList;
-        }
-
-        public Response checkFavorite(Long userId, Long friendUserId, Long bookId) {
-            Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, friendUserId);
-
-            Boolean isFavorite = false;
-            if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
-                isFavorite = false;
-
-            BookRoomResponse result = new BookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
-                    roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
-                    roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
-                    roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
-
-            return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
-        }
+        return resultSet;
     }
+    /**
+     *  friendRepo.existByUserFriendIdAndUserId(a, b)
+     *  이것은 UserFriendId가 a 고 UserId가 b인 데이터가 있는가 체크하고 있으면 true, 없으면 false를 반환하는 거에요
+     *  SpringDataJpa를 사용할 때 find(Select) delete 등등 뒤에 By컬럼명 하면 해당 컬럼을 기준으로 조건문을 작성해서 작동하게 되는 거에요
+     */
+
+    private List<Bookroom> getFavoriteBookRooms(Long user_id) {
+        List<Bookroom> getFavoriteBookRoomList = new ArrayList<>();
+        /**
+         * 이건 그냥 본인의 책방 리스트를 가져오는 중입니다 -> 좋아요 누른 책방이 아님
+         * 그리고 findById는 해당 pk값으로 가져오는 것입니다.
+         * userId를 사용하기 위해서는 findByUserId라는 메소드를 만들고 사용하면 됩니다.
+         *
+         * 우선 제 나름대로 수정했습니다.
+         * favorite에서 bookroomId를 가져와서 그 bookroomId를 통해 bookroom조회하여 리스트로 만들어 반환합니다.
+         */
+        List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id, user_id);
+        for (Long bookroomId : bookroomIds) {
+            log.info("bookroomId = {}", bookroomId);
+            Optional<Bookroom> optionalBookroom = bookroomRepo.findById(bookroomId);
+            if (optionalBookroom.isPresent())
+                getFavoriteBookRoomList.add(optionalBookroom.get());
+        }
+
+        return getFavoriteBookRoomList;
+    }
+
+    public Response checkFavorite(Long userId, Long friendUserId, Long bookId) {
+        Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, friendUserId);
+
+        Boolean isFavorite = false;
+        if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
+            isFavorite = false;
+
+        BookRoomResponse result = new BookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
+                roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
+                roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
+                roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
+
+        return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
+    }
+}
 
