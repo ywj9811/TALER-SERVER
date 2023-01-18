@@ -95,7 +95,6 @@ public class FavoriteService {
 
     public Response getResult(Long userId) {
         Map<String, Object> result = new HashMap<>();
-        Response response = new Response();
 
         List<BookRoomSelectDto> recommendBookFavoriteDtoList = getRecommendBooks(userId);
         List<RecommendFriendDto> recommendUserList = bookRecommendFriend(userId);
@@ -106,11 +105,7 @@ public class FavoriteService {
         result.put("bookRoomFavoriteList", bookRoomFavoriteList);
         //별표 누른 동화책 가져와
 
-        response.setResult(result);
-        response.setCode(SUCCESSCODE);
-        response.setMessage(SUCCESSMESSAGE);
-
-        return response;
+        return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     /**
@@ -189,7 +184,7 @@ public class FavoriteService {
         return getFavoriteBookRoomList;
     }
 
-    public Response checkFavorite(Long userId, Long friendUserId, Long bookId, Response response) {
+    public Response checkFavorite(Long userId, Long friendUserId, Long bookId) {
         Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, friendUserId);
 
         Boolean isFavorite = false;
@@ -201,11 +196,7 @@ public class FavoriteService {
                 roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
                 roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
 
-        response.setResult(result);
-        response.setCode(SUCCESSCODE);
-        response.setMessage(SUCCESSMESSAGE);
-
-        return response;
+        return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
     }
 }
 
