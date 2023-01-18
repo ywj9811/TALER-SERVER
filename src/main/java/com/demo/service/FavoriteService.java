@@ -4,12 +4,10 @@ import com.demo.dao.BookdetailsDao;
 import com.demo.dao.BookroomDao;
 import com.demo.dao.FavoriteDao;
 import com.demo.dao.UserDao;
-import com.demo.domain.Bookroom;
-import com.demo.domain.Favorite;
-import com.demo.domain.Friend;
-import com.demo.domain.User;
+import com.demo.domain.*;
 import com.demo.dto.BookRoomSelectDto;
 import com.demo.dto.FavoriteInsertDto;
+import com.demo.dto.FriendBookRoomResponse;
 import com.demo.dto.RecommendFriendDto;
 import com.demo.dto.response.Response;
 import com.demo.repository.BookRoomRepo;
@@ -28,6 +26,8 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.SUCCESSMESSAGE;
 
 @Service
 public class FavoriteService {
+    @Autowired
+    BookService bookService;
     @Autowired
     BookroomDao bookroomDao;
 
@@ -60,7 +60,7 @@ public class FavoriteService {
     }
 
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {
-        //책을 담을때 popularity올려야함-> dao에서 해결 -> 그린님과 공통되는 부분
+        //책을 담을때 popularity올려야함-> dao에서 해결 -> 그린님과 공통되는 부분 ?? popularity는 책방에 담을 때 올리는 것 아닌가요?!
         FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,0);
         Favorite favorite = favoriteRepo.save(favoriteInsertDto.FavoriteDtoToFavorite());
 
@@ -104,11 +104,12 @@ public class FavoriteService {
 
         List<BookRoomSelectDto> recommendBookFavoriteDtoList = getRecommendBooks(userId);
         List<RecommendFriendDto> recommendUserList = bookRecommendFriend(userId);
-        Optional<Bookroom> bookRoomFavoriteList = getFavoriteBookRooms(userId);
+        List<Bookroom> bookRoomFavoriteList = getFavoriteBookRooms(userId);
 
         result.put("recommendBookFavoriteDtoList", recommendBookFavoriteDtoList);
         result.put("recommendUserList", recommendUserList);
         result.put("bookRoomFavoriteList", bookRoomFavoriteList);
+        //별표 누른 동화책 가져와
 
         response.setResult(result);
         response.setCode(SUCCESSCODE);
@@ -166,17 +167,44 @@ public class FavoriteService {
      * 나중에 필요하면 처리!
      */
 
-    private Optional<Bookroom> getFavoriteBookRooms(Long user_id) {
-        Optional<Bookroom> getFavoriteBookRoomList;
-        getFavoriteBookRoomList = bookroomRepo.findById(user_id);
+    private List<Bookroom> getFavoriteBookRooms(Long user_id) {
+//        Optional<Bookroom> getFavoriteBookRoomList;
+//        getFavoriteBookRoomList = bookroomRepo.findById(user_id);
+        List<Bookroom> getFavoriteBookRoomList = new ArrayList<>();
+        /**
+         * 이건 그냥 본인의 책방 리스트를 가져오는 중입니다 -> 좋아요 누른 책방이 아님
+         * 그리고 findById는 해당 pk값으로 가져오는 것입니다.
+         * userId를 사용하기 위해서는 findByUserId라는 메소드를 만들고 사용하면 됩니다.
+         *
+         * 우선 제 나름대로 수정했습니다.
+         * favorite에서 bookroomId를 가져와서 그 bookroomId를 통해 bookroom조회하여 리스트로 만들어 반환합니다.
+         */
+        List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id);
+        for (Long bookroomId : bookroomIds) {
+            Optional<Bookroom> byId = bookroomRepo.findById(bookroomId);
+            if (byId.isPresent())
+                getFavoriteBookRoomList.add(byId.get());
+        }
 
         return getFavoriteBookRoomList;
     }
 
-    public Boolean checkFavorite(Long userId, Long bookId) {
-        if(favoriteDao.checkFavorite(userId,bookId))
-            return true;
-        return false;
+    public Response checkFavorite(Long userId, Long friendUserId, Long bookId, Response response) {
+        Roomview roomview = (Roomview) bookService.selectBookRoom(bookId, friendUserId, response).getResult();
+
+        Boolean isFavorite = true;
+        if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
+            isFavorite = false;
+        FriendBookRoomResponse result = new FriendBookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
+                roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
+                roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
+                roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
+
+        response.setResult(result);
+        response.setCode(SUCCESSCODE);
+        response.setMessage(SUCCESSMESSAGE);
+
+        return response;
     }
 }
 
