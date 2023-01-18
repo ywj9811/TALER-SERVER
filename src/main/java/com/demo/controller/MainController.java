@@ -3,10 +3,7 @@ package com.demo.controller;
 import com.demo.dto.response.Response;
 import com.demo.service.MainService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
@@ -16,8 +13,8 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 public class MainController {
     private final MainService mainService;
 
-    @GetMapping("/mine")
-    public Response getMyMain(String userId) {
+    @GetMapping("/mine/{userId}")
+    public Response getMyMain(@PathVariable String userId) {
         try {
             if (userId == null) {
                 return new Response(NULLMESSAGE, NULLCODE);
@@ -37,8 +34,8 @@ public class MainController {
     //이미 follow한 친구 클릭시 로드 되는 메인페이지
 
 
-    @GetMapping("/another")
-    public Response getAnotherMain(String userId, String otherUserId) {
+    @GetMapping("/another/{userId}/{otherUserId}")
+    public Response getAnotherMain(@PathVariable String userId, @PathVariable String otherUserId) {
         try {
             if (userId == null) {
                 return new Response(NULLMESSAGE, NULLCODE);
