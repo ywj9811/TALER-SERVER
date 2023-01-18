@@ -5,20 +5,15 @@ import com.demo.dao.BookroomDao;
 import com.demo.dao.FavoriteDao;
 import com.demo.dao.UserDao;
 import com.demo.domain.*;
-import com.demo.dto.BookRoomSelectDto;
-import com.demo.dto.FavoriteInsertDto;
-import com.demo.dto.FriendBookRoomResponse;
-import com.demo.dto.RecommendFriendDto;
+import com.demo.dto.*;
 import com.demo.dto.response.Response;
 import com.demo.repository.BookRoomRepo;
 import com.demo.repository.FavoriteRepo;
-import org.apache.ibatis.annotations.Param;
+import com.demo.repository.RoomViewRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.awt.print.Book;
 import java.util.*;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.SUCCESSCODE;
@@ -27,7 +22,7 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.SUCCESSMESSAGE;
 @Service
 public class FavoriteService {
     @Autowired
-    BookService bookService;
+    RoomViewRepo roomViewRepo;
     @Autowired
     BookroomDao bookroomDao;
 
@@ -148,14 +143,19 @@ public class FavoriteService {
 
     //유저에게 추천 친구
     private List<RecommendFriendDto> bookRecommendFriend(Long user_id) {
+
         List<RecommendFriendDto> recommendUserList  = new ArrayList<>();
         //과거 읽어본 동화책을 등록한 다른 user list
-        recommendUserList = userDao.recommendFriendByFavoriteExperience(user_id);
+        if (userDao.recommendFriendByFavoriteExperience(user_id) != null)
+            recommendUserList = userDao.recommendFriendByFavoriteExperience(user_id);
         //나이가 같거나 등록한 동화책이 같은 경우가 2개 이상인 경우
-        recommendUserList.addAll(userDao.recommendFriendBySameAge(user_id));
-        recommendUserList.addAll(userDao.recommendFriendBySameBook(user_id));
+        if (userDao.recommendFriendBySameAge(user_id) != null)
+            recommendUserList.addAll(userDao.recommendFriendBySameAge(user_id));
+        if (userDao.recommendFriendBySameBook(user_id) != null)
+            recommendUserList.addAll(userDao.recommendFriendBySameBook(user_id));
         //좋아요를 눌러둔 동화책이 3개 이상인 경우
-        recommendUserList.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
+        if (userDao.recommendFriendBySameFavoriteBook(user_id) != null)
+            recommendUserList.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
         //겹치는 친구가 2명 이상인 경우
 
         //->이 중 제일 많이 겹치는 user를 리스트에서 뽑아 추천하기
@@ -190,12 +190,13 @@ public class FavoriteService {
     }
 
     public Response checkFavorite(Long userId, Long friendUserId, Long bookId, Response response) {
-        Roomview roomview = (Roomview) bookService.selectBookRoom(bookId, friendUserId, response).getResult();
+        Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, friendUserId);
 
-        Boolean isFavorite = true;
+        Boolean isFavorite = false;
         if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
             isFavorite = false;
-        FriendBookRoomResponse result = new FriendBookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
+
+        BookRoomResponse result = new BookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
                 roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
                 roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
                 roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
