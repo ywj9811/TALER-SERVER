@@ -94,7 +94,7 @@ public class InterFaceController {
     public Response bookFriendBookroom(String userId, String friendUserId, String bookId) {
         try {
             if (userId == null || friendUserId == null || bookId == null) {
-
+                return new Response(NULLMESSAGE, NULLCODE);
             }
             //별표 확인
             return favoriteService.checkFavorite(Long.parseLong(userId), Long.parseLong(friendUserId), Long.parseLong(bookId));
