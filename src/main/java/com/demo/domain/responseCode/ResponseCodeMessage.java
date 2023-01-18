@@ -34,6 +34,9 @@ public class ResponseCodeMessage {
     public static final String USERCHARACTERSELECTERRORMESSAGE = "[ERROR] USERCHARACTER 조회에 실패했습니다";
     public static final String UPDATEERRORMESSAGE = "[ERROR] 업데이트 실패했습니다";
     public static final String BOOKROOMDUPLICATEDMESSAGE = "[ERROR] BOOKROOM 중복되었습니다";
+
+    public static final String RECOMMENDBOOKFAVORITEDTOLISTNULLMESSAGE = "[ERROR] recommendBookFavoriteDtoList 이 비어있습니다";
+
     public static final int SUCCESSCODE = 2000;
     public static final int NULLCODE = 3000;
     public static final int USERSELECTERRORMCODE = 4000;

@@ -43,7 +43,7 @@ public class BookroomDao {
     public List<BookRoomSelectDto> getBookroomByExperience(Long userId) {
         List<BookRoomSelectDto> results = jdbcTemplate.query(
                 "select distinct bookroom_id,book_id,theme_color,user_id from bookroom\n" +
-                        "where book_id in(" +
+                        "where user_id != ? and book_id in(" +
                         "select book_id " +
                         "from favorite " +
                         "where user_id = ? and isfavorite = 0 " +
@@ -58,7 +58,7 @@ public class BookroomDao {
                                 rs.getString("theme_color"));
                         return bookRoomSelectDto;
                     }
-                }, userId);
+                }, userId, userId);
 
         return results.isEmpty() ? null : results;
     }

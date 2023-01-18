@@ -84,7 +84,9 @@ public class InterFaceController {
     //book titles를 api검색어로 넣어 book image가져오기
     @GetMapping("/book/recommend/select")
     public Response bookRecommendSelect(@RequestParam("userId") Long userId) {
-        List<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
+        Response response = new Response();
+
+        Set<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
 
         return new Response(bookRecommendList, SUCCESSMESSAGE, SUCCESSCODE);
     }

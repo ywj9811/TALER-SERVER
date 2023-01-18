@@ -21,7 +21,7 @@ public class UserController {
         return usercharacters;
     }
 
-    @PostMapping("/insertusercharacter")
+    @PostMapping("/user/character")
     //유저 캐릭터 정보 저장하기
     public Usercharacter saveUsercharacter(UsercharacterDto usercharacterDto) {
         Usercharacter usercharacter = usercharacterService.saveUsercharacter(usercharacterDto);
