@@ -84,8 +84,6 @@ public class InterFaceController {
     //book titles를 api검색어로 넣어 book image가져오기
     @GetMapping("/book/recommend/select")
     public Response bookRecommendSelect(@RequestParam("userId") Long userId) {
-        Response response = new Response();
-
         Set<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
 
         return new Response(bookRecommendList, SUCCESSMESSAGE, SUCCESSCODE);
@@ -111,19 +109,6 @@ public class InterFaceController {
      * 이 아래 추천 동화책방, 즐겨찾기 클릭시 모두 친구의 동화책방으로 이동되는 것인데, 친구 동화책방 api 그대로 사용해도 괜찮을 것 같아요
      * 단순 이동을 위한 api이니
      */
-    //추천 동화책방 클릭시 로드되는 동화책방
-    @GetMapping("/book/recommend/bookroom")
-    public Response bookRecommendBookroom(Long notFriendUserId, Long bookId) {
-        //안드로이드 측 별표 없이
-        return bookService.selectBookRoom(bookId,notFriendUserId);
-    }
-
-    //즐겨찾기 클릭시 로드 되는 동화책방
-    @GetMapping("/book/favorite/bookroom")
-    public Response bookFavoriteBookroom(Long notFriendUserId, Long bookId) {
-        //안드로이드 측 별표 있게
-        return bookService.selectBookRoom(bookId,notFriendUserId);
-    }
 
     /**
      * Response 타입으로 반환을 하고 있어서 우선 그에 맞춰서 수정했습니다
