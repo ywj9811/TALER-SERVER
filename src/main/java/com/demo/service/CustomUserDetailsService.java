@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Component("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepo userRepo;
@@ -22,26 +24,27 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(final String username) {
-        if(username.contains(")")){
-            String parentName = username.substring(username.lastIndexOf(")")+1);
-
-            return parentRepo.findByNickname(parentName)
-                    .map(parent -> createUser(parentName, parent))
-                    .orElseThrow(() -> new UsernameNotFoundException(parentName + " -> 데이터베이스에서 찾을 수 없습니다."));
+        Optional<User> optionalUser = userRepo.findByNickname(username);
+        if(optionalUser.orElse(null) != null){
+            return optionalUser
+                    .map(this::createUser)
+                    .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
+        }else{
+            return parentRepo.findByNickname(username)
+                    .map(this::createUser)
+                    .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
         }
-
-        return userRepo.findByNickname(username)
-                .map(user -> createUser(username, user))
-                .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
-    private org.springframework.security.core.userdetails.User createUser(String username, UserDetails userDetails) {
-        if (userDetails.isEnabled()) {
-            throw new RuntimeException(username + " -> 삭제된 유저 입니다.");
+    private org.springframework.security.core.userdetails.User createUser(UserDetails userDetails) {
+        if (!userDetails.isEnabled()) {
+            throw new RuntimeException(userDetails.getUsername() + " -> 활성화되어 있지 않습니다.");
         }
 
         return new org.springframework.security.core.userdetails.User(userDetails.getUsername(),
                 userDetails.getPassword(),
                 userDetails.getAuthorities());
     }
+
+
 }

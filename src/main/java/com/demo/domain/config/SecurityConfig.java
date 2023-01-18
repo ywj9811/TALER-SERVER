@@ -43,13 +43,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/usersingup").permitAll()
-                .antMatchers("/user/parentsignup").permitAll()
+                .antMatchers("/user/save").permitAll()
+                .antMatchers("/user/parent/save").permitAll()
                 .antMatchers("/user/login").permitAll()
+                .antMatchers("/user/parent/login").permitAll()
                 .anyRequest().authenticated()
+
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
-
-
     }
 }

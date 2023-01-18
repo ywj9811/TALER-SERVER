@@ -16,7 +16,7 @@ import java.util.Collection;
 @Entity
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Parent implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,11 +39,11 @@ public class Parent implements UserDetails {
     private String pw;
 
     private String authority;
-
+/**
     @OneToOne(fetch = FetchType.LAZY) //사용시점에 조회가 됨
     @JoinColumn(name = "parentId")
     private User user;
-
+*/
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         ArrayList<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();

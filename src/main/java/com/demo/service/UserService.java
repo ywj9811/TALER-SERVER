@@ -32,11 +32,12 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    //아이 회원가입
     public Response userSignUp(UserInsertDto userInsertDto) throws DuplicateMemberException {
         if (userRepo.findByNickname(userInsertDto.getNickname()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
-        String encodePw = passwordEncoder.encode(userInsertDto.getPw());
+        String encodePw = passwordEncoder.encode(userInsertDto.getPw()); //비밀번호 암호화
         userInsertDto.setPw(encodePw);
 
         User user = userInsertDto.dtoToUser(userInsertDto);
@@ -44,22 +45,23 @@ public class UserService {
         return new Response(userDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
+    //부모 회원가입
     public Response parentSignUp(ParentInsertDto parentInsertDto) throws DuplicateMemberException {
         Optional<User> user = userRepo.findByNickname((parentInsertDto.getUserNickname()));
 
-        //아이 계정 확인
+
         if (parentRepo.findByNickname(parentInsertDto.getNickname()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
+        //아이 계정 유효성 검증
         if(user.orElse(null) == null){
             throw new DuplicateMemberException("아이계정이 존재하지 않습니다.");
         }
-        if(!passwordEncoder.matches
-                (user.get().getPw(), parentInsertDto.getUserPw())){
+        if(!passwordEncoder.matches(parentInsertDto.getUserPw(),user.get().getPw())){
             throw new DuplicateMemberException("아이계정 비밀번호가 틀렸습니다");
         }
 
-        String encodePw = passwordEncoder.encode(parentInsertDto.getPw());
+        String encodePw = passwordEncoder.encode(parentInsertDto.getPw()); //비밀번호 암호화
         parentInsertDto.setPw(encodePw);
 
         Parent parent = parentInsertDto.dtoToParent(parentInsertDto, user.get().getUserId());
@@ -67,7 +69,9 @@ public class UserService {
         return new Response(parentDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
-    public Response logIn(LogInDto logInDto){
+    //아이, 부모 로그인
+    public Response login(LogInDto logInDto) throws Exception {
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(logInDto.getNickname(), logInDto.getPw());
 

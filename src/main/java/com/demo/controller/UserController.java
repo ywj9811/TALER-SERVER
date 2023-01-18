@@ -24,24 +24,31 @@ public class UserController {
 
     private final UserService userService;
     private final UsercharacterService usercharacterService;
+    private String role;
 
     //아이 회원가입
-    @PostMapping("/usersingup")
+    @PostMapping("/save")
     public Response singup(@Valid @RequestBody UserInsertDto userInsertDto ) throws DuplicateMemberException {
         return userService.userSignUp(userInsertDto);
     }
 
     //부모 회원가입
-    @PostMapping("/parentsignup")
+    @PostMapping("/parent/save")
     public Response saveParent(@RequestBody ParentInsertDto parentInsertDto) throws DuplicateMemberException {
         return userService.parentSignUp(parentInsertDto);
 
     }
 
     //아이 로그인
-    @PostMapping("login")
-    public Response login(@RequestBody LogInDto logInDto) {
-        return userService.logIn(logInDto);
+    @PostMapping("/login")
+    public Response userLogin(@RequestBody LogInDto logInDto) throws Exception {
+        return userService.login(logInDto);
+    }
+
+    //부모 로그인
+    @PostMapping("/parent/login")
+    public Response parentLogin(@RequestBody LogInDto logInDto) throws Exception {
+        return userService.login(logInDto);
     }
 
 
