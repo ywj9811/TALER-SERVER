@@ -19,7 +19,6 @@ public class Roomview {
     private String themeColor;
     private String themeMusicUrl;
     private String bookTitle;
-    private int isfavorite;
     private String gender;
     private String nickname;
     private String headStyle;

@@ -8,7 +8,7 @@ public class DefaultFavoriteInsert {
                 .userId(userId)
                 .bookId(bookId)
                 .bookroomId(bookroomId)
-                .isfavorite(0)
+                .isfavorite(1)
                 .build();
     }
 }

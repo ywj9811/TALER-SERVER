@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
 @RestController
@@ -27,19 +25,13 @@ public class BookController {
     //결과 코드, 결과 메시지, 결과 -> Map 사용
     @GetMapping("/bookroom") //bookroom 조회
     public Response moveToBookRoom(String userId, String bookId) {
-        Response response = new Response();
         if (userId == null || bookId == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(NULLMESSAGE, NULLCODE);
         }
-
         try {
-            return bookService.selectBookRoom(Long.parseLong(bookId), Long.parseLong(userId), response);
+            return bookService.selectBookRoom(Long.parseLong(bookId), Long.parseLong(userId));
         } catch (Exception e) {
-            response.setCode(BOOKROOMSELECTERRORCODE);
-            response.setMessage(BOOKROOMSELECTERRORMESSAGE);
-            return response;
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
         }
     }
     /**
@@ -53,20 +45,15 @@ public class BookController {
      */
     @PostMapping("/bookroom") //bookroom 생성
     public Response saveBookRoom(String userId, String bookId) {
-        Response response = new Response();
         try {
             BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(Long.parseLong(userId), Long.parseLong(bookId));
             log.info("getBookId = {}", bookRoomInsertDto.getBookId());
             if (bookRoomInsertDto.getBookId() == null || bookRoomInsertDto.getBookId() == null) {
-                response.setCode(NULLCODE);
-                response.setMessage(NULLMESSAGE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
-            return bookService.saveBookRoom(bookRoomInsertDto, response);
+            return bookService.saveBookRoom(bookRoomInsertDto);
         } catch (Exception e) {
-            response.setMessage(BOOKROOMINSERTERRORMESSAGE);
-            response.setCode(BOOKROOMINSERTERRORCODE);
-            return response;
+            return new Response(BOOKROOMINSERTERRORMESSAGE, BOOKROOMINSERTERRORCODE);
         }
     }
     /**
@@ -80,166 +67,117 @@ public class BookController {
 
     @PostMapping("/bookroom/color")
     public Response updateThemeColor(String bookroomId, String themeColor) {
-        Response response = new Response();
         if (bookroomId == null || themeColor == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(NULLMESSAGE, NULLCODE);
         }
         try {
-            return bookService.updateThemeColor(themeColor, Long.parseLong(bookroomId), response);
+            return bookService.updateThemeColor(themeColor, Long.parseLong(bookroomId));
         } catch (Exception e) {
-            response.setCode(BOOKROOMUPDATEERRORCODE);
-            response.setMessage(BOOKROOMUPDATEERRORMESSAGE);
-            return response;
+            return new Response(BOOKROOMUPDATEERRORMESSAGE, BOOKROOMUPDATEERRORCODE);
         }
     }
 
     @PostMapping("/bookroom/music")
     public Response updateThemeMusicUrl(String bookroomId, String themeMusicUrl) {
-        Response response = new Response();
         if (bookroomId == null || themeMusicUrl == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(NULLMESSAGE, NULLCODE);
         }
         try {
-            return bookService.updateThemeMusicUrl(themeMusicUrl, Long.parseLong(bookroomId), response);
+            return bookService.updateThemeMusicUrl(themeMusicUrl, Long.parseLong(bookroomId));
         } catch (Exception e) {
-            response.setCode(BOOKROOMUPDATEERRORCODE);
-            response.setMessage(BOOKROOMUPDATEERRORMESSAGE);
-            return response;
+            return new Response(BOOKROOMUPDATEERRORMESSAGE, BOOKROOMUPDATEERRORCODE);
         }
     }
 
     @PostMapping("/bookroom/delete")
     public Response deleteBookroom(String bookroomId) {
-        Response response = new Response();
         if (bookroomId == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(NULLMESSAGE, NULLCODE);
         }
         try {
-            return bookService.deleteBookRoom(Long.parseLong(bookroomId), response);
+            return bookService.deleteBookRoom(Long.parseLong(bookroomId));
         } catch (Exception e) {
-            response.setCode(BOOKROOMDELETEERRORCODE);
-            response.setMessage(BOOKROOMDELETEERRORMESSAGE);
-            return response;
+            return new Response(BOOKROOMDELETEERRORMESSAGE, BOOKROOMDELETEERRORCODE);
         }
     }
 
     @GetMapping("/picture") //pciture탭 조회
     public Response moveToPictureTab(String bookroomId) {
-        Response response = new Response();
         if (bookroomId == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(NULLMESSAGE, NULLCODE);
         }
         try {
-            return bookService.getPictureByBookroomId(Long.parseLong(bookroomId), response);
+            return bookService.getPictureByBookroomId(Long.parseLong(bookroomId));
         } catch (Exception e) {
-            response.setCode(PICTURESELECTERRORCODE);
-            response.setMessage(PICTURESELECTERRORMESSAGE);
-            return response;
+            return new Response(PICTURESELECTERRORMESSAGE, PICTURESELECTERRORCODE);
         }
     }
 
     @PostMapping("/picture") //picture 등록
     public Response savePicture(String pictureUrl, String bookroomId) {
-        Response response = new Response();
         try {
             PictureInsertDto pictureInsertDto = new PictureInsertDto(pictureUrl, Long.parseLong(bookroomId));
             if (pictureInsertDto.getPictureUrl() == null || pictureInsertDto.getBookroomId() == null) {
-                response.setCode(NULLCODE);
-                response.setMessage(NULLMESSAGE);
-                return response;
+                return new Response(BOOKROOMUPDATEERRORMESSAGE, BOOKROOMUPDATEERRORCODE);
             }
-            return bookService.savePicture(pictureInsertDto, response);
+            return bookService.savePicture(pictureInsertDto);
         } catch (Exception e) {
-            response.setCode(PICTUREINSERTERRORCODE);
-            response.setMessage(PICTUREINSERTERRORMESSAGE);
-            return response;
+            return new Response(PICTUREINSERTERRORMESSAGE, PICTUREINSERTERRORCODE);
         }
     }
 
     @GetMapping("/word") //word 조회
     public Response moveToWordTab(String bookroomId) {
-        Response response = new Response();
         if (bookroomId == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(NULLMESSAGE, NULLCODE);
         }
         try {
-            return bookService.getWordByroomId(Long.parseLong(bookroomId), response);
+            return bookService.getWordByroomId(Long.parseLong(bookroomId));
         } catch (Exception e) {
-            response.setCode(WORDSELECTERRORCODE);
-            response.setMessage(WORDSELECTERRORMESSAGE);
-            return response;
+            return new Response(WORDSELECTERRORMESSAGE, WORDSELECTERRORCODE);
         }
     }
     @PostMapping("/word") //word 등록
     public Response saveWord(String bookroomId, String mainId, String wordPictureUrl, String wordVoiceUrl, String wordText, String wordMain) {
-        Response response = new Response();
         try {
             WordInsertDto wordInsertDto = new WordInsertDto(Long.parseLong(bookroomId), Long.parseLong(mainId), wordPictureUrl, wordVoiceUrl, wordText, Integer.parseInt(wordMain));
             if ((Integer) wordInsertDto.getWordMain() == null || wordInsertDto.getMainId() == null || wordInsertDto.getBookroomId() == null) {
-                response.setCode(NULLCODE);
-                response.setMessage(NULLMESSAGE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
             if (wordInsertDto.getWordText() == null && wordInsertDto.getWordPictureUrl() == null && wordInsertDto.getWordVoiceUrl() == null) {
-                response.setCode(NULLCODE);
-                response.setMessage(NULLMESSAGE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
-            return bookService.saveWord(wordInsertDto, response);
+            return bookService.saveWord(wordInsertDto);
         } catch (Exception e) {
-            response.setCode(WORDINSERTERRORCODE);
-            response.setMessage(WORDINSERTERRORMESSAGE);
-            return response;
+            return new Response(WORDINSERTERRORMESSAGE, WORDINSERTERRORCODE);
         }
     }
 
     @GetMapping("/mind") //mindmap 조회
     public Response moveToMindTab(String bookroomId) {
-        Response response = new Response();
         if (bookroomId == null) {
-            response.setCode(NULLCODE);
-            response.setMessage(NULLMESSAGE);
-            return response;
+            return new Response(BOOKROOMUPDATEERRORMESSAGE, BOOKROOMUPDATEERRORCODE);
         }
         try {
-            return bookService.getMindmapByBookroomId(Long.parseLong(bookroomId), response);
+            return bookService.getMindmapByBookroomId(Long.parseLong(bookroomId));
         } catch (Exception e) {
-            response.setMessage(MINDMAPSELECTERRORMESSAGE);
-            response.setCode(MINDMAPSELECTERRORCODE);
-            return response;
+            return new Response(MINDMAPSELECTERRORMESSAGE, MINDMAPINSERTERRORCODE);
         }
     }
     @PostMapping("/mind") //mindmap 등록
     public Response saveMind(String bookroomId, String wordPictureUrl, String wordVoiceUrl, String wordText, String priority) {
-        Response response = new Response();
         try {
             MindInsertDto mindInsertDto = new MindInsertDto(Long.parseLong(bookroomId), wordPictureUrl, wordVoiceUrl, wordText, Integer.parseInt(priority));
             if ((Integer) mindInsertDto.getPriority() == null || mindInsertDto.getBookroomId() == null) {
-                response.setCode(NULLCODE);
-                response.setMessage(NULLMESSAGE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
             if (mindInsertDto.getWordText() == null && mindInsertDto.getWordPictureUrl() == null && mindInsertDto.getWordVoiceUrl() == null) {
-                response.setCode(NULLCODE);
-                response.setMessage(NULLMESSAGE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
 
-            return bookService.saveMind(mindInsertDto, response);
+            return bookService.saveMind(mindInsertDto);
         } catch (Exception e) {
-            response.setMessage(MINDMAPINSERTERRORMESSAGE);
-            response.setCode(MINDMAPINSERTERRORCODE);
-            return response;
+            return new Response(MINDMAPINSERTERRORMESSAGE, MINDMAPINSERTERRORCODE);
         }
     }
 }

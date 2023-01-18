@@ -17,36 +17,25 @@ public class MainController {
 
     @GetMapping("/mine")
     public Response getMyMain(String userId) {
-        Response response = new Response();
         try {
             if (userId == null) {
-                response.setMessage(NULLMESSAGE);
-                response.setCode(NULLCODE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
-            return mainService.getMain(Long.parseLong(userId), response);
+            return mainService.getMain(Long.parseLong(userId));
         } catch (Exception e) {
-            response.setCode(000);
-            response.setMessage("추후 작성");
-            return response;
+            return new Response();
         }
     }
 
     @GetMapping("/another")
     public Response getAnotherMain(String userId, String otherUserId) {
-        Response response = new Response();
-
         try {
             if (userId == null) {
-                response.setMessage(NULLMESSAGE);
-                response.setCode(NULLCODE);
-                return response;
+                return new Response(NULLMESSAGE, NULLCODE);
             }
-            return mainService.getMainAndisFriend(Long.parseLong(userId), Long.parseLong(otherUserId), response);
+            return mainService.getMainAndisFriend(Long.parseLong(userId), Long.parseLong(otherUserId));
         } catch (Exception e) {
-            response.setCode(000);
-            response.setMessage("추후 작성");
-            return response;
+            return new Response();
         }
     }
     /**
