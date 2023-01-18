@@ -6,11 +6,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FavoriteRepo extends JpaRepository<Favorite, Long> {
-    Favorite findByUserIdAndBookId(Long userId, Long bookId);
+    Optional<Favorite> findByUserIdAAndBookroomId(Long userId, Long bookroomId);
+
+    @Query("SELECT fv.bookroomId FROM Favorite fv WHERE fv.userId = :userId AND fv.isfavorite = 1")
+    List<Long> findBookroomIdByUserId(@Param("userId") Long userId);
 
     //좋아요 누르면 특정 isint = 1로 세팅
     @Query("UPDATE Favorite SET isfavorite =1 WHERE userId = :userId and bookId = :bookId")
