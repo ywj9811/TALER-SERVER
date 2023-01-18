@@ -1,6 +1,5 @@
 package com.demo.service;
 
-import com.demo.dao.BookroomDao;
 import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.MindInsertDto;
@@ -13,19 +12,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
-import static com.demo.dto.DefaultFavoriteInsert.dtoToEntity;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class BookService {
-    private final BookroomDao bookroomDao;
     private final BookRoomRepo bookRoomRepo;
     private final BookDetailsRepo bookDetailsRepo;
     private final FavoriteRepo favoriteRepo;
@@ -40,13 +36,24 @@ public class BookService {
      * join에서 문제 발생 -> 하나하나 조회는 비효율 -> view 사용
      */
     public Response selectBookRoom(Long bookId, Long userId, Response response) {
-        Roomview roomView = roomViewRepo.findByBookIdAndUserId(bookId, userId);
-        if (roomView == null) {
+        boolean isFavorite = true;
+
+        Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, userId);
+        if (roomview == null) {
             response.setMessage(ROOMVIEWSELECTERRORMESSAGE);
             response.setCode(ROOMVIEWSELECTERRORCODE);
             return response;
         }
-        response.setResult(roomView);
+
+        if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
+            isFavorite = false;
+
+        BookRoomResponse result = new BookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
+                roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
+                roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
+                roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
+
+        response.setResult(result);
         response.setMessage(SUCCESSMESSAGE);
         response.setCode(SUCCESSCODE);
         return response;
@@ -82,9 +89,6 @@ public class BookService {
         Bookroom save = bookRoomRepo.save(bookroom);
         log.info("bookroom save = {}", save);
         //생성
-
-        insertDefaultFavorite(bookroom);
-        //좋아요 표시 안한 상태로 favorite 생성
 
         //성공
         response.setResult(bookroom);
@@ -124,11 +128,7 @@ public class BookService {
     }
 
     //bookroom 생성시 isfavorite를 0으로하여 등록하는 메소드
-    private void insertDefaultFavorite(Bookroom bookroom) {
-        Favorite favorite = dtoToEntity(bookroom.getUserId(), bookroom.getBookId(), bookroom.getBookroomId());
-        Favorite favoriteSave = favoriteRepo.save(favorite);
-        log.info("default favorite save = {}", favoriteSave);
-    }
+    //!!!삭제함!!!
 
     //themeColor 추가용(업데이트)
     public Response updateThemeColor(String themeColor, Long bookroomId, Response response) {
@@ -226,21 +226,4 @@ public class BookService {
         response.setResult(save);
         return response;
     }
-
-//    public List<BookRoomSelectDto> getRecommendBooks(Long id){
-//        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
-//        List<BookRoomSelectDto> bookRoomSelectDtoList = new ArrayList<>();
-//        if (bookroomDao.getBookroomByFavorite(id) != null) {
-//            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByFavorite(id));
-//        }
-//        System.out.println(bookRoomSelectDtoList);
-//        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
-//        if (bookroomDao.getBookroomByExperience(id) != null) {
-//            bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
-//        }
-//        return bookRoomSelectDtoList;
-//    }
-/**
- * favoriteService로 옮김
- */
 }
