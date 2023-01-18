@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendBookRoomResponse {
+public class BookRoomResponse {
     private Long bookroomId;
     private Long userId;
     private Long bookId;
