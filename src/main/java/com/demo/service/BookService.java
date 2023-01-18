@@ -223,12 +223,12 @@ public class BookService {
     }
 
     public Response deleteWord(Long wordId) {
-        pictureRepo.deleteById(wordId);
+        wordRepo.deleteById(wordId);
         return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     public Response deleteMind(Long mindId) {
-        pictureRepo.deleteById(mindId);
+        mindMapRepo.deleteById(mindId);
         return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 }
