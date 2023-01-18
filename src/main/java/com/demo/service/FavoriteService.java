@@ -193,7 +193,7 @@ public class FavoriteService {
         Roomview roomview = (Roomview) bookService.selectBookRoom(bookId, friendUserId, response).getResult();
 
         Boolean isFavorite = true;
-        if (favoriteRepo.findByUserIdAAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
+        if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
             isFavorite = false;
         FriendBookRoomResponse result = new FriendBookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
                 roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
