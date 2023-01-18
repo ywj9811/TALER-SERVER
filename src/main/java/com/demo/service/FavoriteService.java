@@ -213,7 +213,7 @@ public class FavoriteService {
     public Response checkFavorite(Long userId, Long friendUserId, Long bookId) {
         Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, friendUserId);
 
-        Boolean isFavorite = false;
+        Boolean isFavorite = true;
         if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
             isFavorite = false;
 
