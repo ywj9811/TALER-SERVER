@@ -101,7 +101,7 @@ public class InterFaceController {
             //안드쪽 별표 있게
             //안드쪽 별표 없이
         } catch (Exception e) {
-            return new Response("추후 추가", 000);
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
         }
     }
 
