@@ -5,19 +5,20 @@ import lombok.Data;
 
 @Data
 public class ParentInsertDto {
-    private Long userId;
     private String nickname;
     private int age;
-    private int status;
     private String pw;
+    private String userNickname;
+    private String userPw;
 
-    public Parent dtoToParent(ParentInsertDto parentInsertDto){
+    public Parent dtoToParent(ParentInsertDto parentInsertDto, Long userId ){
         return Parent.builder()
-                .userId(parentInsertDto.getUserId())
+                .userId(userId)
                 .nickname(parentInsertDto.getNickname())
                 .age(parentInsertDto.getAge())
-                .status(parentInsertDto.getStatus())
+                .status(1)
                 .pw(parentInsertDto.getPw())
+                .authority("parent")
                 .build();
     }
 }

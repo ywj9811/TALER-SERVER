@@ -39,7 +39,6 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
-    @JsonIgnore
     private int status;
 
     @JsonIgnore
@@ -58,31 +57,31 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return pw;
     }
-
     @Override
     public String getUsername() {
-        return null;
+        return nickname;
     }
-
     @Override
     public boolean isAccountNonExpired() {
         return false;
     }
-
     @Override
     public boolean isAccountNonLocked() {
         return false;
     }
-
     @Override
     public boolean isCredentialsNonExpired() {
         return false;
     }
-
     @Override
     public boolean isEnabled() {
-        return false;
+        if(status==0){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }

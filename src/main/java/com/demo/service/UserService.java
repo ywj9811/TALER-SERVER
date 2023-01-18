@@ -9,7 +9,6 @@ import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -33,7 +32,7 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public Response signup(UserInsertDto userInsertDto) throws DuplicateMemberException {
+    public Response userSignUp(UserInsertDto userInsertDto) throws DuplicateMemberException {
         if (userRepo.findByNickname(userInsertDto.getNickname()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
@@ -41,31 +40,31 @@ public class UserService {
         userInsertDto.setPw(encodePw);
 
         User user = userInsertDto.dtoToUser(userInsertDto);
-        User saveuser = userRepo.save(user);
-        return new Response(saveuser,SUCCESSMESSAGE,SUCCESSCODE);
+        UserDto userDto = UserDto.userEntityToDto(userRepo.save(user));
+        return new Response(userDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
-    public Response saveParent(ParentInsertDto parentInsertDto){
-        String encodePw = passwordEncoder.encode(parentInsertDto.getPw());
-        parentInsertDto.setPw(encodePw);
-        Parent parent = parentInsertDto.dtoToParent(parentInsertDto);
-        Parent saveParent = parentRepo.save(parent);
-        return new Response(saveParent,SUCCESSMESSAGE,SUCCESSCODE);
+    public Response parentSignUp(ParentInsertDto parentInsertDto) throws DuplicateMemberException {
+        Optional<User> user = userRepo.findByNickname((parentInsertDto.getUserNickname()));
 
-    }
-
-    public Response registerUser(int userIdx, LogInDto logInDto) throws BaseException {
-        Optional<User> user = userRepo.findByNickname(logInDto.getNickname());
-        User user1 = user.get();
-        try{
-            userRepo.updateUserId(user1.getUserId(), userIdx);
-            return new Response(logInDto,SUCCESSMESSAGE,SUCCESSCODE);
-
-        }catch (Exception e){
-           throw  new BaseException();
+        //아이 계정 확인
+        if (parentRepo.findByNickname(parentInsertDto.getNickname()).orElse(null) != null) {
+            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
+        }
+        if(user.orElse(null) == null){
+            throw new DuplicateMemberException("아이계정이 존재하지 않습니다.");
+        }
+        if(!passwordEncoder.matches
+                (user.get().getPw(), parentInsertDto.getUserPw())){
+            throw new DuplicateMemberException("아이계정 비밀번호가 틀렸습니다");
         }
 
+        String encodePw = passwordEncoder.encode(parentInsertDto.getPw());
+        parentInsertDto.setPw(encodePw);
 
+        Parent parent = parentInsertDto.dtoToParent(parentInsertDto, user.get().getUserId());
+        ParentDto parentDto = ParentDto.EntityToPaParentDto(parentRepo.save(parent));
+        return new Response(parentDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
     public Response logIn(LogInDto logInDto){
@@ -80,7 +79,5 @@ public class UserService {
 
         return new Response(tokenDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
-
-
 
 }
