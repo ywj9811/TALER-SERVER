@@ -122,7 +122,7 @@ public class BookRoomTest {
         response = bookService.saveBookRoom(bookRoomInsertDto, response);
         Bookroom bookroom = (Bookroom) response.getResult();
 
-        Favorite favorite = favoriteRepo.findByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
+        Favorite favorite = favoriteRepo.findByUserIdAAndBookroomId(bookroom.getUserId(), bookroom.getBookroomId()).get();
         log.info("favorite 생성 확인, isfavorite = {}", favorite.getIsfavorite());
         assertThat(favorite.getIsfavorite()).isEqualTo(0);
 
