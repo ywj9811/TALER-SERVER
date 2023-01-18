@@ -24,6 +24,7 @@ import com.demo.repository.RoomViewRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -32,6 +33,7 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.BOOKROOMSELECTERR
 
 @Service
 @Slf4j
+@Transactional
 public class FavoriteService {
     @Autowired
     RoomViewRepo roomViewRepo;

@@ -63,7 +63,7 @@ public class BookController {
      * bookdetails의 bookpopularity 증가
      */
 
-    @PostMapping("/bookroom/color/{bookroomId}")
+    @PutMapping("/bookroom/color/{bookroomId}")
     public Response updateThemeColor(@PathVariable String bookroomId, String themeColor) {
         if (bookroomId == null || themeColor == null) {
             return new Response(NULLMESSAGE, NULLCODE);
@@ -75,7 +75,7 @@ public class BookController {
         }
     }
 
-    @PostMapping("/bookroom/music/{bookroomId}")
+    @PutMapping("/bookroom/music/{bookroomId}")
     public Response updateThemeMusicUrl(@PathVariable String bookroomId, String themeMusicUrl) {
         if (bookroomId == null || themeMusicUrl == null) {
             return new Response(NULLMESSAGE, NULLCODE);
@@ -87,7 +87,7 @@ public class BookController {
         }
     }
 
-    @PostMapping("/bookroom/delete/{bookroomId}")
+    @DeleteMapping("/bookroom/delete/{bookroomId}")
     public Response deleteBookroom(@PathVariable String bookroomId) {
         if (bookroomId == null) {
             return new Response(NULLMESSAGE, NULLCODE);

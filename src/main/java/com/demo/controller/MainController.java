@@ -25,15 +25,6 @@ public class MainController {
         }
     }
 
-    //추천 친구 클릭시 로드 되는 메인페이지
-//    @GetMapping("/main/friend")
-//    public List bookRecommendSelect(@RequestParam("user_id") Long user_id, @RequestParam("friend_id")) {
-//        return favoriteService.bookRecommendSelect(user_id);
-//    }
-
-    //이미 follow한 친구 클릭시 로드 되는 메인페이지
-
-
     @GetMapping("/another/{userId}/{otherUserId}")
     public Response getAnotherMain(@PathVariable String userId, @PathVariable String otherUserId) {
         try {
