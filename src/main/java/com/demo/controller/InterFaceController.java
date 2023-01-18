@@ -120,15 +120,18 @@ public class InterFaceController {
 
     //친구가 등록한 동화책방 클릭시
     @GetMapping("/book/friend/bookroom")
-    public Response bookFriendBookroom(Long notFriendUserId, Long bookId) {
+    public Response bookFriendBookroom(String userId, String friendUserId, String bookId) {
         Response response = new Response();
-        //별표 확인
-        if(favoriteService.checkFavorite(notFriendUserId, bookId)){
+        try {
+            //별표 확인
+            return favoriteService.checkFavorite(Long.parseLong(userId), Long.parseLong(friendUserId), Long.parseLong(bookId), response);
             //안드쪽 별표 있게
-        }else{
             //안드쪽 별표 없이
+        } catch (Exception e) {
+            response.setMessage("추후 추가");
+            response.setCode(000);
+            return response;
         }
-        return bookService.selectBookRoom(bookId, notFriendUserId, response);
     }
 
     //추천 동화책방 클릭시 로드되는 동화책방
