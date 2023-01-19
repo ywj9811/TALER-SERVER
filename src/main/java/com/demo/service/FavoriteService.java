@@ -59,16 +59,17 @@ public class FavoriteService {
     UserDao userDao;
 
     //책 좋아요
-    public Favorite likeBooks(Long userId, Long bookId){
-        Favorite favorite = favoriteRepo.Like(userId,bookId);
+    public Response likeBooks(Long userId, Long bookId, Long bookroomId){
+        FavoriteInsertDto favorite = new FavoriteInsertDto(userId, bookroomId, bookId, 1);
+        Favorite save = favoriteRepo.save(favorite.FavoriteDtoToFavorite());
 
-        return  favorite;
+        return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
     //책 좋아요 취소
-    public  Favorite disLikeBooks(Long userId, Long bookId){
-        Favorite favorite = favoriteRepo.DisLike(userId,bookId);
+    public  Response disLikeBooks(Long userId, Long bookroomId){
+        favoriteRepo.deleteByUserIdAndBookroomId(userId, bookroomId);
 
-        return favorite;
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {
@@ -116,19 +117,18 @@ public class FavoriteService {
     public Response getResult(Long userId) {
         Map<String, Object> result = new HashMap<>();
         Response response = new Response();
-        Set<BookRoomSelectDto> recommendBookFavoriteDtoList = getRecommendBooks(userId);
-        Set<RecommendFriendDto> recommendUserList = bookRecommendFriend(userId);
-        List<Bookroom> bookRoomFavoriteList = getFavoriteBookRooms(userId);
+        Set<BookRoomSelectDto> recommendBookrooms = getRecommendBooks(userId);
+        Set<RecommendFriendDto> recommendUsers = bookRecommendFriend(userId);
+        List<Bookroom> myFavoriteBookrooms = getFavoriteBookRooms(userId);
 
-        if (recommendUserList == null && recommendUserList == null && bookRoomFavoriteList == null) {
+        if (recommendUsers == null && recommendUsers == null && myFavoriteBookrooms == null) {
             response.setCode(NULLCODE);
             response.setMessage(NULLMESSAGE);
             return response;
         } else {
-
-            result.put("recommendBookFavoriteDtoList", recommendBookFavoriteDtoList);
-            result.put("recommendUserList", recommendUserList);
-            result.put("bookRoomFavoriteList", bookRoomFavoriteList);
+            result.put("recommendUsers", recommendUsers);
+            result.put("myFavoriteBookrooms", myFavoriteBookrooms);
+            result.put("recommendBookrooms", recommendBookrooms);
 
             return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
         }
@@ -162,19 +162,19 @@ public class FavoriteService {
 
     //유저에게 추천 친구
     private Set<RecommendFriendDto> bookRecommendFriend(Long user_id) {
-        List<RecommendFriendDto> recommendUserList  = new ArrayList<>();
+        List<RecommendFriendDto> recommendUsers  = new ArrayList<>();
 
         if (userDao.recommendFriendByFavoriteExperience(user_id) != null)
-            recommendUserList = userDao.recommendFriendByFavoriteExperience(user_id);
+            recommendUsers = userDao.recommendFriendByFavoriteExperience(user_id);
         if (userDao.recommendFriendBySameAge(user_id) != null)
-            recommendUserList.addAll(userDao.recommendFriendBySameAge(user_id));
+            recommendUsers.addAll(userDao.recommendFriendBySameAge(user_id));
         if (userDao.recommendFriendBySameBook(user_id) != null)
-            recommendUserList.addAll(userDao.recommendFriendBySameBook(user_id));
+            recommendUsers.addAll(userDao.recommendFriendBySameBook(user_id));
         if (userDao.recommendFriendBySameFavoriteBook(user_id) != null)
-            recommendUserList.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
+            recommendUsers.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
 
         Set<RecommendFriendDto> resultSet = new HashSet<>();
-        for(RecommendFriendDto recommendFriendDto:recommendUserList){
+        for(RecommendFriendDto recommendFriendDto:recommendUsers){
             if(recommendFriendDto.getFriendUserId() == user_id
                     || friendRepo.existsByUserFriendIdAndUserId(recommendFriendDto.getFriendUserId(), user_id))
                 continue;
@@ -199,7 +199,7 @@ public class FavoriteService {
          * 우선 제 나름대로 수정했습니다.
          * favorite에서 bookroomId를 가져와서 그 bookroomId를 통해 bookroom조회하여 리스트로 만들어 반환합니다.
          */
-        List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id, user_id);
+        List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id);
         for (Long bookroomId : bookroomIds) {
             log.info("bookroomId = {}", bookroomId);
             Optional<Bookroom> optionalBookroom = bookroomRepo.findById(bookroomId);
