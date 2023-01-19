@@ -29,7 +29,7 @@ public class InterFaceController {
             return new Response("추후 추가",0);
         }
     }
-    @PostMapping("book/deletefavorite/{userId}/{bookId}")
+    @DeleteMapping("book/deletefavorite/{userId}/{bookId}")
     // 책 좋아요 삭제
     public Response deleteFavorite(@PathVariable Long userId, @PathVariable Long bookId){
         return favoriteService.disLikeBooks(userId,bookId);
