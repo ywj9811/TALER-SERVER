@@ -59,16 +59,17 @@ public class FavoriteService {
     UserDao userDao;
 
     //책 좋아요
-    public Favorite likeBooks(Long userId, Long bookId){
-        Favorite favorite = favoriteRepo.Like(userId,bookId);
+    public Response likeBooks(Long userId, Long bookId, Long bookroomId){
+        FavoriteInsertDto favorite = new FavoriteInsertDto(userId, bookroomId, bookId, 1);
+        Favorite save = favoriteRepo.save(favorite.FavoriteDtoToFavorite());
 
-        return  favorite;
+        return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
     //책 좋아요 취소
-    public  Favorite disLikeBooks(Long userId, Long bookId){
-        Favorite favorite = favoriteRepo.DisLike(userId,bookId);
+    public  Response disLikeBooks(Long userId, Long bookroomId){
+        favoriteRepo.deleteByUserIdAndBookroomId(userId, bookroomId);
 
-        return favorite;
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {

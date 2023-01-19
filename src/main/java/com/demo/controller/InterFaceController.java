@@ -20,17 +20,19 @@ public class InterFaceController {
     @Autowired
     BookService bookService;
 
-    @PostMapping("/book/favorite")
+    @PostMapping("/book/favorite/{userId}/{bookId}/{bookroomId}")
     //책 좋아요 추가
-    public Favorite addFavorite(@RequestParam Long userId, @RequestParam Long bookId){
-        Favorite favorite = favoriteService.likeBooks(userId,bookId);
-        return favorite;
+    public Response addFavorite(@PathVariable String userId, @PathVariable String bookId, @PathVariable String bookroomId) {
+        try {
+            return favoriteService.likeBooks(Long.parseLong(userId), Long.parseLong(bookId), Long.parseLong(bookroomId));
+        } catch (Exception e) {
+            return new Response("추후 추가",0);
+        }
     }
-    @PostMapping("book/deletefavorite")
+    @PostMapping("book/deletefavorite/{userId}/{bookId}")
     // 책 좋아요 삭제
-    public Favorite deleteFavorite(@RequestParam Long userId, @RequestParam Long bookId){
-        Favorite favorite = favoriteService.disLikeBooks(userId,bookId);
-        return favorite;
+    public Response deleteFavorite(@PathVariable Long userId, @PathVariable Long bookId){
+        return favoriteService.disLikeBooks(userId,bookId);
     }
 //    @PostMapping("user/addfriend/{user_id}")
 //    public Friend addFriend(@PathVariable Long user_id){
