@@ -117,19 +117,18 @@ public class FavoriteService {
     public Response getResult(Long userId) {
         Map<String, Object> result = new HashMap<>();
         Response response = new Response();
-        Set<BookRoomSelectDto> recommendBookFavoriteDtoList = getRecommendBooks(userId);
-        Set<RecommendFriendDto> recommendUserList = bookRecommendFriend(userId);
-        List<Bookroom> bookRoomFavoriteList = getFavoriteBookRooms(userId);
+        Set<BookRoomSelectDto> recommendBookrooms = getRecommendBooks(userId);
+        Set<RecommendFriendDto> recommendUsers = bookRecommendFriend(userId);
+        List<Bookroom> myFavoriteBookrooms = getFavoriteBookRooms(userId);
 
-        if (recommendUserList == null && recommendUserList == null && bookRoomFavoriteList == null) {
+        if (recommendUsers == null && recommendUsers == null && myFavoriteBookrooms == null) {
             response.setCode(NULLCODE);
             response.setMessage(NULLMESSAGE);
             return response;
         } else {
-
-            result.put("recommendBookFavoriteDtoList", recommendBookFavoriteDtoList);
-            result.put("recommendUserList", recommendUserList);
-            result.put("bookRoomFavoriteList", bookRoomFavoriteList);
+            result.put("recommendUsers", recommendUsers);
+            result.put("myFavoriteBookrooms", myFavoriteBookrooms);
+            result.put("recommendBookrooms", recommendBookrooms);
 
             return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
         }
@@ -163,19 +162,19 @@ public class FavoriteService {
 
     //유저에게 추천 친구
     private Set<RecommendFriendDto> bookRecommendFriend(Long user_id) {
-        List<RecommendFriendDto> recommendUserList  = new ArrayList<>();
+        List<RecommendFriendDto> recommendUsers  = new ArrayList<>();
 
         if (userDao.recommendFriendByFavoriteExperience(user_id) != null)
-            recommendUserList = userDao.recommendFriendByFavoriteExperience(user_id);
+            recommendUsers = userDao.recommendFriendByFavoriteExperience(user_id);
         if (userDao.recommendFriendBySameAge(user_id) != null)
-            recommendUserList.addAll(userDao.recommendFriendBySameAge(user_id));
+            recommendUsers.addAll(userDao.recommendFriendBySameAge(user_id));
         if (userDao.recommendFriendBySameBook(user_id) != null)
-            recommendUserList.addAll(userDao.recommendFriendBySameBook(user_id));
+            recommendUsers.addAll(userDao.recommendFriendBySameBook(user_id));
         if (userDao.recommendFriendBySameFavoriteBook(user_id) != null)
-            recommendUserList.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
+            recommendUsers.addAll(userDao.recommendFriendBySameFavoriteBook(user_id));
 
         Set<RecommendFriendDto> resultSet = new HashSet<>();
-        for(RecommendFriendDto recommendFriendDto:recommendUserList){
+        for(RecommendFriendDto recommendFriendDto:recommendUsers){
             if(recommendFriendDto.getFriendUserId() == user_id
                     || friendRepo.existsByUserFriendIdAndUserId(recommendFriendDto.getFriendUserId(), user_id))
                 continue;
