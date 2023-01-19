@@ -32,9 +32,9 @@ public class MainService {
         }
         Usercharacter usercharacter = optionalUsercharacter.get();
 
-        List<Bookroom> bookrooms = bookRoomRepo.findByUserId(userId);
+        List<Bookroom> bookrooms = bookRoomRepo.findAllByUserId(userId);
 
-        List<Friend> friends = friendRepo.findByUserId(userId);
+        List<Friend> friends = friendRepo.findAllByUserId(userId);
 
         Map<String, Object> results = new HashMap<>();
         results.put("usercharacter", usercharacter);
@@ -57,7 +57,7 @@ public class MainService {
         Response response = getMain(otherUserId);
         Map<String, Object> result = (Map<String, Object>) response.getResult();
 
-        List<Friend> byUserId = friendRepo.findByUserId(otherUserId);
+        List<Friend> byUserId = friendRepo.findAllByUserId(otherUserId);
         if (byUserId.contains(userId)) {
             result.put("isFollow", true);
             response.setResult(result);

@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface BookRoomRepo extends JpaRepository<Bookroom, Long> {
-    List<Bookroom> findByUserId(Long userId);
+    List<Bookroom> findAllByUserId(Long userId);
 
     Bookroom findByBookIdAndUserId(Long bookId, Long userId);
 
