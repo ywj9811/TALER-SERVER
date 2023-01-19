@@ -200,7 +200,7 @@ public class FavoriteService {
          * 우선 제 나름대로 수정했습니다.
          * favorite에서 bookroomId를 가져와서 그 bookroomId를 통해 bookroom조회하여 리스트로 만들어 반환합니다.
          */
-        List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id, user_id);
+        List<Long> bookroomIds = favoriteRepo.findBookroomIdByUserId(user_id);
         for (Long bookroomId : bookroomIds) {
             log.info("bookroomId = {}", bookroomId);
             Optional<Bookroom> optionalBookroom = bookroomRepo.findById(bookroomId);
