@@ -40,8 +40,9 @@ public class Parent implements UserDetails {
 
     private String authority;
 /**
+ *
     @OneToOne(fetch = FetchType.LAZY) //사용시점에 조회가 됨
-    @JoinColumn(name = "parentId")
+    @JoinColumn(name = "userId")
     private User user;
 */
     @Override

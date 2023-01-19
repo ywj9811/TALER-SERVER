@@ -47,24 +47,17 @@ public class UserService {
 
     //부모 회원가입
     public Response parentSignUp(ParentInsertDto parentInsertDto) throws DuplicateMemberException {
-        Optional<User> user = userRepo.findByNickname((parentInsertDto.getUserNickname()));
 
 
         if (parentRepo.findByNickname(parentInsertDto.getNickname()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
-        //아이 계정 유효성 검증
-        if(user.orElse(null) == null){
-            throw new DuplicateMemberException("아이계정이 존재하지 않습니다.");
-        }
-        if(!passwordEncoder.matches(parentInsertDto.getUserPw(),user.get().getPw())){
-            throw new DuplicateMemberException("아이계정 비밀번호가 틀렸습니다");
-        }
 
         String encodePw = passwordEncoder.encode(parentInsertDto.getPw()); //비밀번호 암호화
         parentInsertDto.setPw(encodePw);
 
-        Parent parent = parentInsertDto.dtoToParent(parentInsertDto, user.get().getUserId());
+        Parent parent = parentInsertDto.dtoToParent(parentInsertDto,
+                userRepo.findByNickname(parentInsertDto.getUserNickname()).get().getUserId());
         ParentDto parentDto = ParentDto.EntityToPaParentDto(parentRepo.save(parent));
         return new Response(parentDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
@@ -82,6 +75,24 @@ public class UserService {
 
 
         return new Response(tokenDto,SUCCESSMESSAGE,SUCCESSCODE);
+    }
+
+    //부모 회원가입시 아이 등록을 위한 체크
+    public Response checkUser(LogInDto logInDto){
+        Optional<User> user = userRepo.findByNickname(logInDto.getNickname());
+
+        if(user.orElse(null) == null){
+            return new Response(USERSELECTERRORMESSAGE,USERSELECTERRORMCODE);
+        }
+        if(parentRepo.findByUserId(user.get().getUserId()).orElse(null) != null){
+            return new Response("이미 등록된 아이입니다.",USERSELECTERRORMCODE);
+        }
+        if(!passwordEncoder.matches(logInDto.getPw(),user.get().getPw())){
+            return new Response(USERPASSWORDERRORMESSAGE,USERPASSWORDERRORCODE);
+        }
+
+        return new Response(logInDto,SUCCESSMESSAGE,SUCCESSCODE);
+
     }
 
 }

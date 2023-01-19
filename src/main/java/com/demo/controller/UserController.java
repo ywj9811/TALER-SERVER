@@ -51,6 +51,11 @@ public class UserController {
         return userService.login(logInDto);
     }
 
+    //부모 회원가입시 아이 등록을 위한 체크
+    @PostMapping("/parent/check")
+    public Response checkUser(@RequestBody LogInDto logInDto){
+        return userService.checkUser(logInDto);
+    }
 
     @GetMapping("/takeusercharacter/{userId}/{bookId}")
     //유저 캐릭터 정보 불러오기
@@ -71,9 +76,4 @@ public class UserController {
         Usercharacter usercharacter = usercharacterService.updateUsercharacter(usercharacterUpdateDto);
         return usercharacter;
     }
-
-
-
-
-
 }
