@@ -4,15 +4,29 @@ import com.demo.domain.Usercharacter;
 import com.demo.dto.EditCharacterDto;
 import com.demo.dto.UsercharacterDto;
 import com.demo.dto.response.Response;
+import com.demo.service.EmailService;
 import com.demo.service.UsercharacterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
     private final UsercharacterService usercharacterService;
+    private final EmailService emailService;
+
+    @PostMapping("/emailConfirm")
+    public Response emailConfirm(@RequestParam String email) throws Exception {
+        try {
+            return emailService.sendSimpleMessage(email);
+        } catch (IllegalArgumentException e) {
+            return new Response(EMAILERRORMESSAGE, EMAILERRORCODE);
+        }
+    }
+
     @GetMapping("/takeusercharacter/{userId}/{bookId}")
     //유저 캐릭터 정보 불러오기
     public Usercharacter moveToUsercharacter(@PathVariable Long userId,@PathVariable Long bookId) {
