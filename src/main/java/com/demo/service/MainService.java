@@ -25,29 +25,23 @@ public class MainService {
     private final BookRoomRepo bookRoomRepo;
     private final FriendRepo friendRepo;
 
-    public Response getMain(Long userId, Response response) {
+    public Response getMain(Long userId) {
         Optional<Usercharacter> optionalUsercharacter = userCharacterRepo.findByUserIdAndBookId(userId, 0L);
         if (optionalUsercharacter.isEmpty()) {
-            response.setCode(USERCHARACTERSELECTERRORCODE);
-            response.setMessage(USERCHARACTERSELECTERRORMESSAGE);
-            return response;
+            return new Response(USERCHARACTERSELECTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
         }
         Usercharacter usercharacter = optionalUsercharacter.get();
 
-        List<Bookroom> bookrooms = bookRoomRepo.findByUserId(userId);
+        List<Bookroom> bookrooms = bookRoomRepo.findAllByUserId(userId);
 
-        List<Friend> friends = friendRepo.findByUserId(userId);
+        List<Friend> friends = friendRepo.findAllByUserId(userId);
 
         Map<String, Object> results = new HashMap<>();
         results.put("usercharacter", usercharacter);
         results.put("bookrooms", bookrooms);
         results.put("friends", friends);
 
-        response.setCode(SUCCESSCODE);
-        response.setMessage(SUCCESSMESSAGE);
-        response.setResult(results);
-
-        return response;
+        return new Response(results, SUCCESSMESSAGE, SUCCESSCODE);
         /**
          * 위에 : 북룸의 색상으로 쭉 나열해줌
          * -> 누르면 북룸의 정보가 보여야 함
@@ -59,11 +53,11 @@ public class MainService {
          */
     }
 
-    public Response getMainAndisFriend(Long userId, Long otherUserId, Response response) {
-        response = getMain(otherUserId, response);
+    public Response getMainAndisFriend(Long userId, Long otherUserId) {
+        Response response = getMain(otherUserId);
         Map<String, Object> result = (Map<String, Object>) response.getResult();
 
-        List<Friend> byUserId = friendRepo.findByUserId(otherUserId);
+        List<Friend> byUserId = friendRepo.findAllByUserId(otherUserId);
         if (byUserId.contains(userId)) {
             result.put("isFollow", true);
             response.setResult(result);

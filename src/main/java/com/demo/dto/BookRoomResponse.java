@@ -1,17 +1,13 @@
-package com.demo.domain;
+package com.demo.dto;
 
-import lombok.Getter;
-import org.hibernate.annotations.Immutable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
-@Getter
-@Immutable
-//view이기 때문에 @Immutable을 통해 수정이 불가능하도록 만들었음
-public class Roomview {
-    @Id
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookRoomResponse {
     private Long bookroomId;
     private Long userId;
     private Long bookId;
@@ -19,6 +15,7 @@ public class Roomview {
     private String themeColor;
     private String themeMusicUrl;
     private String bookTitle;
+    private boolean isfavorite;
     private String gender;
     private String nickname;
     private String headStyle;

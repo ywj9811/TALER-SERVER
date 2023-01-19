@@ -26,4 +26,10 @@ public class Mindmap {
     private String wordText;
 
     private int priority;
+
+    public void updateMind(String wordText, String wordPictureUrl, String wordVoiceUrl) {
+        this.wordPictureUrl = wordPictureUrl;
+        this.wordText = wordText;
+        this.wordVoiceUrl = wordVoiceUrl;
+    }
 }

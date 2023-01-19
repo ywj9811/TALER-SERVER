@@ -2,9 +2,8 @@ package com.demo.controller;
 
 import com.demo.domain.Favorite;
 import com.demo.dto.response.Response;
-import com.demo.service.BookService;
 import com.demo.service.FavoriteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -12,25 +11,28 @@ import java.util.*;
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
 @RestController
+@RequiredArgsConstructor
 public class InterFaceController {
 
-    @Autowired
-    FavoriteService favoriteService;
+    private final FavoriteService favoriteService;
 
-    @Autowired
-    BookService bookService;
-
-    @PostMapping("/book/favorite")
+    @PostMapping("/book/favorite/{userId}/{bookId}/{bookroomId}")
     //책 좋아요 추가
-    public Favorite addFavorite(@RequestParam Long userId, @RequestParam Long bookId){
-        Favorite favorite = favoriteService.likeBooks(userId,bookId);
-        return favorite;
+    public Response addFavorite(@PathVariable String userId, @PathVariable String bookId, @PathVariable String bookroomId) {
+        try {
+            return favoriteService.likeBooks(Long.parseLong(userId), Long.parseLong(bookId), Long.parseLong(bookroomId));
+        } catch (Exception e) {
+            return new Response(FAVORITEINSERTMESSAGE,FAVORITEINSERTCODE);
+        }
     }
-    @PostMapping("book/deletefavorite")
+    @DeleteMapping("book/deletefavorite/{userId}/{bookId}")
     // 책 좋아요 삭제
-    public Favorite deleteFavorite(@RequestParam Long userId, @RequestParam Long bookId){
-        Favorite favorite = favoriteService.disLikeBooks(userId,bookId);
-        return favorite;
+    public Response deleteFavorite(@PathVariable String userId, @PathVariable String bookId) {
+        try {
+            return favoriteService.disLikeBooks(Long.parseLong(userId), Long.parseLong(bookId));
+        } catch (Exception e) {
+            return new Response(FAVORITEDELETEMESSAGE, FAVORITEDELETECODE);
+        }
     }
 //    @PostMapping("user/addfriend/{user_id}")
 //    public Friend addFriend(@PathVariable Long user_id){
@@ -43,16 +45,6 @@ public class InterFaceController {
     @GetMapping("/book/recommend")
     //추천 동화책 방
     public Response bookRecommend(Long userId) {
-//        List<BookRoomSelectDto> recommendBookFavoriteDtoList = bookService.getRecommendBooks(userId);
-//
-//        //user의 추천 친구
-//        List<RecommendFriendDto> recommendUserList = favoriteService.bookRecommendFriend(userId);
-//        //model.setAttribute("recommendUserList",recommendUserList);
-//
-//        //별표 누른 동화책방 리스트 가져오기
-//        Optional<Bookroom> bookRoomFavoriteList = favoriteService.getFavoriteBookRooms(userId);
-//        //model.setAttribute("bookRoomFavoriteList",bookRoomFavoriteList);
-
         return favoriteService.getResult(userId);
     }
 
@@ -78,7 +70,6 @@ public class InterFaceController {
     //초기에 읽어본 동화책 클릭시 isfavorite에는 0값 들어감
     //해당 book_id favorite의 popularity 올려야함
     public Response bookReadbook(@RequestParam("userId") Long userId, @RequestParam("bookId1") Long bookId1, @RequestParam("bookId2") Long bookId2, @RequestParam("bookId3") Long bookId3, @RequestParam("bookId4")Long bookId4, @RequestParam("bookId5") Long bookId5) {
-        Response response = new Response();
         List<Favorite> favoriteList = new ArrayList<>();
 
         favoriteList.add(favoriteService.save(userId,0L,bookId1));
@@ -87,11 +78,7 @@ public class InterFaceController {
         favoriteList.add(favoriteService.save(userId,0L,bookId4));
         favoriteList.add(favoriteService.save(userId,0L,bookId5));
 
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-        response.setResult(favoriteList);
-
-        return response;
+        return new Response(favoriteList, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     //동화책방에 들어와서 제목 클릭시 '이런 동화책은 어떤가요?'문구와 함께 보여지는 동화책
@@ -99,53 +86,31 @@ public class InterFaceController {
     //book titles를 api검색어로 넣어 book image가져오기
     @GetMapping("/book/recommend/select")
     public Response bookRecommendSelect(@RequestParam("userId") Long userId) {
-        Response response = new Response();
+        Set<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
 
-        List<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
-
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-        response.setResult(bookRecommendList);
-
-        return response;
+        return new Response(bookRecommendList, SUCCESSMESSAGE, SUCCESSCODE);
     }
-
-    //추천 친구 클릭시 로드 되는 메인페이지
-//    @GetMapping("/main/friend")
-//    public List bookRecommendSelect(@RequestParam("user_id") Long user_id, @RequestParam("friend_id")) {
-//        return favoriteService.bookRecommendSelect(user_id);
-//    }
-
-    //이미 follow한 친구 클릭시 로드 되는 메인페이지
 
     //친구가 등록한 동화책방 클릭시
     @GetMapping("/book/friend/bookroom")
-    public Response bookFriendBookroom(Long notFriendUserId, Long bookId) {
-        Response response = new Response();
-        //별표 확인
-        if(favoriteService.checkFavorite(notFriendUserId, bookId)){
+    public Response bookFriendBookroom(String userId, String friendUserId, String bookId) {
+        try {
+            if (userId == null || friendUserId == null || bookId == null) {
+                return new Response(NULLMESSAGE, NULLCODE);
+            }
+            //별표 확인
+            return favoriteService.checkFavorite(Long.parseLong(userId), Long.parseLong(friendUserId), Long.parseLong(bookId));
             //안드쪽 별표 있게
-        }else{
             //안드쪽 별표 없이
+        } catch (Exception e) {
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
         }
-        return bookService.selectBookRoom(bookId, notFriendUserId, response);
     }
 
-    //추천 동화책방 클릭시 로드되는 동화책방
-    @GetMapping("/book/recommend/bookroom")
-    public Response bookRecommendBookroom(Long notFriendUserId, Long bookId) {
-        Response response = new Response();
-        //안드로이드 측 별표 없이
-        return bookService.selectBookRoom(bookId,notFriendUserId, response);
-    }
-
-    //즐겨찾기 클릭시 로드 되는 동화책방
-    @GetMapping("/book/favorite/bookroom")
-    public Response bookFavoriteBookroom(Long notFriendUserId, Long bookId) {
-        Response response = new Response();
-        //안드로이드 측 별표 있게
-        return bookService.selectBookRoom(bookId,notFriendUserId, response);
-    }
+    /**
+     * 이 아래 추천 동화책방, 즐겨찾기 클릭시 모두 친구의 동화책방으로 이동되는 것인데, 친구 동화책방 api 그대로 사용해도 괜찮을 것 같아요
+     * 단순 이동을 위한 api이니
+     */
 
     /**
      * Response 타입으로 반환을 하고 있어서 우선 그에 맞춰서 수정했습니다

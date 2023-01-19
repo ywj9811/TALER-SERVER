@@ -1,5 +1,6 @@
 package com.demo.dao;
 
+import com.demo.dto.BookRoomSelectDto;
 import com.demo.dto.RecommendFriendDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -113,4 +114,5 @@ public class UserDao {
 
         return results.isEmpty() ? null : results;
     }
+
 }
