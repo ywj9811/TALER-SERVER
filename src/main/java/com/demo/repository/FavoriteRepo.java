@@ -25,7 +25,7 @@ public interface FavoriteRepo extends JpaRepository<Favorite, Long> {
     @Query("UPDATE Favorite SET isfavorite = 0 WHERE userId = :userId and bookId = :bookId")
     Favorite DisLike(@Param("userId")Long userId, @Param("bookId")Long bookId);
 
-    void deleteByUserIdAndBookId(Long userId, Long bookId);
+    void deleteByUserIdAndBookroomId(Long userId, Long bookroomId);
 
     void deleteAllByBookroomId(Long bookroomId);
 }
