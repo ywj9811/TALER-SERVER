@@ -2,9 +2,8 @@ package com.demo.controller;
 
 import com.demo.domain.Favorite;
 import com.demo.dto.response.Response;
-import com.demo.service.BookService;
 import com.demo.service.FavoriteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -12,13 +11,10 @@ import java.util.*;
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
 @RestController
+@RequiredArgsConstructor
 public class InterFaceController {
 
-    @Autowired
-    FavoriteService favoriteService;
-
-    @Autowired
-    BookService bookService;
+    private final FavoriteService favoriteService;
 
     @PostMapping("/book/favorite/{userId}/{bookId}/{bookroomId}")
     //책 좋아요 추가
@@ -26,13 +22,17 @@ public class InterFaceController {
         try {
             return favoriteService.likeBooks(Long.parseLong(userId), Long.parseLong(bookId), Long.parseLong(bookroomId));
         } catch (Exception e) {
-            return new Response("추후 추가",0);
+            return new Response(FAVORITEINSERTMESSAGE,FAVORITEINSERTCODE);
         }
     }
     @DeleteMapping("book/deletefavorite/{userId}/{bookId}")
     // 책 좋아요 삭제
-    public Response deleteFavorite(@PathVariable Long userId, @PathVariable Long bookId){
-        return favoriteService.disLikeBooks(userId,bookId);
+    public Response deleteFavorite(@PathVariable String userId, @PathVariable String bookId) {
+        try {
+            return favoriteService.disLikeBooks(Long.parseLong(userId), Long.parseLong(bookId));
+        } catch (Exception e) {
+            return new Response(FAVORITEDELETEMESSAGE, FAVORITEDELETECODE);
+        }
     }
 //    @PostMapping("user/addfriend/{user_id}")
 //    public Friend addFriend(@PathVariable Long user_id){

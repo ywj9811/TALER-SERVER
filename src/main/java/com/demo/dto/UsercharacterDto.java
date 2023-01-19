@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class UsercharacterDto {
-    private Long characterId;
-
     private Long userId;
 
     private Long bookId;
@@ -37,8 +35,7 @@ public class UsercharacterDto {
 
     private String faceStyle;
 
-    public UsercharacterDto(Long characterId, Long userId, Long bookId, String gender, String nickname, String headStyle, String headColor, String topStyle, String topColor, String pantsStyle, String pantsColor, String shoesStyle, String shoesColor, String faceColor, String faceStyle) {
-        this.characterId = characterId;
+    public UsercharacterDto(Long userId, Long bookId, String gender, String nickname, String headStyle, String headColor, String topStyle, String topColor, String pantsStyle, String pantsColor, String shoesStyle, String shoesColor, String faceColor, String faceStyle) {
         this.userId = userId;
         this.bookId = bookId;
         this.gender = gender;
@@ -57,7 +54,6 @@ public class UsercharacterDto {
 
     public Usercharacter insertDtoToUsercharacter(UsercharacterDto usercharacterDto){
         return Usercharacter.builder()
-                .characterId(usercharacterDto.getCharacterId())
                 .userId(usercharacterDto.getUserId())
                 .bookId(usercharacterDto.getBookId())
                 .gender(usercharacterDto.getGender())
