@@ -2,15 +2,11 @@ package com.demo.service;
 
 import com.demo.dao.BookdetailsDao;
 import com.demo.dao.BookroomDao;
-import com.demo.dao.FavoriteDao;
 import com.demo.dao.UserDao;
 import com.demo.domain.Bookroom;
 import com.demo.domain.Favorite;
-import com.demo.domain.Friend;
-import com.demo.domain.User;
 import com.demo.dto.BookRoomSelectDto;
 import com.demo.dto.FavoriteInsertDto;
-import com.demo.dto.FriendDto;
 import com.demo.dto.RecommendFriendDto;
 import com.demo.domain.*;
 import com.demo.dto.*;
@@ -18,45 +14,28 @@ import com.demo.dto.response.Response;
 import com.demo.repository.BookRoomRepo;
 import com.demo.repository.FavoriteRepo;
 import com.demo.repository.FriendRepo;
-import com.demo.repository.UserRepo;
-import org.apache.ibatis.annotations.Param;
+import lombok.RequiredArgsConstructor;
 import com.demo.repository.RoomViewRepo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
-import static com.demo.domain.responseCode.ResponseCodeMessage.BOOKROOMSELECTERRORMESSAGE;
 
 @Service
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class FavoriteService {
-    @Autowired
-    RoomViewRepo roomViewRepo;
-    @Autowired
-    BookroomDao bookroomDao;
-
-    @Autowired
-    FriendRepo friendRepo;
-
-    @Autowired
-    FavoriteRepo favoriteRepo;
-
-    @Autowired
-    BookRoomRepo bookroomRepo;
-
-    @Autowired
-    FavoriteDao favoriteDao;
-
-    @Autowired
-    BookdetailsDao bookdetailsDao;
-
-    @Autowired
-    UserDao userDao;
+    private final RoomViewRepo roomViewRepo;
+    private final BookroomDao bookroomDao;
+    private final FriendRepo friendRepo;
+    private final FavoriteRepo favoriteRepo;
+    private final BookRoomRepo bookroomRepo;
+    private final BookdetailsDao bookdetailsDao;
+    private final UserDao userDao;
 
     //책 좋아요
     public Response likeBooks(Long userId, Long bookId, Long bookroomId){

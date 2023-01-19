@@ -1,7 +1,5 @@
 package com.demo.domain.responseCode;
 
-import javax.swing.plaf.PanelUI;
-
 public class ResponseCodeMessage {
     public static final String SUCCESSMESSAGE = "성공";
     public static final String NULLMESSAGE = "[ERROR] 들어온 값이 NULL입니다";
@@ -37,6 +35,13 @@ public class ResponseCodeMessage {
 
     public static final String RECOMMENDBOOKFAVORITEDTOLISTNULLMESSAGE = "[ERROR] recommendBookFavoriteDtoList 이 비어있습니다";
 
+    public static final String FAVORITESELECTMESSAGE = "[ERROR] FAVORITE 조회에 실패했습니다.";
+    public static final String FAVORITEUPDATEMESSAGE = "[ERROR] FAVORITE 업데이트에 실패했습니다.";
+    public static final String FAVORITEINSERTMESSAGE = "[ERROR] FAVORITE 생성에 실패했습니다.";
+    public static final String FAVORITEDELETEMESSAGE = "[ERROR] FAVORITE 삭제에 실패했습니다.";
+    public static final String EMAILERRORMESSAGE = "[ERROR] Email 전송에서 에러 발생";
+
+
     public static final int SUCCESSCODE = 2000;
     public static final int NULLCODE = 3000;
     public static final int USERSELECTERRORMCODE = 4000;
@@ -63,6 +68,13 @@ public class ResponseCodeMessage {
     public static final int ROOMVIEWSELECTERRORCODE = 110001;
     public static final int USERCHARACTERSELECTERRORCODE = 20001;
     public static final int BOOKROOMDUPLICATEDCODE = 20002;
+
+    public static final int FAVORITESELECTCODE = 100001;
+    public static final int FAVORITEUPDATECODE = 100002;
+    public static final int FAVORITEINSERTCODE = 100003;
+    public static final int FAVORITEDELETECODE = 100004;
+
+    public static final int EMAILERRORCODE = 800;
 }
 /**
  * SUCCESS = 2000
