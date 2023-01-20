@@ -71,7 +71,7 @@ public class UserService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        TokenDto tokenDto = tokenProvider.createToken(authentication);
+        TokenDto tokenDto = tokenProvider.createTokenDto(authentication);
 
 
         return new Response(tokenDto,SUCCESSMESSAGE,SUCCESSCODE);

@@ -6,6 +6,7 @@ import com.demo.dto.response.Response;
 import com.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,18 @@ public class UserController {
     private final UserService userService;
     private final UsercharacterService usercharacterService;
     private final EmailService emailService;
+
+    @PostMapping("/jwtTest")
+    public String jwtTest() throws Exception{
+        return "Hello!";
+    }
+
+    @PostMapping("/masterTest")
+    @PreAuthorize("hasAnyAuthority('master')")
+    public String masterTest() throws Exception{
+        return "Hello master!";
+    }
+
 
     @PostMapping("/emailConfirm")
     public Response emailConfirm(@RequestParam String email) throws Exception {

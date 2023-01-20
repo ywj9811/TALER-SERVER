@@ -1,6 +1,7 @@
 package com.demo.jwt;
 
 import com.demo.dto.TokenDto;
+import com.demo.redis.RedisTool;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -23,17 +24,35 @@ import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider implements InitializingBean {
+
+    private final RedisTool redisTool;
+
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
+    private static final String USERNAME_KEY = "username";
     private final String secret;
-    private final long tokenValidityInMilliseconds;
+    private final long accessTokenValidityInMilliseconds;
+    private final long refreshTokenValidityInMilliseconds;
+    private final long now = (new Date()).getTime();
     private Key key;
 
+    /**
+     * (유효기간 설정 관련 설명)
+     * Date 형식 -> 밀리세컨드로 구성
+     * 따라서 Date + ??? -> ???는 밀리세컨드 단위여야 함
+     * application.properties 기본유효기간(expiration) : 초단위
+     * accessTokenValidityInMilliseconds, refreshTokenValidityInMilliseconds
+     * -> 가져와서 1000을 곱해 밀리세컨드 단위로 변환환
+    * */
+
     public TokenProvider(
+            RedisTool redisTool,
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration}") long tokenValidityInSeconds) {
+        this.redisTool = redisTool;
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+        this.accessTokenValidityInMilliseconds = tokenValidityInSeconds * 30 * 1000; //30초
+        this.refreshTokenValidityInMilliseconds = tokenValidityInSeconds * 60 * 1000; //1분
     }
 
     @Override
@@ -42,25 +61,49 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto createToken(Authentication authentication) {
+    public TokenDto createTokenDto(Authentication authentication){
+        String nickname = authentication.getName();
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        String accessToken = createAccessToken(nickname, authorities);
+        String refreshToken = createRefreshToken(nickname, authorities);
+
+        return TokenDto.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public String createAccessToken(String nickname, String authorities) {
+        Date validity = new Date(now + this.accessTokenValidityInMilliseconds);
 
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject("Access")
+                .claim(USERNAME_KEY,nickname)
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
 
-        return TokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .build();
+        return accessToken;
+    }
+
+    public String createRefreshToken(String nickname, String authorities) {
+        Date validity = new Date(now + this.accessTokenValidityInMilliseconds);
+
+        String refreshToken = Jwts.builder()
+                .setSubject("Refresh")
+                .claim(USERNAME_KEY,nickname)
+                .claim(AUTHORITIES_KEY, authorities)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(validity)
+                .compact();
+        //redisTool.setRedisValues(refreshToken,nickname);
+
+        return refreshToken;
     }
 
     public Authentication getAuthentication(String token) {
@@ -76,7 +119,8 @@ public class TokenProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        // original : User principal = new User(claims.getSubject(), "", authorities);
+        User principal = new User(claims.get(USERNAME_KEY).toString(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
@@ -87,8 +131,6 @@ public class TokenProvider implements InitializingBean {
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             logger.info("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            logger.info("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
             logger.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
