@@ -117,7 +117,10 @@ public class BookService {
 
     //themeColor 추가용(업데이트)
     public Response updateThemeColor(String themeColor, Long bookroomId) {
-        Bookroom bookroom = getBookroom(bookroomId);
+        Optional<Bookroom> optionalBookroom = getBookroom(bookroomId);
+        if (optionalBookroom.isEmpty())
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
+        Bookroom bookroom = optionalBookroom.get();
         bookroom.updateThemeColor(themeColor);
         log.info("update themeColor = {}", themeColor);
 
@@ -126,7 +129,10 @@ public class BookService {
 
     //themeMusicUrl 추가용(업데이트)
     public Response updateThemeMusicUrl(String themeMusicUrl, Long bookroomId) {
-        Bookroom bookroom = getBookroom(bookroomId);
+        Optional<Bookroom> optionalBookroom = getBookroom(bookroomId);
+        if (optionalBookroom.isEmpty())
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
+        Bookroom bookroom = optionalBookroom.get();
         bookroom.updateThemeMusicUrl(themeMusicUrl);
         log.info("update themeMusicUrl = {}", themeMusicUrl);
 
@@ -134,21 +140,22 @@ public class BookService {
     }
 
     //bookroom정보 가져오기
-    private Bookroom getBookroom(Long bookroomId) {
+    private Optional<Bookroom> getBookroom(Long bookroomId) {
         Optional<Bookroom> optionalBookroom = bookRoomRepo.findById(bookroomId);
-        Bookroom bookroom = optionalBookroom.get();
-        return bookroom;
+        return optionalBookroom;
     }
 
     public Response deleteBookRoom(Long bookroomId) {
-        Bookroom bookroom = getBookroom(bookroomId);
+        Optional<Bookroom> optionalBookroom = getBookroom(bookroomId);
+        if (optionalBookroom.isEmpty())
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
+        Bookroom bookroom = optionalBookroom.get();
         bookRoomRepo.delete(bookroom);
         pictureRepo.deleteAllByBookroomId(bookroomId);
         wordRepo.deleteAllByBookroomId(bookroomId);
         mindMapRepo.deleteAllByBookroomId(bookroomId);
         userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
         favoriteRepo.deleteAllByBookroomId(bookroomId);
-
         return new Response(SUCCESSMESSAGE, SUCCESSCODE);
 
     }
