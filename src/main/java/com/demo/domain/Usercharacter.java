@@ -1,5 +1,6 @@
 package com.demo.domain;
 
+import com.demo.dto.EditCharacterDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -54,4 +55,18 @@ public class Usercharacter {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public void editCharacter(EditCharacterDto editCharacterDto) {
+        this.gender = editCharacterDto.getGender();
+        this.nickname = editCharacterDto.getNickname();
+        this.headStyle = editCharacterDto.getHeadStyle();
+        this.headColor = editCharacterDto.getHeadColor();
+        this.topStyle = editCharacterDto.getTopStyle();
+        this.topColor = editCharacterDto.getTopColor();
+        this.pantsStyle = editCharacterDto.getPantsStyle();
+        this.pantsColor = editCharacterDto.getPantsColor();
+        this.shoesStyle = editCharacterDto.getShoesStyle();
+        this.shoesColor = editCharacterDto.getShoesColor();
+        this.faceColor = editCharacterDto.getFaceColor();
+        this.faceStyle = editCharacterDto.getFaceStyle();
+    }
 }

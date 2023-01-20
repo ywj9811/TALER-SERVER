@@ -22,7 +22,7 @@ class UsercharacterGetTest {
 
     @Test
     void usercharacterSucess(){
-        Usercharacter usercharacter = (Usercharacter) usercharacterService.getUsercharacter(24L,6L);
+        Usercharacter usercharacter = (Usercharacter) usercharacterService.getUsercharacter(24L,6L).getResult();
         log.info("characterId = {}",usercharacter.getCharacterId());
         log.info("bookId = {}",usercharacter.getBookId());
         log.info("createdAt={}",usercharacter.getCreatedAt());
@@ -36,7 +36,7 @@ class UsercharacterGetTest {
 
     @Test
     void loadUserCharacter(){
-        Usercharacter usercharacter = (Usercharacter) usercharacterService.getUsercharacter(25L,6L);
+        Usercharacter usercharacter = (Usercharacter) usercharacterService.getUsercharacter(25L,6L).getResult();
         assertThat(usercharacter).isNull();
     }
 

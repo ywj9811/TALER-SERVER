@@ -3,9 +3,7 @@ package com.demo.controller;
 import com.demo.dto.response.Response;
 import com.demo.service.MainService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
@@ -15,25 +13,30 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 public class MainController {
     private final MainService mainService;
 
-    @GetMapping("/mine")
-    public Response getMyMain(Long userId) {
-        Response response = new Response();
-        if (userId == null) {
-            response.setMessage(NULLMESSAGE);
-            response.setCode(NULLCODE);
-            return response;
+    @GetMapping("/mine/{userId}")
+    public Response getMyMain(@PathVariable String userId) {
+        try {
+            if (userId == null) {
+                return new Response(NULLMESSAGE, NULLCODE);
+            }
+            return mainService.getMain(Long.parseLong(userId));
+        } catch (Exception e) {
+            return new Response();
         }
-        return mainService.getMain(userId, response);
     }
 
-    @GetMapping("/another")
-    public Response getAnotherMain(Long userId) {
-        Response response = new Response();
-        if (userId == null) {
-            response.setMessage(NULLMESSAGE);
-            response.setCode(NULLCODE);
-            return response;
+    @GetMapping("/another/{userId}/{otherUserId}")
+    public Response getAnotherMain(@PathVariable String userId, @PathVariable String otherUserId) {
+        try {
+            if (userId == null) {
+                return new Response(NULLMESSAGE, NULLCODE);
+            }
+            return mainService.getMainAndisFriend(Long.parseLong(userId), Long.parseLong(otherUserId));
+        } catch (Exception e) {
+            return new Response();
         }
-        return mainService.getMain(userId, response);
     }
+    /**
+     * 팔로우 여부 확인 필요
+     */
 }

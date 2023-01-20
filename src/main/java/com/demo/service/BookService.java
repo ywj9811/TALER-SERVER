@@ -1,6 +1,5 @@
 package com.demo.service;
 
-import com.demo.dao.BookroomDao;
 import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.MindInsertDto;
@@ -17,14 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
-import static com.demo.dto.DefaultFavoriteInsert.dtoToEntity;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class BookService {
-    private final BookroomDao bookroomDao;
     private final BookRoomRepo bookRoomRepo;
     private final BookDetailsRepo bookDetailsRepo;
     private final FavoriteRepo favoriteRepo;
@@ -38,43 +35,43 @@ public class BookService {
      * View를 이용하는 방식으로 작성함
      * join에서 문제 발생 -> 하나하나 조회는 비효율 -> view 사용
      */
-    public Response selectBookRoom(Long bookId, Long userId, Response response) {
-        Roomview roomView = roomViewRepo.findByBookIdAndUserId(bookId, userId);
-        if (roomView == null) {
-            response.setMessage(ROOMVIEWSELECTERRORMESSAGE);
-            response.setCode(ROOMVIEWSELECTERRORCODE);
-            return response;
+    public Response selectBookRoom(Long bookId, Long userId) {
+        boolean isFavorite = true;
+
+        Roomview roomview = roomViewRepo.findByBookIdAndUserId(bookId, userId);
+        if (roomview == null) {
+            return new Response(ROOMVIEWSELECTERRORMESSAGE, ROOMVIEWSELECTERRORCODE);
         }
-        response.setResult(roomView);
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-        return response;
+
+        if (favoriteRepo.findByUserIdAndBookroomId(userId, roomview.getBookroomId()).isEmpty())
+            isFavorite = false;
+
+        BookRoomResponse result = new BookRoomResponse(roomview.getBookroomId(), roomview.getUserId(), roomview.getBookId(), roomview.getCharacterId(),
+                roomview.getThemeColor(), roomview.getThemeMusicUrl(), roomview.getBookTitle(), isFavorite, roomview.getGender(), roomview.getNickname(),
+                roomview.getHeadStyle(), roomview.getHeadColor(), roomview.getTopStyle(), roomview.getTopColor(), roomview.getPantsStyle(), roomview.getPantsColor(),
+                roomview.getShoesStyle(), roomview.getShoesColor(), roomview.getFaceColor(), roomview.getFaceStyle());
+
+        return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
-    public Response saveBookRoom(BookRoomInsertDto bookRoomInsertDto, Response response) {
+    public Response saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
         //중복되는 북룸을 생성하는지 체크
         Long bookId = bookRoomInsertDto.getBookId();
         List<Long> bookIds = bookRoomRepo.findBookroomId(bookRoomInsertDto.getUserId());
         if (bookIds.contains(bookId)) {
-            response.setMessage(BOOKROOMDUPLICATEDMESSAGE);
-            response.setCode(BOOKROOMDUPLICATEDCODE);
-            return response;
+            return new Response(BOOKROOMDUPLICATEDMESSAGE, BOOKROOMDUPLICATEDCODE);
         }
 
         //bookroom을 생성하면서 bookdetails에서 popularity를 +1함
         //만약 책이 조회가 안된다면 예외 반환
         if (updateBookPopularity(bookRoomInsertDto) == null) {
-            response.setMessage(BOOKDETAILSSELECTERRORMESSAGE);
-            response.setCode(BOOKDETAILSSELECTERRORCODE);
-            return response;
+            return new Response(BOOKDETAILSSELECTERRORMESSAGE, BOOKDETAILSSELECTERRORCODE);
         }
 
         //기본 캐릭터를 바탕으로 bookroom기본 캐릭터 생성
         //만약 기존 캐릭터 조회가 안된다면 예외반환
         if (insertDefaultCharacter(bookRoomInsertDto) == null) {
-            response.setMessage(USERCHARACTERSELECTERRORMESSAGE);
-            response.setCode(USERCHARACTERSELECTERRORCODE);
-            return response;
+            return new Response(USERCHARACTERSELECTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
         }
 
         Bookroom bookroom = bookRoomInsertDto.dtoToBookRoom(bookRoomInsertDto);
@@ -82,20 +79,13 @@ public class BookService {
         log.info("bookroom save = {}", save);
         //생성
 
-        insertDefaultFavorite(bookroom);
-        //좋아요 표시 안한 상태로 favorite 생성
-
         //성공
-        response.setResult(bookroom);
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-
-        return response;
+        return new Response(bookroom, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     //book detail에 검색한 동화책 파싱하는 작업도 해야할 것 같습니다..! book details에서 값을 찾아서 popularity를 올리는 경우는
     //검색한 도서가 이미 book details테이블에 있는 경우이고
-    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요!
+    //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요! -> 안드로이드 파트와 이야기 후 결정
     //popularity 업데이트 시키는 메소드
     private Bookdetails updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
         Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
@@ -123,105 +113,129 @@ public class BookService {
     }
 
     //bookroom 생성시 isfavorite를 0으로하여 등록하는 메소드
-    private void insertDefaultFavorite(Bookroom bookroom) {
-        Favorite favorite = dtoToEntity(bookroom.getUserId(), bookroom.getBookId(), bookroom.getBookroomId());
-        Favorite favoriteSave = favoriteRepo.save(favorite);
-        log.info("default favorite save = {}", favoriteSave);
-    }
+    //!!!삭제함!!!
 
     //themeColor 추가용(업데이트)
-    public void updateThemeColor(String themeColor, Long bookroomId) {
-        Bookroom bookroom = getBookroom(bookroomId);
+    public Response updateThemeColor(String themeColor, Long bookroomId) {
+        Optional<Bookroom> optionalBookroom = getBookroom(bookroomId);
+        if (optionalBookroom.isEmpty())
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
+        Bookroom bookroom = optionalBookroom.get();
         bookroom.updateThemeColor(themeColor);
         log.info("update themeColor = {}", themeColor);
+
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     //themeMusicUrl 추가용(업데이트)
-    public void updateThemeMusicUrl(String themeMusicUrl, Long bookroomId) {
-        Bookroom bookroom = getBookroom(bookroomId);
+    public Response updateThemeMusicUrl(String themeMusicUrl, Long bookroomId) {
+        Optional<Bookroom> optionalBookroom = getBookroom(bookroomId);
+        if (optionalBookroom.isEmpty())
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
+        Bookroom bookroom = optionalBookroom.get();
         bookroom.updateThemeMusicUrl(themeMusicUrl);
         log.info("update themeMusicUrl = {}", themeMusicUrl);
+
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     //bookroom정보 가져오기
-    private Bookroom getBookroom(Long bookroomId) {
+    private Optional<Bookroom> getBookroom(Long bookroomId) {
         Optional<Bookroom> optionalBookroom = bookRoomRepo.findById(bookroomId);
-        Bookroom bookroom = optionalBookroom.get();
-        return bookroom;
+        return optionalBookroom;
     }
 
-    public void deleteBookRoom(Long bookroomId) {
-        Bookroom bookroom = getBookroom(bookroomId);
+    public Response deleteBookRoom(Long bookroomId) {
+        Optional<Bookroom> optionalBookroom = getBookroom(bookroomId);
+        if (optionalBookroom.isEmpty())
+            return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
+        Bookroom bookroom = optionalBookroom.get();
         bookRoomRepo.delete(bookroom);
         pictureRepo.deleteAllByBookroomId(bookroomId);
         wordRepo.deleteAllByBookroomId(bookroomId);
         mindMapRepo.deleteAllByBookroomId(bookroomId);
         userCharacterRepo.deleteByUserIdAndBookId(bookroom.getUserId(), bookroom.getBookId());
         favoriteRepo.deleteAllByBookroomId(bookroomId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+
     }
 
-    public Response getPictureByBookroomId(Long bookroomId, Response response) {
+    public Response getPictureByBookroomId(Long bookroomId) {
         List<Picturetable> picturetables = pictureRepo.findAllByBookroomId(bookroomId);
-        response.setCode(SUCCESSCODE);
-        response.setMessage(SUCCESSMESSAGE);
-        response.setResult(picturetables);
-        return response;
+        return new Response(picturetables, SUCCESSMESSAGE, SUCCESSCODE);
     }
-    public Response savePicture(PictureInsertDto pictureInsertDto, Response response) {
+    public Response savePicture(PictureInsertDto pictureInsertDto) {
         Picturetable picturetable = pictureInsertDto.insertDtoToPicturetable(pictureInsertDto);
         Picturetable save = pictureRepo.save(picturetable);
         log.info("picture save = {}", save);
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-        response.setResult(save);
 
-        return response;
+        return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
-    public Response getWordByroomId(Long bookroomId, Response response) {
+    public Response getWordByroomId(Long bookroomId) {
         List<Wordtable> wordtables = wordRepo.findAllByBookroomId(bookroomId);
-        response.setResult(wordtables);
-        response.setCode(SUCCESSCODE);
-        response.setMessage(SUCCESSMESSAGE);
-        return response;
+        return new Response(wordtables, SUCCESSMESSAGE, SUCCESSCODE);
     }
-    public Response saveWord(WordInsertDto wordInsertDto, Response response) {
+    public Response saveWord(WordInsertDto wordInsertDto) {
         Wordtable wordtable = wordInsertDto.insertDtoToWordtable(wordInsertDto);
         Wordtable save = wordRepo.save(wordtable);
         log.info("word save = {}", save);
 
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-        response.setResult(save);
-        return response;
+        return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
-    public Response getMindmapByBookroomId(Long bookroomId, Response response) {
+    public Response getMindmapByBookroomId(Long bookroomId) {
         List<Mindmap> mindmaps = mindMapRepo.findAllByBookroomId(bookroomId);
-        response.setResult(mindmaps);
-        response.setCode(SUCCESSCODE);
-        response.setMessage(SUCCESSMESSAGE);
-        return response;
+        return new Response(mindmaps, SUCCESSMESSAGE, SUCCESSCODE);
     }
-    public Response saveMind(MindInsertDto mindInsertDto, Response response) {
+    public Response saveMind(MindInsertDto mindInsertDto) {
         Mindmap mindmap = mindInsertDto.insertDtoToMindmap(mindInsertDto);
         Mindmap save = mindMapRepo.save(mindmap);
         log.info("mind save = {}", save);
 
-        response.setMessage(SUCCESSMESSAGE);
-        response.setCode(SUCCESSCODE);
-        response.setResult(save);
-        return response;
+        return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
-    public List<BookRoomSelectDto> getRecommendBooks(Long id){
-        //유저가 좋아요를 눌러논 동화책방의 주인이 등록한 다른 동화책방을 추천으로 주기 -> null일 경우 고려
-        List<BookRoomSelectDto> bookRoomSelectDtoList = bookroomDao.getBookroomByFavorite(id);
-        System.out.println(bookRoomSelectDtoList);
-        //유저가 이전에 읽어본 동화책을 등록한 동화책방을 추천
-        bookRoomSelectDtoList.addAll(bookroomDao.getBookroomByExperience(id));
-
-        return bookRoomSelectDtoList;
+    public Response updatePicture(Long pictureId, String pictureUrl) {
+        Optional<Picturetable> optionalPicturetable = pictureRepo.findById(pictureId);
+        if (optionalPicturetable.isEmpty())
+            return new Response(PICTURESELECTERRORMESSAGE, PICTURESELECTERRORCODE);
+        Picturetable picturetable = optionalPicturetable.get();
+        picturetable.updatePictureUrl(pictureUrl);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
+    public Response updateWord(Long wordId, String wordText, String wordPictureUrl, String wordVoiceUrl) {
+        Optional<Wordtable> optionalWordtable = wordRepo.findById(wordId);
+        if (optionalWordtable.isEmpty())
+            return new Response(WORDSELECTERRORMESSAGE, WORDSELECTERRORCODE);
+        Wordtable wordtable = optionalWordtable.get();
+        wordtable.updateWord(wordPictureUrl, wordVoiceUrl, wordText);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response updateMind(Long mindId, String wordText, String wordPictureUrl, String wordVoiceUrl) {
+        Optional<Mindmap> optionalMindmap = mindMapRepo.findById(mindId);
+        if (optionalMindmap.isEmpty())
+            return new Response(MINDMAPSELECTERRORMESSAGE, MINDMAPSELECTERRORCODE);
+        Mindmap mindmap = optionalMindmap.get();
+        mindmap.updateMind(wordText, wordPictureUrl, wordVoiceUrl);
+
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response deletePicture(Long pictureId) {
+        pictureRepo.deleteById(pictureId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response deleteWord(Long wordId) {
+        wordRepo.deleteById(wordId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
+
+    public Response deleteMind(Long mindId) {
+        mindMapRepo.deleteById(mindId);
+        return new Response(SUCCESSMESSAGE, SUCCESSCODE);
+    }
 }
