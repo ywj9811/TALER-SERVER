@@ -51,6 +51,15 @@ public class FavoriteService {
         return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
+    public  Response addFriend(Long userId, Long friendUserId){
+        friendRepo.add(userId, friendUserId);
+        return new Response(SUCCESSMESSAGE,SUCCESSCODE);
+    }
+    public  Response deleteFriend(Long userId, Long friendUserId){
+        friendRepo.delete(userId,friendUserId);
+        return new Response(SUCCESSMESSAGE,SUCCESSCODE);
+    }
+
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {
         //책을 담을때 popularity올려야함-> dao에서 해결 -> 그린님과 공통되는 부분 ?? popularity는 책방에 담을 때 올리는 것 아닌가요?!
         FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,0);
