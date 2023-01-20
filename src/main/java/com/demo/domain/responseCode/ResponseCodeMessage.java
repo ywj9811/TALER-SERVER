@@ -30,7 +30,9 @@ public class ResponseCodeMessage {
     public static final String FAVORITESELECTERRORMESSAGE = "[ERROR] FAVORITE 조회에 실패했습니다";
     public static final String FRIENDSELECTERRORMESSAGE = "[ERROR] FRIEND 조회에 실패했습니다";
     public static final String USERCHARACTERSELECTERRORMESSAGE = "[ERROR] USERCHARACTER 조회에 실패했습니다";
-    public static final String UPDATEERRORMESSAGE = "[ERROR] 업데이트 실패했습니다";
+    public static final String USERCHARACTERUPDATEERRORMESSAGE = "[ERROR] USERCHARACTER 업데이트에 실패했습니다";
+    public static final String USERCHARACTERINSERTERRORMESSAGE = "[ERROR] USERCHARACTER 생성에 실패했습니다";
+    public static final String USERCHARACTERDELETEERRORMESSAGE = "[ERROR] USERCHARACTER 삭제에 실패했습니다";
     public static final String BOOKROOMDUPLICATEDMESSAGE = "[ERROR] BOOKROOM 중복되었습니다";
 
     public static final String RECOMMENDBOOKFAVORITEDTOLISTNULLMESSAGE = "[ERROR] recommendBookFavoriteDtoList 이 비어있습니다";
@@ -39,6 +41,12 @@ public class ResponseCodeMessage {
     public static final String FAVORITEUPDATEMESSAGE = "[ERROR] FAVORITE 업데이트에 실패했습니다.";
     public static final String FAVORITEINSERTMESSAGE = "[ERROR] FAVORITE 생성에 실패했습니다.";
     public static final String FAVORITEDELETEMESSAGE = "[ERROR] FAVORITE 삭제에 실패했습니다.";
+
+    public static final String FRIENDSELECTMESSAGE = "[ERROR] FRIEND 조회에 실패했습니다";
+    public static final String FRIENDUPDATEMESSAGE = "[ERROR] FRIEND 업데이트에 실패했습니다";
+    public static final String FRIENDINSERTMESSAGE = "[ERROR] FRIEND 생성에 실패했습니다";
+    public static final String FRIENDDELETEMESSAGE = "[ERROR] FRIEND 삭제에 실패했습니다";
+
     public static final String EMAILERRORMESSAGE = "[ERROR] Email 전송에서 에러 발생";
 
 
@@ -67,6 +75,9 @@ public class ResponseCodeMessage {
     public static final int MINDMAPDELETEERRORCODE = 80004;
     public static final int ROOMVIEWSELECTERRORCODE = 110001;
     public static final int USERCHARACTERSELECTERRORCODE = 20001;
+    public static final int USERCHARACTERSUPDATEERORCODE = 20002;
+    public static final int USERCHARACTERSINSERTERRORCODE = 20003;
+    public static final int USERCHARACTERDELETEERRORCODE = 20004;
     public static final int BOOKROOMDUPLICATEDCODE = 20002;
 
     public static final int FAVORITESELECTCODE = 100001;
@@ -74,6 +85,10 @@ public class ResponseCodeMessage {
     public static final int FAVORITEINSERTCODE = 100003;
     public static final int FAVORITEDELETECODE = 100004;
 
+    public static final int FRIENDSELECTCODE = 90001;
+    public static final int FRIENDUPDATECODE = 90002;
+    public static final int FRIENDINSERTCODE = 90003;
+    public static final int FRIENDDELETECODE = 90004;
     public static final int EMAILERRORCODE = 800;
 }
 /**
