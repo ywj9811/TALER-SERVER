@@ -22,17 +22,18 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 public class UsercharacterService{
 
     private final UserCharacterRepo userCharacterRepo;
-    public Usercharacter getUsercharacter(Long userId, Long bookId) {
+    public Response getUsercharacter(Long userId, Long bookId) {
         Usercharacter usercharacter = userCharacterRepo.findByUserIdAndBookId(userId, bookId).get();
-        return usercharacter;
+
+        return new Response(usercharacter, SUCCESSMESSAGE, SUCCESSCODE);
     }
     //.get()을 사용해서 Optional에서 따로 받아왔습니다.
     //Optional을 사용하면 .empty가 가능해서 예외처리가 쉬워 사용했습니다
 
-    public Usercharacter saveUsercharacter(UsercharacterDto usercharacterDto){
+    public Response saveUsercharacter(UsercharacterDto usercharacterDto){
         Usercharacter usercharacter = usercharacterDto.insertDtoToUsercharacter(usercharacterDto);
         Usercharacter save = userCharacterRepo.save(usercharacter);
-        return save;
+        return new Response(save, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     public Response updateUsercharacter(Long userId, Long bookId, EditCharacterDto editCharacterDto){

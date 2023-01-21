@@ -3,8 +3,6 @@ package com.demo.dto;
 import com.demo.domain.Usercharacter;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class UsercharacterDto {
     private Long userId;
@@ -35,9 +33,7 @@ public class UsercharacterDto {
 
     private String faceStyle;
 
-    public UsercharacterDto(Long userId, Long bookId, String gender, String nickname, String headStyle, String headColor, String topStyle, String topColor, String pantsStyle, String pantsColor, String shoesStyle, String shoesColor, String faceColor, String faceStyle) {
-        this.userId = userId;
-        this.bookId = bookId;
+    public UsercharacterDto(String gender, String nickname, String headStyle, String headColor, String topStyle, String topColor, String pantsStyle, String pantsColor, String shoesStyle, String shoesColor, String faceColor, String faceStyle) {
         this.gender = gender;
         this.nickname = nickname;
         this.headStyle = headStyle;
