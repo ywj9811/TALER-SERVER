@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class RedisTool {
+    /**
 
     private final RedisTemplate redisTemplate;
     public void setRedisValues(String token, String nickname){
@@ -28,4 +29,5 @@ public class RedisTool {
     public void delRedisValues(String token) {
         redisTemplate.delete(token.substring(7));
     }
+     */
 }

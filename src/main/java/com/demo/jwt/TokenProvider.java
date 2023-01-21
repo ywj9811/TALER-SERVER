@@ -40,7 +40,7 @@ public class TokenProvider implements InitializingBean {
      * (유효기간 설정 관련 설명)
      * Date 형식 -> 밀리세컨드로 구성
      * 따라서 Date + ??? -> ???는 밀리세컨드 단위여야 함
-     * application.properties 기본유효기간(expiration) : 초단위
+     * application.properties 기본유효기간(expiration) : 초단위 (3600초 = 1시간)
      * accessTokenValidityInMilliseconds, refreshTokenValidityInMilliseconds
      * -> 가져와서 1000을 곱해 밀리세컨드 단위로 변환환
     * */
@@ -51,8 +51,8 @@ public class TokenProvider implements InitializingBean {
             @Value("${jwt.expiration}") long tokenValidityInSeconds) {
         this.redisTool = redisTool;
         this.secret = secret;
-        this.accessTokenValidityInMilliseconds = tokenValidityInSeconds * 30 * 1000; //30초
-        this.refreshTokenValidityInMilliseconds = tokenValidityInSeconds * 60 * 1000; //1분
+        this.accessTokenValidityInMilliseconds = tokenValidityInSeconds * 1000; //1시간 -> 임의 설정 값
+        this.refreshTokenValidityInMilliseconds = tokenValidityInSeconds * 2 * 1000; //2시간 -> 임의 설정 값
     }
 
     @Override

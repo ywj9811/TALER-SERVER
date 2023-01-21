@@ -3,7 +3,6 @@ package com.demo.service;
 import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.response.Response;
-import com.demo.dto.response.BaseException;
 import com.demo.jwt.TokenProvider;
 import com.demo.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,6 @@ public class UserService {
         ParentDto parentDto = ParentDto.EntityToPaParentDto(parentRepo.save(parent));
         return new Response(parentDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
-
     //아이, 부모 로그인
     public Response login(LogInDto logInDto) throws Exception {
 
@@ -85,7 +83,7 @@ public class UserService {
             return new Response(USERSELECTERRORMESSAGE,USERSELECTERRORMCODE);
         }
         if(parentRepo.findByUserId(user.get().getUserId()).orElse(null) != null){
-            return new Response("이미 등록된 아이입니다.",USERSELECTERRORMCODE);
+            return new Response(DUPLICATEUSERMESSAGE,DUPLICATEUSERCODE);
         }
         if(!passwordEncoder.matches(logInDto.getPw(),user.get().getPw())){
             return new Response(USERPASSWORDERRORMESSAGE,USERPASSWORDERRORCODE);

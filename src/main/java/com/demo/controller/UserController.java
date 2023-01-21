@@ -55,20 +55,17 @@
 package com.demo.controller;
 
 import com.demo.dto.*;
-import com.demo.dto.response.BaseException;
 import com.demo.dto.response.Response;
 import com.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import com.demo.domain.*;
 import com.demo.domain.Usercharacter;
 import com.demo.dto.EditCharacterDto;
 import com.demo.dto.UsercharacterDto;
-import com.demo.dto.response.Response;
 import com.demo.service.EmailService;
 import com.demo.service.UsercharacterService;
 
@@ -85,18 +82,6 @@ public class UserController {
     private final UsercharacterService usercharacterService;
     private final EmailService emailService;
 
-    @PostMapping("/jwtTest")
-    public String jwtTest() throws Exception{
-        return "Hello!";
-    }
-
-    @PostMapping("/masterTest")
-    @PreAuthorize("hasAnyAuthority('master')")
-    public String masterTest() throws Exception{
-        return "Hello master!";
-    }
-
-
     @PostMapping("/emailConfirm")
     public Response emailConfirm(@RequestParam String email) throws Exception {
         try {
@@ -106,30 +91,49 @@ public class UserController {
         }
     }
 
-
     //아이 회원가입
     @PostMapping("/save")
-    public Response singup(@Valid @RequestBody UserInsertDto userInsertDto ) throws DuplicateMemberException {
-        return userService.userSignUp(userInsertDto);
+    public Response singup(@Valid @RequestBody UserInsertDto userInsertDto ){
+        try{
+            return userService.userSignUp(userInsertDto);
+        }catch(DuplicateMemberException e){
+            return new Response(DUPLICATEUSERMESSAGE, DUPLICATEUSERCODE);
+        }
     }
 
     //부모 회원가입
     @PostMapping("/parent/save")
-    public Response saveParent(@RequestBody ParentInsertDto parentInsertDto) throws DuplicateMemberException {
-        return userService.parentSignUp(parentInsertDto);
-
+    public Response saveParent(@RequestBody ParentInsertDto parentInsertDto){
+        try{
+            return userService.parentSignUp(parentInsertDto);
+        }catch(DuplicateMemberException e){
+            return new Response(DUPLICATEUSERMESSAGE, DUPLICATEUSERCODE);
+        }
     }
 
     //아이 로그인
     @PostMapping("/login")
-    public Response userLogin(@RequestBody LogInDto logInDto) throws Exception {
-        return userService.login(logInDto);
+    public Response userLogin(@RequestBody LogInDto logInDto) {
+        try{
+            return userService.login(logInDto);
+        }catch(BadCredentialsException e){
+            return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
+        }catch(Exception e){
+            return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
+        }
+
     }
 
     //부모 로그인
     @PostMapping("/parent/login")
-    public Response parentLogin(@RequestBody LogInDto logInDto) throws Exception {
-        return userService.login(logInDto);
+    public Response parentLogin(@RequestBody LogInDto logInDto) {
+        try{
+            return userService.login(logInDto);
+        }catch(BadCredentialsException e){
+            return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
+        }catch(Exception e){
+            return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
+        }
     }
 
     //부모 회원가입시 아이 등록을 위한 체크
