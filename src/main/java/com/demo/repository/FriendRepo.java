@@ -13,9 +13,9 @@ import java.util.LongSummaryStatistics;
 public interface FriendRepo extends JpaRepository<Friend, Long> {
     List<Friend> findAllByUserId(Long userId);
 
-    @Query("INSERT Friend VALUES (:userId,:friendUserId)")
+    @Query("INSERT INTO Friend VALUES (:userId,:friendUserId)")
     List<Long>add(Long userId, Long friendUserId);
-    @Query("DELETE FROM Freind WHERE userId = :userId and friendId = :friendId")
+    @Query("DELETE FROM Fried WHERE userId = :userId and friendId = :friendUserId")
     List<Long>delete(Long userId, Long friendUserId);
 
 
