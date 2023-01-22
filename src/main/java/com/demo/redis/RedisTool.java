@@ -7,11 +7,15 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * refresh 토큰을 저장하는 redis 사용을 위한 클래스
+ * redis는 별도의 프로그램을 설치해야 해서 일단 주석처리 해놓았습니다
+ * redis : 메인 메모리인 RAM에 데이터를 올려 사용하기 때문에 DB들보다 빠르고 가볍고, 굉장히 빠른 액세스가 가능하다.
+ */
 @Component
 @RequiredArgsConstructor
 public class RedisTool {
-    /**
+    /*
 
     private final RedisTemplate redisTemplate;
     public void setRedisValues(String token, String nickname){

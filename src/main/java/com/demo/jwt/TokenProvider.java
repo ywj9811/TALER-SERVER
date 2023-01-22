@@ -22,11 +22,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+/**
+ * access토큰, refresh토큰을 생성하는 클래스
+ * 토큰의 유효성 검증도 포함
+ */
 @Component
 public class TokenProvider implements InitializingBean {
 
     private final RedisTool redisTool;
-
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
     private static final String USERNAME_KEY = "username";
@@ -35,15 +38,6 @@ public class TokenProvider implements InitializingBean {
     private final long refreshTokenValidityInMilliseconds;
     private final long now = (new Date()).getTime();
     private Key key;
-
-    /**
-     * (유효기간 설정 관련 설명)
-     * Date 형식 -> 밀리세컨드로 구성
-     * 따라서 Date + ??? -> ???는 밀리세컨드 단위여야 함
-     * application.properties 기본유효기간(expiration) : 초단위 (3600초 = 1시간)
-     * accessTokenValidityInMilliseconds, refreshTokenValidityInMilliseconds
-     * -> 가져와서 1000을 곱해 밀리세컨드 단위로 변환환
-    * */
 
     public TokenProvider(
             RedisTool redisTool,
@@ -101,7 +95,7 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
-        //redisTool.setRedisValues(refreshToken,nickname);
+        //redisTool.setRedisValues(refreshToken,nickname); // redis에 refresh 토큰 저장
 
         return refreshToken;
     }

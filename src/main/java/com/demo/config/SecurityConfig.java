@@ -44,8 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                //.antMatchers("/","/**").permitAll()
-                .antMatchers("/user/parent/check").hasAuthority("master")
+                .antMatchers("/","/**").permitAll() //모든 api에 대한 접근 허용 (지우면 token필요함)
                 .antMatchers("/user/save").permitAll()
                 .antMatchers("/user/parent/save").permitAll()
                 .antMatchers("/user/login").permitAll()

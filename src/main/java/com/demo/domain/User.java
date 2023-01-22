@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * SpringSecurity 사용을 위해 UserDetails 인터페이스 상속
+ * 각 유저마다 권한부여를 위해 authority 필드 추가했습니다
+ */
 @Getter
 @Entity
 @AllArgsConstructor
