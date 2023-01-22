@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/**
+ * Spring security 로그인을 위한 클래스
+ */
 @Component("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepo userRepo;

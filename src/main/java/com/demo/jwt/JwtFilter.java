@@ -14,6 +14,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+/**
+ * spring security와 jwt를 사용하기 위한 jwt용 커스텀 필터
+ * UsernamePasswordAuthenticationFilter 앞에 등록
+ * 토큰을 받아서 디코딩 후에 authentication객체를 SecurityContextHolder에 저장
+ */
 public class JwtFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);

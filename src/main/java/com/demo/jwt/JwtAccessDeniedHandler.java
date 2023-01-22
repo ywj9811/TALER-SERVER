@@ -15,6 +15,9 @@ import java.io.PrintWriter;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
+/**
+ * 허용된 권한이 없을때 발생하는 403 에러 handler
+ */
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     @Override

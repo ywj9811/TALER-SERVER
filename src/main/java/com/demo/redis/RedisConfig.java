@@ -8,9 +8,12 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+/**
+ * refresh 토큰을 저장하는 redis관련 설정 클래스
+ */
 @Configuration
 public class RedisConfig {
-    /**
+    /*
     @Value("${redis.host}")
     private String redisHost;
 

@@ -17,6 +17,9 @@ import java.io.PrintWriter;
 import static com.demo.domain.responseCode.ResponseCodeMessage.UNAUTHORIZEROORCODE;
 import static com.demo.domain.responseCode.ResponseCodeMessage.UNAUTHORIZEROORMESSAGE;
 
+/**
+ * 유요한 자격증명을 제공하지 않을 때(ex: 토큰이 없을때, 토큰이 잘못 되었을때 등) 401 에러 handler
+ */
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
