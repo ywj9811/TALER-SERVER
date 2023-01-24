@@ -55,6 +55,7 @@
 package com.demo.controller;
 
 import com.demo.domain.Favorite;
+import com.demo.domain.Friend;
 import com.demo.dto.response.Response;
 import com.demo.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
@@ -88,13 +89,23 @@ public class InterFaceController {
             return new Response(FAVORITEDELETEMESSAGE, FAVORITEDELETECODE);
         }
     }
-//    @PostMapping("user/addfriend/{user_id}")
-//    public Friend addFriend(@PathVariable Long user_id){
-//        Friend friend = favoriteService.
-//    }
-//
-//
-//    @PostMapping("user/deletefriend/{user_id}")
+    @PostMapping("user/addfriend/{userId}/{friendUserId}")
+    public Response addFriend(@PathVariable Long userId, @PathVariable Long friendUserId){
+        try {
+            return favoriteService.addFriend(userId, friendUserId);
+        } catch (Exception e){
+            return new Response(FRIENDINSERTMESSAGE, FRIENDINSERTCODE);
+        }
+    }
+
+    @PostMapping("user/deletefriend/{userId}/{friendUserId}")
+    public Response deleteFriend(@PathVariable Long userId, @PathVariable Long friendUserId){
+        try {
+            return  favoriteService.deleteFriend(userId, friendUserId);
+        } catch (Exception e){
+            return new Response(FRIENDDELETEMESSAGE, FAVORITEDELETECODE);
+        }
+    }
 
     @GetMapping("/book/recommend")
     //추천 동화책 방
