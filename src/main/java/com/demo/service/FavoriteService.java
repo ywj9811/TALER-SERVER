@@ -51,14 +51,25 @@ public class FavoriteService {
         return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
-    public  Response addFriend(Long userId, Long friendUserId){
-        friendRepo.add(userId, friendUserId);
+    public Response addFriend(Long userId, Long friendUserId){
+        Optional<Friend> optionalFriend = friendRepo.findByUserIdAndUserFriendId(userId, friendUserId);
+        if (optionalFriend.isPresent())
+            return new Response(FRIENDINSERTMESSAGE, FRIENDINSERTCODE);
+        FriendDto friendDto = new FriendDto(userId, friendUserId);
+        friendRepo.save(friendDto.toFriend());
         return new Response(SUCCESSMESSAGE,SUCCESSCODE);
     }
-    public  Response deleteFriend(Long userId, Long friendUserId){
-        friendRepo.delete(userId,friendUserId);
+    //jpa에서 제공하는 save 사용으로 수정했습니다(리스트로 리턴을 받게 되면 돌려줄 수 없어서 오류 발생)
+
+    public Response deleteFriend(Long userId, Long userFriendId){
+        log.info("userId = {}, userFriendId = {}", userId, userFriendId);
+        Optional<Friend> optionalFriend = friendRepo.findByUserIdAndUserFriendId(userId, userFriendId);
+        if (optionalFriend.isEmpty())
+            return new Response(FRIENDDELETEMESSAGE, FRIENDDELETECODE);
+        friendRepo.delete(optionalFriend.get());
         return new Response(SUCCESSMESSAGE,SUCCESSCODE);
     }
+    //jpa제공 delete로 수정
 
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {
         //책을 담을때 popularity올려야함-> dao에서 해결 -> 그린님과 공통되는 부분 ?? popularity는 책방에 담을 때 올리는 것 아닌가요?!
