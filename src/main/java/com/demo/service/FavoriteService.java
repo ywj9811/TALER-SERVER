@@ -80,18 +80,24 @@ public class FavoriteService {
     }
 
     //동화책 등록시 추천 동화책
-    public Set<String> bookRecommendSelect(Long user_id) {
+    public List<String> bookRecommendSelect(Long user_id) {
         //읽어본 동화책, 좋아요를 눌러둔 동화책의 같은 장르의 동화책을 추천
-        List<String> getBookGenre = bookdetailsDao.myFavoriteGenreByExperience(user_id);
-
-        //해당 장르 중 가장 많이 나온 장르를 뽑기
-        Map<String, Integer> genreCount = new HashMap<>();
-        for(String genreStr:getBookGenre){
-            if(!genreCount.containsKey(genreStr))
-                genreCount.put(genreStr,0);
-            genreCount.put(genreStr,genreCount.get(genreStr)+1);
+        List<String> bookRecommendSelectList = bookdetailsDao.getBookTitlesByPopularity();
+        if(bookRecommendSelectList == null){
+            bookRecommendSelectList = bookdetailsDao.getBookTitlesByFavorite(user_id);
         }
-        List<Map.Entry<String, Integer>> list_entries = new ArrayList<Map.Entry<String, Integer>>(genreCount.entrySet());
+        else if(bookRecommendSelectList.size()<6){
+            bookRecommendSelectList.addAll(bookdetailsDao.getBookTitlesByFavorite(user_id));
+        }
+
+        //해당 장르 중 가장 많이 나온 책제목뽑기
+        Map<String, Integer> bookTitleCnt = new HashMap<>();
+        for(String bookTitle:bookRecommendSelectList){
+            if(!bookTitleCnt.containsKey(bookTitle))
+                bookTitleCnt.put(bookTitle,0);
+            bookTitleCnt.put(bookTitle,bookTitleCnt.get(bookTitle)+1);
+        }
+        List<Map.Entry<String, Integer>> list_entries = new ArrayList<Map.Entry<String, Integer>>(bookTitleCnt.entrySet());
 
         // 비교함수 Comparator를 사용하여 내림차순 정렬
         Collections.sort(list_entries, new Comparator<Map.Entry<String, Integer>>() {
@@ -103,13 +109,12 @@ public class FavoriteService {
         });
 
         List<String> resultList = new ArrayList<>();
-        resultList = bookdetailsDao.getBookTitleByBookGere(list_entries.get(0).getKey(),user_id);
-        resultList.addAll(bookdetailsDao.getBookTitleByBookGere(list_entries.get(1).getKey(),user_id));
-        Set<String> resultSet = new HashSet<>();
-        for(String s:resultList){
-            resultSet.add(s);
+
+        for (Map.Entry<String, Integer> entry : list_entries) {
+            resultList.add(entry.getKey());
         }
-        return resultSet;
+
+        return resultList;
 
     }
 
