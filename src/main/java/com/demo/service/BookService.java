@@ -55,22 +55,12 @@ public class BookService {
     }
 
     public Response saveBookRoom(Long userId, String bookTitle, String bookAuthor) {
-        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findByBookTitleAndBookAuthor(bookTitle, bookAuthor);
-        Long bookId;
-        if (optionalBookdetails.isEmpty()) {
-            BookInsertDto bookInsertDto = new BookInsertDto(bookTitle, bookAuthor);
-            Bookdetails save = bookDetailsRepo.save(bookInsertDto.dtoToBookdetails());
-            bookId = save.getBookId();
-        } else {
-            Bookdetails bookdetails = optionalBookdetails.get();
-            //중복되는 북룸을 생성하는지 체크
-            bookId = bookdetails.getBookId();
-            List<Long> bookIds = bookRoomRepo.findBookroomId(userId);
-            if (bookIds.contains(bookId)) {
-                return new Response(BOOKROOMDUPLICATEDMESSAGE, BOOKROOMDUPLICATEDCODE);
-            }
-        }
+        Long bookId = getBookId(bookTitle, bookAuthor);
 
+        List<Long> bookIds = bookRoomRepo.findBookroomId(userId);
+        if (bookIds.contains(bookId)) {
+            return new Response(BOOKROOMDUPLICATEDMESSAGE, BOOKROOMDUPLICATEDCODE);
+        }
         //bookroom을 생성하면서 bookdetails에서 popularity를 +1함
         updateBookPopularity(bookId);
 
@@ -90,6 +80,18 @@ public class BookService {
         return new Response(bookroom, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
+    private Long getBookId(String bookTitle, String bookAuthor) {
+        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findByBookTitleAndBookAuthor(bookTitle, bookAuthor);
+        if (optionalBookdetails.isEmpty()) {
+            BookInsertDto bookInsertDto = new BookInsertDto(bookTitle, bookAuthor);
+            Bookdetails save = bookDetailsRepo.save(bookInsertDto.dtoToBookdetails());
+            return save.getBookId();
+        } else {
+            Bookdetails bookdetails = optionalBookdetails.get();
+            //중복되는 북룸을 생성하는지 체크
+            return bookdetails.getBookId();
+        }
+    }
     //book detail에 검색한 동화책 파싱하는 작업도 해야할 것 같습니다..! book details에서 값을 찾아서 popularity를 올리는 경우는
     //검색한 도서가 이미 book details테이블에 있는 경우이고
     //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요! -> 안드로이드 파트와 이야기 후 결정
