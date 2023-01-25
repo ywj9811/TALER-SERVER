@@ -90,18 +90,18 @@ public class InterFaceController {
         }
     }
     @PostMapping("user/addfriend/{userId}/{friendUserId}")
-    public Response addFriend(@PathVariable Long userId, @PathVariable Long friendUserId){
+    public Response addFriend(@PathVariable String userId, @PathVariable String friendUserId){
         try {
-            return favoriteService.addFriend(userId, friendUserId);
+            return favoriteService.addFriend(Long.parseLong(userId), Long.parseLong(friendUserId));
         } catch (Exception e){
             return new Response(FRIENDINSERTMESSAGE, FRIENDINSERTCODE);
         }
     }
 
-    @PostMapping("user/deletefriend/{userId}/{friendUserId}")
-    public Response deleteFriend(@PathVariable Long userId, @PathVariable Long friendUserId){
+    @DeleteMapping("user/deletefriend/{userId}/{friendUserId}")
+    public Response deleteFriend(@PathVariable String userId, @PathVariable String friendUserId){
         try {
-            return  favoriteService.deleteFriend(userId, friendUserId);
+            return favoriteService.deleteFriend(Long.parseLong(userId), Long.parseLong(friendUserId));
         } catch (Exception e){
             return new Response(FRIENDDELETEMESSAGE, FAVORITEDELETECODE);
         }
