@@ -157,8 +157,8 @@ public class InterFaceController {
     }
 
     //친구가 등록한 동화책방 클릭시
-    @GetMapping("/book/friend/bookroom")
-    public Response bookFriendBookroom(String userId, String friendUserId, String bookId) {
+    @GetMapping("/book/friend/bookroom/{userId}/{friendUserId}/{bookId}")
+    public Response bookFriendBookroom(@PathVariable String userId, @PathVariable String friendUserId, @PathVariable String bookId) {
         try {
             if (userId == null || friendUserId == null || bookId == null) {
                 return new Response(NULLMESSAGE, NULLCODE);
