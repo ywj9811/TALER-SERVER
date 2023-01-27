@@ -59,6 +59,9 @@ public class ResponseCodeMessage {
     public static final String DUPLICATEUSERMESSAGE = "[ERROR] 이미 등록된 유저입니다.";
     public static final String UNAUTHORIZEROORMESSAGE = "[ERROR] 유효한 자격증명이 없습니다.";
     public static final String FORBIDDENEROORMESSAGE = "[ERROR] 유효한 권한이 없습니다.";
+    public static final String JWTEXPIREDMESSAGE = "[ERROR] 만료된 토큰입니다.";
+    public static final String REFRESHTOKENEXCETIONMESSAGE = "[ERROR] refresh토큰이 유효하지 않습니다.";
+    public static final String REFRESHTOKENNULLMESSAGE = "[ERROR] refresh토큰이 존재하지 않습니다.";
 
     public static final int USERPASSWORDERRORCODE = 1000;
     public static final int USERIDPASSWRODERRORCODE = 1001;
@@ -66,6 +69,9 @@ public class ResponseCodeMessage {
     public static final int DUPLICATEUSERCODE = 1003;
     public static final int UNAUTHORIZEROORCODE = 1004;
     public static final int FORBIDDENEROORCODE = 1005;
+    public static final int JWTEXPIREDCODE = 1006;
+    public static final int REFRESHTOKENEXCETIONCODE = 1007;
+    public static final int REFRESHTOKENNULLCODE = 1008;
 
 
     public static final int SUCCESSCODE = 2000;

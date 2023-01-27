@@ -41,6 +41,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         PrintWriter writer = response.getWriter();
         writer.write(res);
         writer.flush();
+        System.out.println(authException.getMessage());
 
 
     }

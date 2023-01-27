@@ -150,6 +150,11 @@ public class UserController {
         }
     }
 
+    @PostMapping("/reIssueAccessToken/{nickname}")
+    public Response reIssueAccessToken(@PathVariable String nickname){
+        return userService.reIssueAccessToken(nickname);
+    }
+
     @PostMapping("/character/{userId}/{bookId}")
     //유저 캐릭터 정보 저장하기
     public Response saveUsercharacter(@PathVariable String userId, @PathVariable String bookId,  UsercharacterDto usercharacterDto) {

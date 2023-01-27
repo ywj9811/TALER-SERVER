@@ -4,19 +4,24 @@ import com.demo.domain.*;
 import com.demo.dto.*;
 import com.demo.dto.response.Response;
 import com.demo.jwt.TokenProvider;
+import com.demo.redis.RedisTool;
 import com.demo.repository.*;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 @Service
@@ -30,6 +35,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisTool redisTool;
 
     //아이 회원가입
     public Response userSignUp(UserInsertDto userInsertDto) throws DuplicateMemberException {
@@ -90,6 +96,29 @@ public class UserService {
         }
 
         return new Response(logInDto,SUCCESSMESSAGE,SUCCESSCODE);
+
+    }
+
+    public Response reIssueAccessToken(String nickName){
+        String rtk = redisTool.getRedisValues(nickName);
+        if(StringUtils.hasText(rtk)){
+            try{
+                tokenProvider.validateToken(rtk);
+            }catch(JwtException e){
+                return new Response(REFRESHTOKENEXCETIONMESSAGE,REFRESHTOKENEXCETIONCODE);
+            }
+        }else{
+            return new Response(REFRESHTOKENNULLMESSAGE,REFRESHTOKENNULLCODE);
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(rtk);
+        String atk = tokenProvider.createAccessToken(authentication.getName(),
+                authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(",")));
+
+        return new Response(atk,SUCCESSMESSAGE,SUCCESSCODE);
+
 
     }
 

@@ -1,11 +1,11 @@
 package com.demo.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Builder
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
 public class TokenDto {
 
     private String grantType;
