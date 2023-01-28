@@ -4,12 +4,12 @@
  *
  * -----Spring Data JPA 기본적인 사용법-----
  * 1. insert문 : repo.save(Entity객체) 단순하게 save로 처리할 수 있습니다! (Builder를 사용하거나 등등의 방법으로 객체 생성하여 넣어주세요)
- * 
+ *
  * 2. select문 : save()와 마찬가지로 기본 제공 메소드가 있는데 findById()가 있습니다. 이것은 Pk값을 기준으로 찾는 찾아서 반환해주는 기본 메소드에요!(Optional타입으로 반환되어요)
- *      이외에 다른 조건에 의한 select를 사용하고 싶다 
+ *      이외에 다른 조건에 의한 select를 사용하고 싶다
  *      -> findBy + 원하는 컬럼1 + AND + 원하는 컬럼1 == (SELECT * FROM ENTITY객체 WHERE 원하는 컬럼1 = ? AND 원하는 컬럼2 = ?) 이렇게 자동 생성되어 사용할 수 있습니다!
  *      findBy의 경우는 객체 하나만 조회하고 findAllBy를 사용하면 List<Entity>로 조회됩니다!
- * 
+ *
  * 3. update문 : update문은 평소에 사용하던 방식과 조금 달라서 헷갈릴 수 있습니다
  *              1. findBy를 사용하여 update를 하고자 하는 대상을 가져옵니다
  *              2. 대상.set컬럼() 을 통해서 원하는 값을 넣어주면 자동으로 UPDATE가 실행됩니다 (하지만 Entity에는 setter를 사용하는 것을 지양하라 하기에... 다른 방식을 사용합시다)
@@ -54,13 +54,22 @@
  */
 package com.demo.controller;
 
+import com.demo.dto.*;
+import com.demo.dto.response.Response;
+import com.demo.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.*;
+import com.demo.domain.*;
+import com.demo.domain.Usercharacter;
 import com.demo.dto.EditCharacterDto;
 import com.demo.dto.UsercharacterDto;
-import com.demo.dto.response.Response;
 import com.demo.service.EmailService;
 import com.demo.service.UsercharacterService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
@@ -68,6 +77,8 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
+    private final UserService userService;
     private final UsercharacterService usercharacterService;
     private final EmailService emailService;
 
@@ -80,6 +91,58 @@ public class UserController {
         }
     }
 
+    //아이 회원가입
+    @PostMapping("/save")
+    public Response singup(@Valid @RequestBody UserInsertDto userInsertDto ){
+        try{
+            return userService.userSignUp(userInsertDto);
+        }catch(DuplicateMemberException e){
+            return new Response(DUPLICATEUSERMESSAGE, DUPLICATEUSERCODE);
+        }
+    }
+
+    //부모 회원가입
+    @PostMapping("/parent/save")
+    public Response saveParent(@RequestBody ParentInsertDto parentInsertDto){
+        try{
+            return userService.parentSignUp(parentInsertDto);
+        }catch(DuplicateMemberException e){
+            return new Response(DUPLICATEUSERMESSAGE, DUPLICATEUSERCODE);
+        }
+    }
+
+    //아이 로그인
+    @PostMapping("/login")
+    public Response userLogin(@RequestBody LogInDto logInDto) {
+        try{
+            return userService.login(logInDto);
+        }catch(BadCredentialsException e){
+            return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
+        }catch(Exception e){
+            return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
+        }
+
+    }
+
+    //부모 로그인
+    @PostMapping("/parent/login")
+    public Response parentLogin(@RequestBody LogInDto logInDto) {
+        try{
+            return userService.login(logInDto);
+        }catch(BadCredentialsException e){
+            return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
+        }catch(Exception e){
+            return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
+        }
+    }
+
+
+    //부모 회원가입시 아이 등록을 위한 체크
+    @PostMapping("/parent/check")
+    public Response checkUser(@RequestBody LogInDto logInDto){
+        return userService.checkUser(logInDto);
+    }
+
     @GetMapping("/takeusercharacter/{userId}/{bookId}")
     //유저 캐릭터 정보 불러오기
     public Response moveToUsercharacter(@PathVariable String userId,@PathVariable String bookId) {
@@ -88,6 +151,11 @@ public class UserController {
         } catch (Exception e) {
             return new Response(USERCHARACTERSELECTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
         }
+    }
+
+    @PostMapping("/reIssueAccessToken/{nickname}")
+    public Response reIssueAccessToken(@PathVariable String nickname){
+        return userService.reIssueAccessToken(nickname);
     }
 
     @PostMapping("/character/{userId}/{bookId}")
@@ -114,7 +182,7 @@ public class UserController {
 /**
  * ------수정한 부분---------
  * @RequestMapping("user")로 변경 -> 그외에 회의록 : 서버 참고하여 api변경해주세요!
- * 
+ *
  * updateUsercharacter()메소드 수정했습니다.
  * Response타입으로 반환하도록 만들었으며 Service타고 들어가면서 확인하시면 제가 어떻게 처리하고 있는지 확인할 수 있을 것 입니다.
  *

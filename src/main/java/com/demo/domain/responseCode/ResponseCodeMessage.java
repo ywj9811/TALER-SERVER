@@ -1,5 +1,7 @@
 package com.demo.domain.responseCode;
 
+import javax.swing.plaf.PanelUI;
+
 public class ResponseCodeMessage {
     public static final String SUCCESSMESSAGE = "성공";
     public static final String NULLMESSAGE = "[ERROR] 들어온 값이 NULL입니다";
@@ -48,6 +50,28 @@ public class ResponseCodeMessage {
     public static final String FRIENDDELETEMESSAGE = "[ERROR] FRIEND 삭제에 실패했습니다";
 
     public static final String EMAILERRORMESSAGE = "[ERROR] Email 전송에서 에러 발생";
+
+
+
+    public static final String USERPASSWORDERRORMESSAGE = "[ERROR] 비밀번호가 다릅니다.";
+    public static final String USERIDPASSWRODERRORMESSAGE = "[ERROR] 아이디 또는 비밀번호가 다릅니다.";
+    public static final String USERLOGINERRORMESSAGE = "[ERROR] 로그인에 실패하였습니다.";
+    public static final String DUPLICATEUSERMESSAGE = "[ERROR] 이미 등록된 유저입니다.";
+    public static final String UNAUTHORIZEROORMESSAGE = "[ERROR] 유효한 자격증명이 없습니다.";
+    public static final String FORBIDDENEROORMESSAGE = "[ERROR] 유효한 권한이 없습니다.";
+    public static final String JWTEXPIREDMESSAGE = "[ERROR] 만료된 토큰입니다.";
+    public static final String REFRESHTOKENEXCETIONMESSAGE = "[ERROR] refresh토큰이 유효하지 않습니다.";
+    public static final String REFRESHTOKENNULLMESSAGE = "[ERROR] refresh토큰이 존재하지 않습니다.";
+
+    public static final int USERPASSWORDERRORCODE = 1000;
+    public static final int USERIDPASSWRODERRORCODE = 1001;
+    public static final int USERLOGINERRORCODE = 1002;
+    public static final int DUPLICATEUSERCODE = 1003;
+    public static final int UNAUTHORIZEROORCODE = 1004;
+    public static final int FORBIDDENEROORCODE = 1005;
+    public static final int JWTEXPIREDCODE = 1006;
+    public static final int REFRESHTOKENEXCETIONCODE = 1007;
+    public static final int REFRESHTOKENNULLCODE = 1008;
 
 
     public static final int SUCCESSCODE = 2000;

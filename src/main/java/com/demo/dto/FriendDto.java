@@ -10,9 +10,7 @@ public class FriendDto {
     Long userId;
     Long userFriendId;
 
-
-
-    public Friend FriendDto() {
+    public Friend toFriend() {
         return Friend.builder()
                 .userId(userId)
                 .userFriendId(userFriendId)

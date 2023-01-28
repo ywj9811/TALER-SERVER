@@ -51,6 +51,26 @@ public class FavoriteService {
         return new Response(SUCCESSMESSAGE, SUCCESSCODE);
     }
 
+    public Response addFriend(Long userId, Long friendUserId){
+        Optional<Friend> optionalFriend = friendRepo.findByUserIdAndUserFriendId(userId, friendUserId);
+        if (optionalFriend.isPresent())
+            return new Response(FRIENDINSERTMESSAGE, FRIENDINSERTCODE);
+        FriendDto friendDto = new FriendDto(userId, friendUserId);
+        friendRepo.save(friendDto.toFriend());
+        return new Response(SUCCESSMESSAGE,SUCCESSCODE);
+    }
+    //jpa에서 제공하는 save 사용으로 수정했습니다(리스트로 리턴을 받게 되면 돌려줄 수 없어서 오류 발생)
+
+    public Response deleteFriend(Long userId, Long userFriendId){
+        log.info("userId = {}, userFriendId = {}", userId, userFriendId);
+        Optional<Friend> optionalFriend = friendRepo.findByUserIdAndUserFriendId(userId, userFriendId);
+        if (optionalFriend.isEmpty())
+            return new Response(FRIENDDELETEMESSAGE, FRIENDDELETECODE);
+        friendRepo.delete(optionalFriend.get());
+        return new Response(SUCCESSMESSAGE,SUCCESSCODE);
+    }
+    //jpa제공 delete로 수정
+
     public Favorite save(Long user_id, Long bookroom_id, Long book_id) {
         //책을 담을때 popularity올려야함-> dao에서 해결 -> 그린님과 공통되는 부분 ?? popularity는 책방에 담을 때 올리는 것 아닌가요?!
         FavoriteInsertDto favoriteInsertDto = new FavoriteInsertDto(user_id,bookroom_id,book_id,0);
@@ -60,18 +80,24 @@ public class FavoriteService {
     }
 
     //동화책 등록시 추천 동화책
-    public Set<String> bookRecommendSelect(Long user_id) {
+    public List<String> bookRecommendSelect(Long user_id) {
         //읽어본 동화책, 좋아요를 눌러둔 동화책의 같은 장르의 동화책을 추천
-        List<String> getBookGenre = bookdetailsDao.myFavoriteGenreByExperience(user_id);
-
-        //해당 장르 중 가장 많이 나온 장르를 뽑기
-        Map<String, Integer> genreCount = new HashMap<>();
-        for(String genreStr:getBookGenre){
-            if(!genreCount.containsKey(genreStr))
-                genreCount.put(genreStr,0);
-            genreCount.put(genreStr,genreCount.get(genreStr)+1);
+        List<String> bookRecommendSelectList = bookdetailsDao.getBookTitlesByPopularity();
+        if(bookRecommendSelectList == null){
+            bookRecommendSelectList = bookdetailsDao.getBookTitlesByFavorite(user_id);
         }
-        List<Map.Entry<String, Integer>> list_entries = new ArrayList<Map.Entry<String, Integer>>(genreCount.entrySet());
+        else if(bookRecommendSelectList.size()<6){
+            bookRecommendSelectList.addAll(bookdetailsDao.getBookTitlesByFavorite(user_id));
+        }
+
+        //해당 장르 중 가장 많이 나온 책제목뽑기
+        Map<String, Integer> bookTitleCnt = new HashMap<>();
+        for(String bookTitle:bookRecommendSelectList){
+            if(!bookTitleCnt.containsKey(bookTitle))
+                bookTitleCnt.put(bookTitle,0);
+            bookTitleCnt.put(bookTitle,bookTitleCnt.get(bookTitle)+1);
+        }
+        List<Map.Entry<String, Integer>> list_entries = new ArrayList<Map.Entry<String, Integer>>(bookTitleCnt.entrySet());
 
         // 비교함수 Comparator를 사용하여 내림차순 정렬
         Collections.sort(list_entries, new Comparator<Map.Entry<String, Integer>>() {
@@ -83,13 +109,12 @@ public class FavoriteService {
         });
 
         List<String> resultList = new ArrayList<>();
-        resultList = bookdetailsDao.getBookTitleByBookGere(list_entries.get(0).getKey(),user_id);
-        resultList.addAll(bookdetailsDao.getBookTitleByBookGere(list_entries.get(1).getKey(),user_id));
-        Set<String> resultSet = new HashSet<>();
-        for(String s:resultList){
-            resultSet.add(s);
+
+        for (Map.Entry<String, Integer> entry : list_entries) {
+            resultList.add(entry.getKey());
         }
-        return resultSet;
+
+        return resultList;
 
     }
 
