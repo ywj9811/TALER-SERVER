@@ -41,7 +41,8 @@ public class SecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf().disable();
+        /*
                 .exceptionHandling()
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
@@ -61,7 +62,7 @@ public class SecurityConfig{
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
-
+*/
         return http.build();
     }
 }

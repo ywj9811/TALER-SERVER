@@ -66,7 +66,6 @@ import com.demo.domain.*;
 import com.demo.domain.Usercharacter;
 import com.demo.dto.EditCharacterDto;
 import com.demo.dto.UsercharacterDto;
-import com.demo.service.EmailService;
 import com.demo.service.UsercharacterService;
 
 import javax.validation.Valid;
@@ -76,79 +75,43 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
-public class UserController {
+public class UserCharaterController {
 
-    private final UserService userService;
     private final UsercharacterService usercharacterService;
-    private final EmailService emailService;
 
-    @PostMapping("/emailConfirm")
-    public Response emailConfirm(@RequestParam String email) throws Exception {
+
+
+    @GetMapping("/takeusercharacter/{userId}/{bookId}")
+    //유저 캐릭터 정보 불러오기
+    public Response moveToUsercharacter(@PathVariable String userId,@PathVariable String bookId) {
         try {
-            return emailService.sendSimpleMessage(email);
-        } catch (IllegalArgumentException e) {
-            return new Response(EMAILERRORMESSAGE, EMAILERRORCODE);
-        }
-    }
-
-    //아이 회원가입
-    @PostMapping("/save")
-    public Response singup(@Valid @RequestBody UserInsertDto userInsertDto ){
-        try{
-            return userService.userSignUp(userInsertDto);
-        }catch(DuplicateMemberException e){
-            return new Response(DUPLICATEUSERMESSAGE, DUPLICATEUSERCODE);
-        }
-    }
-
-    //부모 회원가입
-    @PostMapping("/parent/save")
-    public Response saveParent(@RequestBody ParentInsertDto parentInsertDto){
-        try{
-            return userService.parentSignUp(parentInsertDto);
-        }catch(DuplicateMemberException e){
-            return new Response(DUPLICATEUSERMESSAGE, DUPLICATEUSERCODE);
-        }
-    }
-
-    //아이 로그인
-    @PostMapping("/login")
-    public Response userLogin(@RequestBody LogInDto logInDto) {
-        try{
-            return userService.login(logInDto);
-        }catch(BadCredentialsException e){
-            return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
-        }catch(Exception e){
-            return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
-        }
-
-    }
-
-    //부모 로그인
-    @PostMapping("/parent/login")
-    public Response parentLogin(@RequestBody LogInDto logInDto) {
-        try{
-            return userService.login(logInDto);
-        }catch(BadCredentialsException e){
-            return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
-        }catch(Exception e){
-            return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
+            return usercharacterService.getUsercharacter(Long.parseLong(userId), Long.parseLong(bookId));
+        } catch (Exception e) {
+            return new Response(USERCHARACTERSELECTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
         }
     }
 
 
-    //부모 회원가입시 아이 등록을 위한 체크
-    @PostMapping("/parent/check")
-    public Response checkUser(@RequestBody LogInDto logInDto){
-        return userService.checkUser(logInDto);
+    @PostMapping("/character/{userId}/{bookId}")
+    //유저 캐릭터 정보 저장하기
+    public Response saveUsercharacter(@PathVariable String userId, @PathVariable String bookId,  UsercharacterDto usercharacterDto) {
+        try {
+            usercharacterDto.setUserId(Long.parseLong(userId));
+            usercharacterDto.setBookId(Long.parseLong(bookId));
+            return usercharacterService.saveUsercharacter(usercharacterDto);
+        } catch (Exception e) {
+            return new Response(USERCHARACTERINSERTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
+        }
     }
 
-
-    @PostMapping("/reIssueAccessToken/{nickname}")
-    public Response reIssueAccessToken(@PathVariable String nickname){
-        return userService.reIssueAccessToken(nickname);
+    @PutMapping("/character/edit/{userId}/{bookId}")
+    public Response updateUsercharacter(EditCharacterDto editCharacterDto, @PathVariable String userId, @PathVariable String bookId) {
+        try {
+            return usercharacterService.updateUsercharacter(Long.parseLong(userId), Long.parseLong(bookId), editCharacterDto);
+        } catch (Exception e) {
+            return new Response(USERCHARACTERUPDATEERRORMESSAGE, USERCHARACTERSUPDATEERORCODE);
+        }
     }
-
 }
 /**
  * ------수정한 부분---------
