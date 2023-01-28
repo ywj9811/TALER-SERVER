@@ -50,7 +50,7 @@ public class EmailConfig {
         Properties pt = new Properties();
         pt.put("mail.smtp.socketFactory.port", socketPort); // smtp 포트 번호 넣어주는 것이다 (다른번호 사용시 설정 변경해야함)
         pt.put("mail.smtp.auth", auth); // stmp 권한 인증
-        
+
         pt.put("mail.smtp.starttls.enable", starttls); //smtp starttls 사용
         pt.put("mail.smtp.starttls.required", startlls_required);
         //starttls -> 보안을 위한 사용(명시적 보안이라 함)

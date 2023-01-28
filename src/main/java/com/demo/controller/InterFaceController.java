@@ -55,6 +55,7 @@
 package com.demo.controller;
 
 import com.demo.domain.Favorite;
+import com.demo.domain.Friend;
 import com.demo.dto.response.Response;
 import com.demo.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
@@ -88,13 +89,23 @@ public class InterFaceController {
             return new Response(FAVORITEDELETEMESSAGE, FAVORITEDELETECODE);
         }
     }
-//    @PostMapping("user/addfriend/{user_id}")
-//    public Friend addFriend(@PathVariable Long user_id){
-//        Friend friend = favoriteService.
-//    }
-//
-//
-//    @PostMapping("user/deletefriend/{user_id}")
+    @PostMapping("user/addfriend/{userId}/{friendUserId}")
+    public Response addFriend(@PathVariable String userId, @PathVariable String friendUserId){
+        try {
+            return favoriteService.addFriend(Long.parseLong(userId), Long.parseLong(friendUserId));
+        } catch (Exception e){
+            return new Response(FRIENDINSERTMESSAGE, FRIENDINSERTCODE);
+        }
+    }
+
+    @DeleteMapping("user/deletefriend/{userId}/{friendUserId}")
+    public Response deleteFriend(@PathVariable String userId, @PathVariable String friendUserId){
+        try {
+            return favoriteService.deleteFriend(Long.parseLong(userId), Long.parseLong(friendUserId));
+        } catch (Exception e){
+            return new Response(FRIENDDELETEMESSAGE, FAVORITEDELETECODE);
+        }
+    }
 
     @GetMapping("/book/recommend")
     //추천 동화책 방
@@ -140,14 +151,14 @@ public class InterFaceController {
     //book titles를 api검색어로 넣어 book image가져오기
     @GetMapping("/book/recommend/select")
     public Response bookRecommendSelect(@RequestParam("userId") Long userId) {
-        Set<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
+        List<String> bookRecommendList = favoriteService.bookRecommendSelect(userId);
 
         return new Response(bookRecommendList, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
     //친구가 등록한 동화책방 클릭시
-    @GetMapping("/book/friend/bookroom")
-    public Response bookFriendBookroom(String userId, String friendUserId, String bookId) {
+    @GetMapping("/book/friend/bookroom/{userId}/{friendUserId}/{bookId}")
+    public Response bookFriendBookroom(@PathVariable String userId, @PathVariable String friendUserId, @PathVariable String bookId) {
         try {
             if (userId == null || friendUserId == null || bookId == null) {
                 return new Response(NULLMESSAGE, NULLCODE);

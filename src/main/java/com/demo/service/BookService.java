@@ -54,26 +54,23 @@ public class BookService {
         return new Response(result, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
-    public Response saveBookRoom(BookRoomInsertDto bookRoomInsertDto) {
-        //중복되는 북룸을 생성하는지 체크
-        Long bookId = bookRoomInsertDto.getBookId();
-        List<Long> bookIds = bookRoomRepo.findBookroomId(bookRoomInsertDto.getUserId());
+    public Response saveBookRoom(Long userId, String bookTitle, String bookAuthor) {
+        Long bookId = getBookId(bookTitle, bookAuthor);
+
+        List<Long> bookIds = bookRoomRepo.findBookroomId(userId);
         if (bookIds.contains(bookId)) {
             return new Response(BOOKROOMDUPLICATEDMESSAGE, BOOKROOMDUPLICATEDCODE);
         }
-
         //bookroom을 생성하면서 bookdetails에서 popularity를 +1함
-        //만약 책이 조회가 안된다면 예외 반환
-        if (updateBookPopularity(bookRoomInsertDto) == null) {
-            return new Response(BOOKDETAILSSELECTERRORMESSAGE, BOOKDETAILSSELECTERRORCODE);
-        }
+        updateBookPopularity(bookId);
 
         //기본 캐릭터를 바탕으로 bookroom기본 캐릭터 생성
         //만약 기존 캐릭터 조회가 안된다면 예외반환
-        if (insertDefaultCharacter(bookRoomInsertDto) == null) {
+        if (insertDefaultCharacter(userId, bookId) == null) {
             return new Response(USERCHARACTERSELECTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
         }
 
+        BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(userId, bookId);
         Bookroom bookroom = bookRoomInsertDto.dtoToBookRoom(bookRoomInsertDto);
         Bookroom save = bookRoomRepo.save(bookroom);
         log.info("bookroom save = {}", save);
@@ -83,29 +80,37 @@ public class BookService {
         return new Response(bookroom, SUCCESSMESSAGE, SUCCESSCODE);
     }
 
+    private Long getBookId(String bookTitle, String bookAuthor) {
+        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findByBookTitleAndBookAuthor(bookTitle, bookAuthor);
+        if (optionalBookdetails.isEmpty()) {
+            BookInsertDto bookInsertDto = new BookInsertDto(bookTitle, bookAuthor);
+            Bookdetails save = bookDetailsRepo.save(bookInsertDto.dtoToBookdetails());
+            return save.getBookId();
+        } else {
+            Bookdetails bookdetails = optionalBookdetails.get();
+            //중복되는 북룸을 생성하는지 체크
+            return bookdetails.getBookId();
+        }
+    }
     //book detail에 검색한 동화책 파싱하는 작업도 해야할 것 같습니다..! book details에서 값을 찾아서 popularity를 올리는 경우는
     //검색한 도서가 이미 book details테이블에 있는 경우이고
     //검색 도서가 book details에 없다면 테이블에 값을 넣고 popularity를 0으로 세팅 해야할 것 같아요! -> 안드로이드 파트와 이야기 후 결정
     //popularity 업데이트 시키는 메소드
-    private Bookdetails updateBookPopularity(BookRoomInsertDto bookRoomInsertDto) {
-        Optional<Bookdetails> optionalBookdetails = bookDetailsRepo.findById(bookRoomInsertDto.getBookId());
-        if (optionalBookdetails.isEmpty()) {
-            return null;
-        }
-        Bookdetails bookdetails = optionalBookdetails.get();
+    private Bookdetails updateBookPopularity(Long bookId) {
+        Bookdetails bookdetails = bookDetailsRepo.findById(bookId).get();
         bookdetails.updatePopularity();
         log.info("bookdetails update 실행");
         return bookdetails;
     }
 
     //기본 케릭터 가져와서 bookroom생성시 등록하는 메소드
-    private Usercharacter insertDefaultCharacter(BookRoomInsertDto bookRoomInsertDto) {
-        Optional<Usercharacter> optionalUsercharacter = userCharacterRepo.findByUserIdAndBookId(bookRoomInsertDto.getUserId(), 0L);
+    private Usercharacter insertDefaultCharacter(Long userId, Long bookId) {
+        Optional<Usercharacter> optionalUsercharacter = userCharacterRepo.findByUserIdAndBookId(userId, 0L);
         if (optionalUsercharacter.isEmpty()) {
             return null;
         }
         Usercharacter defaultCharacter = optionalUsercharacter.get();
-        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookRoomInsertDto.getBookId());
+        Usercharacter usercharacter = DefaultCharacterDto.dtoToEntity(defaultCharacter, bookId);
 
         Usercharacter characterSave = userCharacterRepo.save(usercharacter);
         log.info("default character save = {}", characterSave);

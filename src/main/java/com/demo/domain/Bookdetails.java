@@ -21,8 +21,6 @@ public class Bookdetails {
 
     private String bookAuthor;
 
-    private String bookGenre;
-
     private int bookPopularity;
 
     public void updatePopularity() {

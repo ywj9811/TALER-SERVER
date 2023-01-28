@@ -41,15 +41,10 @@ public class BookController {
      * 나중에 이유를 알게 되면 고치도록 하자.
      * 우선 작동하는 방식으로 하자.
      */
-    @PostMapping("/bookroom/{userId}/{bookId}") //bookroom 생성
-    public Response saveBookRoom(@PathVariable String userId, @PathVariable String bookId) {
+    @PostMapping("/bookroom/{userId}") //bookroom 생성
+    public Response saveBookRoom(@PathVariable String userId, String bookTitle, String bookAuthor) {
         try {
-            BookRoomInsertDto bookRoomInsertDto = new BookRoomInsertDto(Long.parseLong(userId), Long.parseLong(bookId));
-            log.info("getBookId = {}", bookRoomInsertDto.getBookId());
-            if (bookRoomInsertDto.getBookId() == null || bookRoomInsertDto.getBookId() == null) {
-                return new Response(NULLMESSAGE, NULLCODE);
-            }
-            return bookService.saveBookRoom(bookRoomInsertDto);
+            return bookService.saveBookRoom(Long.parseLong(userId), bookTitle, bookAuthor);
         } catch (Exception e) {
             return new Response(BOOKROOMINSERTERRORMESSAGE, BOOKROOMINSERTERRORCODE);
         }
