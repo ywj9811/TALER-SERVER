@@ -143,41 +143,12 @@ public class UserController {
         return userService.checkUser(logInDto);
     }
 
-    @GetMapping("/takeusercharacter/{userId}/{bookId}")
-    //유저 캐릭터 정보 불러오기
-    public Response moveToUsercharacter(@PathVariable String userId,@PathVariable String bookId) {
-        try {
-            return usercharacterService.getUsercharacter(Long.parseLong(userId), Long.parseLong(bookId));
-        } catch (Exception e) {
-            return new Response(USERCHARACTERSELECTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
-        }
-    }
 
     @PostMapping("/reIssueAccessToken/{nickname}")
     public Response reIssueAccessToken(@PathVariable String nickname){
         return userService.reIssueAccessToken(nickname);
     }
 
-    @PostMapping("/character/{userId}/{bookId}")
-    //유저 캐릭터 정보 저장하기
-    public Response saveUsercharacter(@PathVariable String userId, @PathVariable String bookId,  UsercharacterDto usercharacterDto) {
-        try {
-            usercharacterDto.setUserId(Long.parseLong(userId));
-            usercharacterDto.setBookId(Long.parseLong(bookId));
-            return usercharacterService.saveUsercharacter(usercharacterDto);
-        } catch (Exception e) {
-            return new Response(USERCHARACTERINSERTERRORMESSAGE, USERCHARACTERSELECTERRORCODE);
-        }
-    }
-
-    @PutMapping("/character/edit/{userId}/{bookId}")
-    public Response updateUsercharacter(EditCharacterDto editCharacterDto, @PathVariable String userId, @PathVariable String bookId) {
-        try {
-            return usercharacterService.updateUsercharacter(Long.parseLong(userId), Long.parseLong(bookId), editCharacterDto);
-        } catch (Exception e) {
-            return new Response(USERCHARACTERUPDATEERRORMESSAGE, USERCHARACTERSUPDATEERORCODE);
-        }
-    }
 }
 /**
  * ------수정한 부분---------

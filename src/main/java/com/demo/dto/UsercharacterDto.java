@@ -15,36 +15,21 @@ public class UsercharacterDto {
 
     private String headStyle;
 
-    private String headColor;
-
     private String topStyle;
-
-    private String topColor;
 
     private String pantsStyle;
 
-    private String pantsColor;
-
     private String shoesStyle;
-
-    private String shoesColor;
-
-    private String faceColor;
 
     private String faceStyle;
 
-    public UsercharacterDto(String gender, String nickname, String headStyle, String headColor, String topStyle, String topColor, String pantsStyle, String pantsColor, String shoesStyle, String shoesColor, String faceColor, String faceStyle) {
+    public UsercharacterDto(String gender, String nickname, String headStyle, String topStyle, String pantsStyle, String shoesStyle, String faceStyle) {
         this.gender = gender;
         this.nickname = nickname;
         this.headStyle = headStyle;
-        this.headColor = headColor;
         this.topStyle = topStyle;
-        this.topColor = topColor;
         this.pantsStyle = pantsStyle;
-        this.pantsColor = pantsColor;
         this.shoesStyle = shoesStyle;
-        this.shoesColor = shoesColor;
-        this.faceColor = faceColor;
         this.faceStyle = faceStyle;
     }
 
@@ -55,14 +40,9 @@ public class UsercharacterDto {
                 .gender(usercharacterDto.getGender())
                 .nickname(usercharacterDto.getNickname())
                 .headStyle(usercharacterDto.getHeadStyle())
-                .headColor(usercharacterDto.getHeadColor())
                 .topStyle(usercharacterDto.getTopStyle())
-                .topColor(usercharacterDto.getTopColor())
-                .pantsColor(usercharacterDto.getPantsColor())
                 .pantsStyle(usercharacterDto.getPantsStyle())
-                .shoesColor(usercharacterDto.getShoesColor())
                 .shoesStyle(usercharacterDto.getShoesStyle())
-                .faceColor(usercharacterDto.getFaceColor())
                 .faceStyle(usercharacterDto.getFaceStyle())
                 .build();
     }
