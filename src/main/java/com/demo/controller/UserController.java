@@ -136,6 +136,7 @@ public class UserController {
         }
     }
 
+
     //부모 회원가입시 아이 등록을 위한 체크
     @PostMapping("/parent/check")
     public Response checkUser(@RequestBody LogInDto logInDto){
