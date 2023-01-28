@@ -37,7 +37,7 @@ public class EmailConfig {
     @Bean
     public JavaMailSender javaMailService() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-        javaMailSender.setHost("smtp.gmail.com"); //smtp 서버 주소
+        javaMailSender.setHost("smtp.naver.com"); //smtp 서버 주소
         javaMailSender.setUsername(id); // 발신자 메일 아이디
         javaMailSender.setPassword(password); // 발신 메일 패스워드(구글 앱 비밀번호)(따로 설정해야함)
         javaMailSender.setPort(port); //smtp port 구글, 네이버 등등에서 해당 메일의 port 확인 가능
