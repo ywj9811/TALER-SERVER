@@ -55,7 +55,6 @@
 package com.demo.controller;
 
 import com.demo.domain.Favorite;
-import com.demo.domain.Friend;
 import com.demo.dto.response.Response;
 import com.demo.service.FavoriteService;
 import lombok.RequiredArgsConstructor;

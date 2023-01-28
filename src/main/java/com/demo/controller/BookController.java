@@ -1,7 +1,5 @@
 package com.demo.controller;
 
-import com.demo.domain.*;
-import com.demo.dto.BookRoomInsertDto;
 import com.demo.dto.MindInsertDto;
 import com.demo.dto.PictureInsertDto;
 import com.demo.dto.WordInsertDto;
@@ -32,15 +30,7 @@ public class BookController {
             return new Response(BOOKROOMSELECTERRORMESSAGE, BOOKROOMSELECTERRORCODE);
         }
     }
-    /**
-     * View를 만들어서 사용함 (join대신)
-     */
-    /**
-     * join을 사용할 경우
-     * 결과값이 안나옴 null로 나옴
-     * 나중에 이유를 알게 되면 고치도록 하자.
-     * 우선 작동하는 방식으로 하자.
-     */
+
     @PostMapping("/bookroom/{userId}") //bookroom 생성
     public Response saveBookRoom(@PathVariable String userId, String bookTitle, String bookAuthor) {
         try {
@@ -49,14 +39,6 @@ public class BookController {
             return new Response(BOOKROOMINSERTERRORMESSAGE, BOOKROOMINSERTERRORCODE);
         }
     }
-
-    /**
-     * Post/bookroom 실행시
-     * bookroom 생성
-     * 기본 usercharacter 베이스로 bookroom 캐릭터 생성
-     * favorite 좋아요X 생성
-     * bookdetails의 bookpopularity 증가
-     */
 
     @PutMapping("/bookroom/color/{bookroomId}")
     public Response updateThemeColor(@PathVariable String bookroomId, String themeColor) {
@@ -236,12 +218,3 @@ public class BookController {
         }
     }
 }
-/**
- * ----------설명------------
- * bookroom에 접근하면 Roomview에 담아서 반환함
- * Roomview에는 bookroom의 모든 필드와 bookTitle, userCharacter의 필드, isfavorite 이 들어있다.
- * 만약 없다면 null이 반환됨
- *
- * picture, word, mind 탭에 접근하는 경우 접근시 아무것도 없을 경우 Empty로 반환이 됨 이들은 List반환
- * 존재한다면 모두 List에 담아서 반환하고 있음
- */
