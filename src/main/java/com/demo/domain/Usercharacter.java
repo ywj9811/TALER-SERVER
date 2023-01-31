@@ -31,21 +31,11 @@ public class Usercharacter {
 
     private String headStyle;
 
-    private String headColor;
-
     private String topStyle;
-
-    private String topColor;
 
     private String pantsStyle;
 
-    private String pantsColor;
-
     private String shoesStyle;
-
-    private String shoesColor;
-
-    private String faceColor;
 
     private String faceStyle;
 
@@ -59,14 +49,9 @@ public class Usercharacter {
         this.gender = editCharacterDto.getGender();
         this.nickname = editCharacterDto.getNickname();
         this.headStyle = editCharacterDto.getHeadStyle();
-        this.headColor = editCharacterDto.getHeadColor();
         this.topStyle = editCharacterDto.getTopStyle();
-        this.topColor = editCharacterDto.getTopColor();
         this.pantsStyle = editCharacterDto.getPantsStyle();
-        this.pantsColor = editCharacterDto.getPantsColor();
         this.shoesStyle = editCharacterDto.getShoesStyle();
-        this.shoesColor = editCharacterDto.getShoesColor();
-        this.faceColor = editCharacterDto.getFaceColor();
         this.faceStyle = editCharacterDto.getFaceStyle();
     }
 }

@@ -1,7 +1,6 @@
 package com.demo.service;
 
 import com.demo.domain.*;
-import com.demo.domain.responseCode.ResponseCodeMessage;
 import com.demo.dto.*;
 import com.demo.dto.response.Response;
 import com.demo.repository.*;
@@ -10,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.demo.domain.responseCode.ResponseCodeMessage.*;

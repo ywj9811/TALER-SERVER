@@ -9,15 +9,10 @@ public class DefaultCharacterDto {
                 .bookId(bookId)
                 .gender(usercharacter.getGender())
                 .nickname(usercharacter.getNickname())
-                .headColor(usercharacter.getHeadColor())
                 .headStyle(usercharacter.getHeadStyle())
-                .topColor(usercharacter.getTopColor())
                 .topStyle(usercharacter.getTopStyle())
-                .pantsColor(usercharacter.getPantsColor())
                 .pantsStyle(usercharacter.getPantsStyle())
-                .shoesColor(usercharacter.getShoesColor())
                 .shoesStyle(usercharacter.getShoesStyle())
-                .faceColor(usercharacter.getFaceColor())
                 .faceStyle(usercharacter.getFaceStyle())
                 .build();
     }
