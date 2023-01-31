@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 /**
  * refresh 토큰을 저장하는 redis 사용을 위한 클래스
@@ -16,11 +17,16 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisTool {
     private final RedisTemplate redisTemplate;
-    public void setRedisValues(String token, String nickname){
+    public void setRedisValues(String nickname, String token){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set(token, nickname, Duration.ofMinutes(10));  // 1분 뒤 메모리에서 삭제
-        redisTemplate.expire(token, 10, TimeUnit.MINUTES);
+        values.set(nickname, token);  // redis에는 반대로 등록됨 이유모르겠음
     }
+
+    public void setExpire(String nickname, long time){
+        redisTemplate.expire(nickname, time, TimeUnit.MINUTES);
+    }
+
+    public void setExpiredAt(String nickname, Date date){ redisTemplate.expireAt(nickname, date); }
 
     // 키값으로 벨류 가져오기
     public String getRedisValues(String nickname){
@@ -28,8 +34,8 @@ public class RedisTool {
         return values.get(nickname);
     }
 
-    public void delRedisValues(String token) {
-        redisTemplate.delete(token.substring(7));
+    public void delRedisValues(String nickname) {
+        redisTemplate.delete(nickname);
     }
 
 }

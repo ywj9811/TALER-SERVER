@@ -6,19 +6,16 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserDto {
-
-    private Long userId;
+public class UserSaveResponseDto {
 
     private String nickname;
 
     private String authority;
 
-    public static UserDto userEntityToDto(User user) {
+    public static UserSaveResponseDto userEntityToDto(User user) {
         if(user == null) return null;
 
-        return UserDto.builder()
-                .userId(user.getUserId())
+        return UserSaveResponseDto.builder()
                 .nickname(user.getNickname())
                 .authority(user.getAuthority())
                 .build();

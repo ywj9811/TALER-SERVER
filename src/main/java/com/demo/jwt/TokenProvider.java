@@ -46,7 +46,7 @@ public class TokenProvider implements InitializingBean {
     public TokenProvider(
             RedisTool redisTool,
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expiration}") long tokenValidityInSeconds,
+            @Value("${jwt.expiration}") long tokenValidityInSeconds,  //1시간
             UserDetailsService userDetailsService) {
         this.redisTool = redisTool;
         this.userDetailsService = userDetailsService;
@@ -104,6 +104,7 @@ public class TokenProvider implements InitializingBean {
                 .setExpiration(validity)
                 .compact();
         redisTool.setRedisValues(nickname,refreshToken); // redis에 refresh 토큰 저장
+        redisTool.setExpire(nickname,2);
 
         return refreshToken;
     }
@@ -116,15 +117,26 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
+
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        // original : User principal = new User(claims.getSubject(), "", authorities);
         UserDetails principal = new User(claims.get(USERNAME_KEY).toString(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public Date getExpiration(String token){
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getExpiration();
     }
 
     public boolean validateToken(String token) {

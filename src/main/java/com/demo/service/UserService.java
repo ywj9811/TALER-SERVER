@@ -7,6 +7,7 @@ import com.demo.jwt.TokenProvider;
 import com.demo.redis.RedisTool;
 import com.demo.repository.*;
 import io.jsonwebtoken.JwtException;
+import io.lettuce.core.RedisException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,8 +48,8 @@ public class UserService {
         userInsertDto.setPw(encodePw);
 
         User user = userInsertDto.dtoToUser(userInsertDto);
-        UserDto userDto = UserDto.userEntityToDto(userRepo.save(user));
-        return new Response(userDto,SUCCESSMESSAGE,SUCCESSCODE);
+        UserSaveResponseDto userSaveResponseDto = UserSaveResponseDto.userEntityToDto(userRepo.save(user));
+        return new Response(userSaveResponseDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
     //부모 회원가입
@@ -63,8 +65,8 @@ public class UserService {
 
         Parent parent = parentInsertDto.dtoToParent(parentInsertDto,
                 userRepo.findByNickname(parentInsertDto.getUserNickname()).get().getUserId());
-        ParentDto parentDto = ParentDto.EntityToPaParentDto(parentRepo.save(parent));
-        return new Response(parentDto,SUCCESSMESSAGE,SUCCESSCODE);
+        ParentSaveResponseDto parentSaveResponseDto = ParentSaveResponseDto.EntityToPaParentDto(parentRepo.save(parent));
+        return new Response(parentSaveResponseDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
     //아이, 부모 로그인
     public Response login(LogInDto logInDto) throws Exception {
@@ -119,6 +121,22 @@ public class UserService {
 
         return new Response(atk,SUCCESSMESSAGE,SUCCESSCODE);
 
+
+    }
+
+    public Response logout(LogoutDto logoutDto){
+        redisTool.delRedisValues(logoutDto.getNickname());
+        Date date = tokenProvider.getExpiration(logoutDto.getJwtToken());
+
+        try{
+            redisTool.setRedisValues("blackList",logoutDto.getJwtToken());
+            redisTool.setExpiredAt(logoutDto.getNickname(),date);
+        }catch(Exception e){
+            return new Response(USERLOGOUTERRORMESSAGE,USERLOGOUTERRORCODE);
+        }
+
+
+        return new Response(logoutDto.getNickname(),SUCCESSMESSAGE,SUCCESSCODE);
 
     }
 

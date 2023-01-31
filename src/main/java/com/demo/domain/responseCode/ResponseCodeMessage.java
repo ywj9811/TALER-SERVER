@@ -62,6 +62,7 @@ public class ResponseCodeMessage {
     public static final String JWTEXPIREDMESSAGE = "[ERROR] 만료된 토큰입니다.";
     public static final String REFRESHTOKENEXCETIONMESSAGE = "[ERROR] refresh토큰이 유효하지 않습니다.";
     public static final String REFRESHTOKENNULLMESSAGE = "[ERROR] refresh토큰이 존재하지 않습니다.";
+    public static final String USERLOGOUTERRORMESSAGE = "[ERROR] 로그아웃에 실패하였습니다.";
 
     public static final int USERPASSWORDERRORCODE = 1000;
     public static final int USERIDPASSWRODERRORCODE = 1001;
@@ -72,6 +73,7 @@ public class ResponseCodeMessage {
     public static final int JWTEXPIREDCODE = 1006;
     public static final int REFRESHTOKENEXCETIONCODE = 1007;
     public static final int REFRESHTOKENNULLCODE = 1008;
+    public static final int USERLOGOUTERRORCODE = 1009;
 
 
     public static final int SUCCESSCODE = 2000;
