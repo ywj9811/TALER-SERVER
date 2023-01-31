@@ -137,7 +137,6 @@ public class UserService {
 
 
         return new Response(logoutDto.getNickname(),SUCCESSMESSAGE,SUCCESSCODE);
-
     }
 
 }
