@@ -59,13 +59,8 @@ import com.demo.dto.response.Response;
 import com.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-import com.demo.domain.*;
-import com.demo.domain.Usercharacter;
-import com.demo.dto.EditCharacterDto;
-import com.demo.dto.UsercharacterDto;
 import com.demo.service.EmailService;
 import com.demo.service.UsercharacterService;
 
@@ -146,6 +141,11 @@ public class UserController {
     @PostMapping("/reIssueAccessToken/{nickname}")
     public Response reIssueAccessToken(@PathVariable String nickname){
         return userService.reIssueAccessToken(nickname);
+    }
+
+    @PostMapping("/logout")
+    public Response logout(@RequestBody LogoutDto logoutDto){
+        return userService.logout(logoutDto);
     }
 
 
