@@ -2,8 +2,10 @@ package com.demo.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.util.Date;
@@ -17,17 +19,11 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisTool {
     private final RedisTemplate redisTemplate;
-    public void setRedisValues(String nickname, String token){
+    public void setRedisValues(String nickname, String token,Date date){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set(nickname, token);  // redis에는 반대로 등록됨 이유모르겠음
+        values.set(nickname, token);
+        redisTemplate.expireAt(nickname, date);
     }
-
-    public void setExpire(String nickname, long time){
-        redisTemplate.expire(nickname, time, TimeUnit.MINUTES);
-    }
-
-    public void setExpiredAt(String nickname, Date date){ redisTemplate.expireAt(nickname, date); }
-
     // 키값으로 벨류 가져오기
     public String getRedisValues(String nickname){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
@@ -36,6 +32,22 @@ public class RedisTool {
 
     public void delRedisValues(String nickname) {
         redisTemplate.delete(nickname);
+    }
+
+    public void setBlackList(String nickname, String token, Date date){
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        values.set("blackList :"+token,nickname);
+        redisTemplate.expireAt(nickname, date);
+    }
+
+    public boolean checkBlackList(String token){
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        String blackList = values.get("blackList :"+token);
+        if(StringUtils.hasText(blackList)){
+            return false;
+        }else{
+            return true;
+        }
     }
 
 }

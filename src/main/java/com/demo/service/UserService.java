@@ -98,7 +98,6 @@ public class UserService {
         }
 
         return new Response(logInDto,SUCCESSMESSAGE,SUCCESSCODE);
-
     }
 
     public Response reIssueAccessToken(String nickName){
@@ -120,8 +119,6 @@ public class UserService {
                 .collect(Collectors.joining(",")));
 
         return new Response(atk,SUCCESSMESSAGE,SUCCESSCODE);
-
-
     }
 
     public Response logout(LogoutDto logoutDto){
@@ -129,14 +126,11 @@ public class UserService {
         Date date = tokenProvider.getExpiration(logoutDto.getJwtToken());
 
         try{
-            redisTool.setRedisValues("blackList",logoutDto.getJwtToken());
-            redisTool.setExpiredAt(logoutDto.getNickname(),date);
+            redisTool.setBlackList(logoutDto.getNickname(),logoutDto.getJwtToken(),date);
         }catch(Exception e){
             return new Response(USERLOGOUTERRORMESSAGE,USERLOGOUTERRORCODE);
         }
 
-
         return new Response(logoutDto.getNickname(),SUCCESSMESSAGE,SUCCESSCODE);
     }
-
 }
