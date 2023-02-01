@@ -1,6 +1,8 @@
 package com.demo.jwt;
+import com.demo.redis.RedisTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,8 +26,10 @@ public class JwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private TokenProvider tokenProvider;
-    public JwtFilter(TokenProvider tokenProvider) {
+    private RedisTool redisTool;
+    public JwtFilter(TokenProvider tokenProvider, RedisTool redisTool) {
         this.tokenProvider = tokenProvider;
+        this.redisTool = redisTool;
     }
 
     @Override
@@ -34,7 +38,7 @@ public class JwtFilter extends GenericFilterBean {
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) && redisTool.checkBlackList(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             this.setAuthentication(authentication);
             logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);

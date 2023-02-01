@@ -103,8 +103,7 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
-        redisTool.setRedisValues(nickname,refreshToken); // redis에 refresh 토큰 저장
-        redisTool.setExpire(nickname,2);
+        redisTool.setRedisValues(nickname,refreshToken,validity); // redis에 refresh 토큰 저장
 
         return refreshToken;
     }
