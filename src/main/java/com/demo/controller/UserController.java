@@ -58,6 +58,7 @@ import com.demo.dto.*;
 import com.demo.dto.response.Response;
 import com.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +72,7 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final UsercharacterService usercharacterService;
@@ -111,8 +113,10 @@ public class UserController {
         try{
             return userService.login(logInDto);
         }catch(BadCredentialsException e){
+            e.printStackTrace();
             return new Response(USERIDPASSWRODERRORMESSAGE,USERIDPASSWRODERRORCODE);
         }catch(Exception e){
+            e.printStackTrace();
             return new Response(USERLOGINERRORMESSAGE,USERLOGINERRORCODE);
         }
 
