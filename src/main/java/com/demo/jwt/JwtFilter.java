@@ -1,9 +1,9 @@
 package com.demo.jwt;
+import com.demo.dto.TokenDto;
+import com.demo.dto.response.Response;
 import com.demo.redis.RedisTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -14,7 +14,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 
 /**
  * spring security와 jwt를 사용하기 위한 jwt용 커스텀 필터
@@ -35,11 +38,15 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String jwt = resolveToken(httpServletRequest);
+        String token = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) && redisTool.checkBlackList(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        if (StringUtils.hasText(token) && tokenProvider.validateToken(token) && redisTool.checkBlackList(token)) {
+            if(httpServletRequest.getRequestURI().equals("/user/ReIssueAccessToken")){
+                checkRefreshTokenAndReIssueAccessToken(servletResponse,token);
+                return;
+            }
+            Authentication authentication = tokenProvider.getAuthentication(token);
             this.setAuthentication(authentication);
             logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
         } else {
@@ -61,5 +68,31 @@ public class JwtFilter extends GenericFilterBean {
         }
 
         return null;
+    }
+
+    private void checkRefreshTokenAndReIssueAccessToken(ServletResponse servletResponse,String token) throws IOException {
+        String username = tokenProvider.getUsername(token);
+        String rtk = redisTool.getRedisValues(username);
+
+        if(!tokenProvider.getSubject(token).equals("Refresh")){
+            Response r = new Response("리프레시 토큰이 아닙니다",1012);
+            FilterErrorResponse.sendError(r, (HttpServletResponse) servletResponse);
+            return;
+        }
+        if (!StringUtils.hasText(rtk)){
+            Response r = new Response(REFRESHTOKENNULLMESSAGE,REFRESHTOKENNULLCODE);
+            FilterErrorResponse.sendError(r, (HttpServletResponse) servletResponse);
+            return;
+        }
+        if(!rtk.equals(token)){
+            Response r = new Response(REFRESHTOKENEXCETIONMESSAGE,REFRESHTOKENEXCETIONCODE);
+            FilterErrorResponse.sendError(r, (HttpServletResponse) servletResponse);
+            return;
+        }
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        TokenDto tokenDto = tokenProvider.createTokenDto(authentication);
+
+        Response r = new Response(tokenDto,SUCCESSMESSAGE,SUCCESSCODE);
+        FilterErrorResponse.sendError(r, (HttpServletResponse) servletResponse);
     }
 }

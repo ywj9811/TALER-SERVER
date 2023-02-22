@@ -69,7 +69,6 @@ public class TokenProvider implements InitializingBean {
 
         String accessToken = createAccessToken(nickname, authorities);
         String refreshToken = createRefreshToken(nickname, authorities);
-        System.out.println("acc : " + accessToken);
         return TokenDto.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
@@ -95,11 +94,13 @@ public class TokenProvider implements InitializingBean {
 
     public String createRefreshToken(String nickname, String authorities) {
         Date validity = new Date(now + this.accessTokenValidityInMilliseconds);
+        Date currentTime = new Date();
 
         String refreshToken = Jwts.builder()
                 .setSubject("Refresh")
                 .claim(USERNAME_KEY,nickname)
                 .claim(AUTHORITIES_KEY, authorities)
+                .setIssuedAt(currentTime) //필수!!
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
@@ -108,14 +109,18 @@ public class TokenProvider implements InitializingBean {
         return refreshToken;
     }
 
-    public Authentication getAuthentication(String token) {
+    public Claims getClaims(String token) {
         Claims claims = Jwts
                 .parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        return claims;
+    }
 
+    public Authentication getAuthentication(String token) {
+        Claims claims = getClaims(token);
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -128,15 +133,23 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Date getExpiration(String token){
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = getClaims(token);
 
         return claims.getExpiration();
     }
+
+    public String getSubject(String token){
+        Claims claims = getClaims(token);
+
+        return claims.getSubject();
+    }
+
+    public String getUsername(String token){
+        Claims claims = getClaims(token);
+
+        return claims.get(USERNAME_KEY).toString();
+    }
+
 
     public boolean validateToken(String token) {
         try {

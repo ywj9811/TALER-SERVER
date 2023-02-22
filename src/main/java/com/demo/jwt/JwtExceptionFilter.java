@@ -40,16 +40,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         }else{
             r = new Response("401 Unauthorized",ex.getMessage(),UNAUTHORIZEROORCODE);
         }
-        ObjectMapper objectMapper = new ObjectMapper();
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        objectMapper.getFactory().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
-
-        String res = objectMapper.writeValueAsString(r);
-        PrintWriter writer = response.getWriter();
-        writer.write(res);
-        writer.flush();
+        FilterErrorResponse.sendError(r,response);
     }
 }

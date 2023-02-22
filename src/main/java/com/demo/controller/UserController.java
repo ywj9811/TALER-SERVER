@@ -57,6 +57,7 @@ package com.demo.controller;
 import com.demo.dto.*;
 import com.demo.dto.response.Response;
 import com.demo.service.UserService;
+import com.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
@@ -75,8 +76,8 @@ import static com.demo.domain.responseCode.ResponseCodeMessage.*;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final UsercharacterService usercharacterService;
     private final EmailService emailService;
+    private final SecurityUtil securityUtil;
 
     @PostMapping("/emailConfirm")
     public Response emailConfirm(@RequestParam String email) throws Exception {
@@ -143,9 +144,9 @@ public class UserController {
 
 
 
-    @PostMapping("/reIssueAccessToken/{nickname}")
-    public Response reIssueAccessToken(@PathVariable String nickname){
-        return userService.reIssueAccessToken(nickname);
+    @PostMapping("/reIssueAccessToken")
+    public Response reIssueAccessToken(){
+        return userService.reIssueAccessToken();
     }
 
     @PostMapping("/logout")

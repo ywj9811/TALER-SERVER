@@ -55,11 +55,12 @@ public class SecurityConfig{
 
                 .and()
                 .authorizeRequests()
-                //.antMatchers("/","/**").permitAll() //모든 api에 대한 접근 허용 (지우면 token필요함)
+                //.antMatchers("/","/**").permitAll() //모든 api에 대한 접근 허용
                 .antMatchers("/user/save","/user/parent/save").permitAll()
                 .antMatchers("/user/login","/user/parent/login").permitAll()
                 .antMatchers("/emailConfirm","/parent/check").permitAll()
                 .anyRequest().authenticated()
+
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider,redisTool));

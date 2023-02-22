@@ -6,6 +6,7 @@ import com.demo.dto.response.Response;
 import com.demo.jwt.TokenProvider;
 import com.demo.redis.RedisTool;
 import com.demo.repository.*;
+import com.demo.utils.SecurityUtil;
 import io.jsonwebtoken.JwtException;
 import io.lettuce.core.RedisException;
 import lombok.RequiredArgsConstructor;
@@ -100,25 +101,14 @@ public class UserService {
         return new Response(logInDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
-    public Response reIssueAccessToken(String nickName){
-        String rtk = redisTool.getRedisValues(nickName);
-        if(StringUtils.hasText(rtk)){
-            try{
-                tokenProvider.validateToken(rtk);
-            }catch(JwtException e){
-                return new Response(REFRESHTOKENEXCETIONMESSAGE,REFRESHTOKENEXCETIONCODE);
-            }
-        }else{
-            return new Response(REFRESHTOKENNULLMESSAGE,REFRESHTOKENNULLCODE);
-        }
+    public Response reIssueAccessToken(){
+        String nickname = SecurityUtil.getCurrentUsername().get();
+        String rtk = redisTool.getRedisValues(nickname);
 
         Authentication authentication = tokenProvider.getAuthentication(rtk);
-        String atk = tokenProvider.createAccessToken(authentication.getName(),
-                authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")));
+        TokenDto tokenDto = tokenProvider.createTokenDto(authentication);
 
-        return new Response(atk,SUCCESSMESSAGE,SUCCESSCODE);
+        return new Response(tokenDto,SUCCESSMESSAGE,SUCCESSCODE);
     }
 
     public Response logout(LogoutDto logoutDto){
