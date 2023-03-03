@@ -34,5 +34,22 @@
 <img src="https://img.shields.io/badge/Amazon%20RDS-fff?style=for-the-badge&logo=Amazon%20RDS&logoColor=#FF9900" width="150" height="40"/>
 </p>
 
+## <p align="center"> 📱Android📱 </p>
+<p align="center">
+<img src="https://img.shields.io/badge/Kotlin-fff?style=for-the-badge&logo=Kotlin&logoColor=#7F52FF" width="150" height="40"/><img src="https://img.shields.io/badge/Android%20Studio-fff?style=for-the-badge&logo=Android%20Studio&logoColor=#3DDC84" width="150" height="40"/><p>
+
 ## <p align="center"> 📑ERD📑 <p>
 ![image](https://user-images.githubusercontent.com/97458548/222734611-8928ef59-6899-47b0-9ff0-6c01e46f174e.png)
+ 
+# <p align="center"> 👩‍👧Member👩‍👧 <p>
+### BackEnd
+ 
+| 비버닉(양원준) | 씅(백승지) | 그린(김도희) | 그린(김유민) | 미카(정홍준) | 찬(김찬솔) |
+| --- | --- | --- | --- | --- | --- |
+| [ywj9811](https://github.com/ywj9811) | [seungji2001](https://github.com/seungji2001) | [ehgmlKim](https://github.com/ehgmlKim) | [minyou2675](https://github.com/minyou2675) | [H0ngJun](https://github.com/H0ngJun) | [zzansol](https://github.com/zzansol) |
+
+ ### FrontEnd
+| 룰루(김의진) | 리랑(유정선) | 하이준(안영준) |
+| --- | --- | --- |
+| [euijinjin](https://github.com/euijinjin) | [yjs616](https://github.com/yjs616) | [codingjobrice](https://github.com/codingjobrice) |
+
