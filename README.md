@@ -7,7 +7,7 @@
  - **마인드맵을 이용하여 독후감을 남겨보자**
  - **각 책마다 캐릭터를 만들어보자**
 ## <p align="center"> 새로운 방식으로 독후감을 써볼 수 있다 </p>
-<p>
+<p align="center">
 <img src="https://user-images.githubusercontent.com/97458548/222730891-f701e832-f156-4442-847e-7f2907dff868.png" width="200" height="400"/>
 <img src="https://user-images.githubusercontent.com/97458548/222730998-b95048a3-e4f6-4b4c-9f5b-8a8303073fd9.png" width="200" height="400"/>
 <img src="https://user-images.githubusercontent.com/97458548/222731091-27e727b4-7125-4414-b2a6-0db6466a3080.png" width="200" height="400"/>
